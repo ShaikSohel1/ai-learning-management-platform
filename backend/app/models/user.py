@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, UTC
+
 
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
@@ -23,7 +24,7 @@ class User(Base):
 
     designation = Column(String(100))
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda:datetime.now(UTC))
 
     # Relationships
     enrollments = relationship("Enrollment", back_populates="user")
