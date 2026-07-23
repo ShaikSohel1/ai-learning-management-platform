@@ -6,12 +6,12 @@ from app.schemas.auth import RegisterRequest, LoginRequest
 from app.services.auth_service import register_user, login_user
 from app.dependencies.auth import get_current_user
 from app.models.user import User
+from app.dependencies.roles import require_admin
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
-
 
 @router.post("/register")
 def register(
@@ -56,4 +56,13 @@ def get_me(
         "role": current_user.role,
         "department": current_user.department,
         "designation": current_user.designation
+    }
+
+@router.get("/admin")
+def admin_dashboard(
+    current_user: User = Depends(require_admin)
+):
+    return {
+        "message": "Welcome Admin",
+        "user": current_user.name
     }
