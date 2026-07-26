@@ -1,10 +1,8 @@
 from sqlalchemy.orm import Session
-
 from app.models.user import User
 from app.schemas.auth import RegisterRequest
 from app.core.security import hash_password
 from sqlalchemy import select
-
 from app.core.jwt import create_access_token
 from app.core.security import verify_password
 
@@ -27,9 +25,8 @@ def login_user(db: Session, user):
     statement = select(User).where(
         User.email == user.email
     )
-
     db_user = db.scalar(statement)
-
+    
     if db_user is None:
         return None
 

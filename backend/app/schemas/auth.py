@@ -8,7 +8,6 @@ class RegisterRequest(BaseModel):
     department: str
     designation: str
 
-
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
@@ -16,3 +15,5 @@ class LoginRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str    
+
+    
