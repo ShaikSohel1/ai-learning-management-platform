@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 export function Button({
   children,
@@ -15,9 +16,10 @@ export function Button({
     switch (variant) {
       case "primary":
         return {
-          background: "var(--color-primary)",
+          background: "var(--gradient-primary)",
           color: "#ffffff",
           border: "none",
+          boxShadow: "var(--glow-primary)",
         };
       case "secondary":
         return {
@@ -27,7 +29,7 @@ export function Button({
         };
       case "outline":
         return {
-          background: "transparent",
+          background: "var(--bg-surface)",
           color: "var(--text-primary)",
           border: "1px solid var(--border-color)",
         };
@@ -51,16 +53,19 @@ export function Button({
   const getSizeStyles = () => {
     switch (size) {
       case "sm":
-        return { padding: "6px 14px", fontSize: "0.82rem", borderRadius: "var(--radius-sm)" };
+        return { padding: "8px 16px", fontSize: "0.82rem", borderRadius: "var(--radius-sm)" };
       case "lg":
         return { padding: "14px 28px", fontSize: "1rem", borderRadius: "var(--radius-md)" };
       default:
-        return { padding: "10px 20px", fontSize: "0.9rem", borderRadius: "var(--radius-md)" };
+        return { padding: "10px 22px", fontSize: "0.9rem", borderRadius: "var(--radius-md)" };
     }
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      transition={{ duration: 0.15 }}
       type={type}
       disabled={disabled}
       onClick={onClick}
@@ -73,7 +78,6 @@ export function Button({
         fontWeight: 600,
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.6 : 1,
-        transition: "all 0.2s ease",
         fontFamily: "var(--font-sans)",
         ...getVariantStyles(),
         ...getSizeStyles(),
@@ -82,7 +86,7 @@ export function Button({
     >
       {Icon && <Icon size={size === "sm" ? 16 : 18} />}
       {children}
-    </button>
+    </motion.button>
   );
 }
 

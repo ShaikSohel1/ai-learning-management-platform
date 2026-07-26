@@ -1,23 +1,27 @@
-/* Enterprise Top Header Bar CSS */
+/* Lovable Floating TopBar Styling */
 
 .app-topbar {
   height: var(--topbar-height);
   position: fixed;
-  top: 0;
-  right: 0;
-  left: var(--sidebar-width);
+  top: 16px;
+  right: 16px;
+  left: calc(var(--sidebar-width) + 32px);
   background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 24px;
   z-index: 40;
-  transition: left 0.25s ease, background 0.25s ease;
+  transition: left 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .app-topbar.sidebar-collapsed {
-  left: var(--sidebar-collapsed-width);
+  left: calc(var(--sidebar-collapsed-width) + 32px);
 }
 
 .topbar-search {
@@ -27,8 +31,14 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
-  padding: 8px 16px;
-  width: 320px;
+  padding: 8px 18px;
+  width: 340px;
+  transition: all 0.2s ease;
+}
+
+.topbar-search:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .topbar-search input {
@@ -43,15 +53,15 @@
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .topbar-action-btn {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -64,29 +74,31 @@
 .topbar-action-btn:hover {
   background: var(--bg-surface-hover);
   color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .topbar-avatar {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: var(--gradient-primary);
   color: white;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
+  box-shadow: var(--glow-primary);
 }
 
 .main-content-wrapper {
-  margin-left: var(--sidebar-width);
-  margin-top: var(--topbar-height);
-  padding: 32px 28px;
-  min-height: calc(100vh - var(--topbar-height));
-  transition: margin-left 0.25s ease;
+  margin-left: calc(var(--sidebar-width) + 32px);
+  margin-top: calc(var(--topbar-height) + 32px);
+  padding: 0 16px 32px 0;
+  min-height: calc(100vh - var(--topbar-height) - 48px);
+  transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .main-content-wrapper.sidebar-collapsed {
-  margin-left: var(--sidebar-collapsed-width);
+  margin-left: calc(var(--sidebar-collapsed-width) + 32px);
 }

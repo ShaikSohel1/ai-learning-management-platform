@@ -1,22 +1,20 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 export function Card({ children, className = "", style = {}, onClick }) {
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.2 }}
       onClick={onClick}
-      className={`ui-card ${className}`}
+      className={`glass-card ${className}`}
       style={{
-        background: "var(--bg-surface)",
-        border: "1px solid var(--border-color)",
-        borderRadius: "var(--radius-lg)",
         padding: "24px",
-        boxShadow: "var(--shadow-sm)",
-        transition: "all 0.2s ease",
         ...style,
       }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 

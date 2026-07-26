@@ -1,84 +1,82 @@
-/* Enterprise AI SaaS Design System & Global Styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;600;700;800&display=swap');
+/* Lovable.dev-Inspired AI Startup Design System & Tokens */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Color Tokens - Light Theme */
+  /* Lovable Light Color System */
   --bg-primary: #f8fafc;
-  --bg-surface: #ffffff;
+  --bg-surface: rgba(255, 255, 255, 0.85);
+  --bg-surface-solid: #ffffff;
   --bg-surface-hover: #f1f5f9;
-  --bg-sidebar: #0f172a;
-  --bg-sidebar-active: #1e293b;
-  --border-color: #e2e8f0;
+  --bg-sidebar: #ffffff;
+  --bg-sidebar-active: #f1f5f9;
+  --border-color: rgba(226, 232, 240, 0.8);
   --border-color-hover: #cbd5e1;
 
-  --text-primary: #0f172a;
+  --text-primary: #09090b;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
   --text-inverse: #ffffff;
 
-  /* Brand & Accent Tokens */
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-primary-light: #e0e7ff;
-  
+  /* Lovable Brand Colors */
+  --color-primary: #6d5ef7;
+  --color-primary-hover: #5b4be3;
+  --color-primary-light: rgba(109, 94, 247, 0.12);
+  --gradient-primary: linear-gradient(135deg, #6d5ef7 0%, #8b5cf6 100%);
+  --glow-primary: 0 8px 24px rgba(109, 94, 247, 0.3);
+
   --color-accent: #8b5cf6;
-  --color-accent-hover: #7c3aed;
-
+  --color-blue: #4f46e5;
   --color-success: #22c55e;
-  --color-success-light: #dcfce7;
-
+  --color-success-light: rgba(34, 197, 94, 0.12);
   --color-warning: #f59e0b;
-  --color-warning-light: #fef3c7;
-
+  --color-warning-light: rgba(245, 158, 11, 0.12);
   --color-danger: #ef4444;
-  --color-danger-light: #fee2e2;
+  --color-danger-light: rgba(239, 68, 68, 0.12);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  /* Lovable Soft Shadows & Radii */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.12);
 
-  /* Border Radii */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
 
-  /* Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Manrope', sans-serif;
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
 
-  /* Sidebar Width */
-  --sidebar-width: 260px;
-  --sidebar-collapsed-width: 72px;
-  --topbar-height: 68px;
+  /* Floating Layout Offsets */
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 76px;
+  --topbar-height: 72px;
 }
 
-/* Dark Mode Tokens */
+/* Lovable Dark Mode Tokens */
 [data-theme="dark"] {
-  --bg-primary: #090d16;
-  --bg-surface: #111827;
-  --bg-surface-hover: #1f2937;
-  --bg-sidebar: #030712;
-  --bg-sidebar-active: #111827;
-  --border-color: #1f2937;
-  --border-color-hover: #374151;
+  --bg-primary: #09090b;
+  --bg-surface: rgba(24, 24, 27, 0.85);
+  --bg-surface-solid: #18181b;
+  --bg-surface-hover: #27272a;
+  --bg-sidebar: #111113;
+  --bg-sidebar-active: #18181b;
+  --border-color: rgba(39, 39, 42, 0.8);
+  --border-color-hover: #3f3f46;
 
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-inverse: #030712;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-inverse: #09090b;
 
-  --color-primary-light: rgba(99, 102, 241, 0.15);
-  --color-success-light: rgba(34, 197, 94, 0.15);
-  --color-warning-light: rgba(245, 158, 11, 0.15);
-  --color-danger-light: rgba(239, 68, 68, 0.15);
+  --color-primary-light: rgba(109, 94, 247, 0.2);
+  --color-success-light: rgba(34, 197, 94, 0.2);
+  --color-warning-light: rgba(245, 158, 11, 0.2);
+  --color-danger-light: rgba(239, 68, 68, 0.2);
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.6);
 }
 
 /* Global Resets & Base Styles */
@@ -97,14 +95,45 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Typography Headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-/* Custom Scrollbars */
+/* Glassmorphism Card Style */
+.glass-card {
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-color-hover);
+}
+
+/* Gradient Button Utility */
+.btn-gradient {
+  background: var(--gradient-primary) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: var(--glow-primary);
+  transition: all 0.2s ease !important;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(109, 94, 247, 0.45) !important;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -120,17 +149,5 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #374151;
-}
-
-/* Glassmorphism Utilities */
-.glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .glass-card {
-  background: rgba(17, 24, 39, 0.85);
+  background: #27272a;
 }

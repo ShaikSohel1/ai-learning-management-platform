@@ -1,12 +1,14 @@
-/* Enterprise SaaS Dashboard Styling */
+/* Lovable Dashboard Layout Styling */
 
 .dash-container {
   max-width: 1240px;
   margin: 0 auto;
 }
 
-.dash-welcome-banner {
+.dash-hero-banner {
   background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 32px;
@@ -17,20 +19,13 @@
   box-shadow: var(--shadow-sm);
 }
 
-.dash-welcome-tag {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.dash-hero-banner h1 {
+  font-size: 1.85rem;
+  margin: 8px 0;
+  letter-spacing: -0.03em;
 }
 
-.dash-welcome-banner h1 {
-  font-size: 1.8rem;
-  margin: 6px 0;
-}
-
-.dash-welcome-banner p {
+.dash-hero-banner p {
   color: var(--text-secondary);
   font-size: 0.95rem;
 }
@@ -57,7 +52,7 @@
   }
 }
 
-/* 2-Column AI & Task Section */
+/* 2-Column Section */
 .dash-two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -70,7 +65,7 @@
     grid-template-columns: 1fr;
   }
 
-  .dash-welcome-banner {
+  .dash-hero-banner {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;

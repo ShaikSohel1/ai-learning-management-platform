@@ -1,20 +1,22 @@
-/* Collapsible Left Sidebar CSS */
+/* Lovable Floating Sidebar Styling */
 
 .app-sidebar {
   width: var(--sidebar-width);
-  height: 100vh;
+  height: calc(100vh - 32px);
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 16px;
+  left: 16px;
   background: var(--bg-sidebar);
-  color: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 14px;
   z-index: 50;
-  transition: width 0.25s ease;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+  box-shadow: var(--shadow-md);
 }
 
 .app-sidebar.collapsed {
@@ -33,18 +35,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 800;
   font-size: 1.15rem;
-  color: white;
+  color: var(--text-primary);
   text-decoration: none;
 }
 
 .sidebar-logo-badge {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  box-shadow: var(--glow-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,18 +57,19 @@
 .sidebar-toggle-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 6px;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .sidebar-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .sidebar-nav {
@@ -79,9 +83,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
-  color: #94a3b8;
+  color: var(--text-secondary);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
@@ -89,18 +93,18 @@
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: white;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .sidebar-link.active {
-  background: var(--color-primary);
+  background: var(--gradient-primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: var(--glow-primary);
 }
 
 .sidebar-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-color);
   padding-top: 16px;
   display: flex;
   flex-direction: column;
