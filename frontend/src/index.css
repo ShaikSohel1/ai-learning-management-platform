@@ -1,0 +1,80 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f4f6f9;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+input,
+textarea,
+select,
+button {
+  font-size: 15px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* ---------- Navbar ---------- */
+
+.navbar {
+  height: 70px;
+  background: #2563eb;
+  color: white;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 40px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 30px;
+}
+
+.navbar-links a {
+  color: white;
+  font-weight: 600;
+}
+
+.navbar-links .active {
+  border-bottom: 2px solid white;
+}
+
+.navbar-user {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.navbar-user button {
+  background: crimson;
+  color: white;
+
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+}
+
+.navbar-user button:hover {
+  background: darkred;
+}
