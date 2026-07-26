@@ -9,11 +9,13 @@ import {
   updateCourse,
   deleteCourse,
 } from "../services/courseService";
+import enrollmentService from "../services/enrollmentService";
 
 import "../styles/courses.css";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState("");
@@ -25,6 +27,16 @@ function Courses() {
   const limit = 5;
 
   const [editingCourse, setEditingCourse] = useState(null);
+
+  const loadEnrollments = async () => {
+    try {
+      const data = await enrollmentService.getMyEnrollments();
+      const ids = data.map((e) => e.course_id);
+      setEnrolledCourseIds(ids);
+    } catch (error) {
+      console.error("Failed to load user enrollments:", error);
+    }
+  };
 
   const loadCourses = async () => {
     try {
@@ -53,7 +65,21 @@ function Courses() {
 
   useEffect(() => {
     loadCourses();
+    loadEnrollments();
   }, [search, category, difficulty, sort, page]);
+
+  const handleEnroll = async (courseId) => {
+    try {
+      await enrollmentService.enrollInCourse(courseId);
+      loadEnrollments();
+      alert("Successfully enrolled in course!");
+    } catch (error) {
+      console.error("Enrollment failed:", error);
+      alert(
+        error.response?.data?.detail || "Unable to enroll in course."
+      );
+    }
+  };
 
   const handleCreate = async (course) => {
     try {
@@ -174,6 +200,8 @@ function Courses() {
               courses={courses}
               onEdit={setEditingCourse}
               onDelete={handleDelete}
+              enrolledCourseIds={enrolledCourseIds}
+              onEnroll={handleEnroll}
             />
 
             <div className="pagination">

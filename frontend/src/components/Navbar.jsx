@@ -31,11 +31,31 @@ function Navbar() {
         >
           Courses
         </Link>
+
+        <Link
+          to="/ai"
+          className={location.pathname === "/ai" ? "active" : ""}
+        >
+          ✨ AI Assistant
+        </Link>
+
+        <Link
+          to="/my-learning"
+          className={location.pathname === "/my-learning" ? "active" : ""}
+        >
+          🎓 My Learning
+        </Link>
+
+        <Link
+          to="/knowledge"
+          className={location.pathname === "/knowledge" ? "active" : ""}
+        >
+          📖 Knowledge Base
+        </Link>
       </div>
 
       <div className="navbar-user">
         <span>{user?.name}</span>
-
         <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>
