@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Bell, Sun, Moon, Check, X } from "lucide-react";
+import { Search, Bell, Sun, Moon, Check, X, Command, Sparkles, Activity } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import notificationService from "../services/notificationService";
 import "../styles/topBar.css";
@@ -47,17 +47,43 @@ export function TopBar({ collapsed }) {
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
     : "U";
 
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+
   return (
     <header className={`app-topbar ${collapsed ? "sidebar-collapsed" : ""}`}>
-      {/* Search Input */}
+      {/* Left Metadata / Breadcrumb / Date */}
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "6px" }}>
+          <span>Workspace</span> / <strong style={{ color: "var(--text-primary)" }}>Dashboard</strong>
+        </div>
+
+        <span style={{ fontSize: "12px", background: "var(--bg-primary)", border: "1px solid var(--border-color)", padding: "2px 10px", borderRadius: "12px", color: "var(--text-muted)", fontWeight: 600 }}>
+          {currentDate}
+        </span>
+
+        {/* AI Status Indicator Badge */}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 700, color: "var(--color-success)", background: "var(--color-success-light)", padding: "3px 10px", borderRadius: "12px" }}>
+          <Activity size={13} />
+          <span>AI Operational</span>
+        </div>
+      </div>
+
+      {/* Center ⌘K Search Input */}
       <div className="topbar-search">
-        <Search size={18} color="var(--text-muted)" />
+        <Search size={16} color="var(--text-muted)" />
         <input
           type="text"
           placeholder="Search courses, skills, policies..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+        <div className="search-cmd-badge">
+          <Command size={11} /> K
+        </div>
       </div>
 
       {/* Topbar Actions */}
@@ -89,7 +115,7 @@ export function TopBar({ collapsed }) {
                   color: "white",
                   borderRadius: "50%",
                   padding: "2px 6px",
-                  fontSize: "0.68rem",
+                  fontSize: "10px",
                   fontWeight: 800,
                 }}
               >
@@ -109,7 +135,7 @@ export function TopBar({ collapsed }) {
                 background: "var(--bg-surface)",
                 color: "var(--text-primary)",
                 borderRadius: "var(--radius-lg)",
-                boxShadow: "var(--shadow-xl)",
+                boxShadow: "var(--shadow-lg)",
                 border: "1px solid var(--border-color)",
                 zIndex: 1000,
                 padding: "16px",
@@ -136,7 +162,7 @@ export function TopBar({ collapsed }) {
               </div>
 
               {notifications.length === 0 ? (
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", textAlign: "center", padding: "12px 0" }}>
+                <p style={{ fontSize: "13px", color: "var(--text-muted)", textAlign: "center", padding: "12px 0" }}>
                   No notifications right now.
                 </p>
               ) : (
@@ -149,7 +175,7 @@ export function TopBar({ collapsed }) {
                         padding: "10px 12px",
                         borderRadius: "var(--radius-md)",
                         marginBottom: "8px",
-                        fontSize: "0.85rem",
+                        fontSize: "13px",
                       }}
                     >
                       <div style={{ fontWeight: 700, color: "var(--text-primary)" }}>{n.title}</div>
@@ -162,9 +188,9 @@ export function TopBar({ collapsed }) {
                             background: "var(--color-primary)",
                             color: "white",
                             border: "none",
-                            borderRadius: "var(--radius-sm)",
+                            borderRadius: "6px",
                             padding: "4px 8px",
-                            fontSize: "0.72rem",
+                            fontSize: "11px",
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",

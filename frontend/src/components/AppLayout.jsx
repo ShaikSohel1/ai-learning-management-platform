@@ -10,7 +10,7 @@ export function AppLayout({ children }) {
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <TopBar collapsed={collapsed} />
       <main className={`main-content-wrapper ${collapsed ? "sidebar-collapsed" : ""}`}>
-        {children}
+        <div className="app-container-1400">{children}</div>
       </main>
     </div>
   );

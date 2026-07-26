@@ -16,10 +16,10 @@ export function Button({
     switch (variant) {
       case "primary":
         return {
-          background: "var(--gradient-primary)",
+          background: "var(--gradient-cta)",
           color: "#ffffff",
           border: "none",
-          boxShadow: "var(--glow-primary)",
+          boxShadow: "var(--glow-cta)",
         };
       case "secondary":
         return {
@@ -53,11 +53,11 @@ export function Button({
   const getSizeStyles = () => {
     switch (size) {
       case "sm":
-        return { padding: "8px 16px", fontSize: "0.82rem", borderRadius: "var(--radius-sm)" };
+        return { padding: "8px 16px", fontSize: "13px", borderRadius: "var(--radius-sm)" };
       case "lg":
-        return { padding: "14px 28px", fontSize: "1rem", borderRadius: "var(--radius-md)" };
+        return { padding: "14px 28px", fontSize: "16px", borderRadius: "var(--radius-md)" };
       default:
-        return { padding: "10px 22px", fontSize: "0.9rem", borderRadius: "var(--radius-md)" };
+        return { padding: "10px 22px", fontSize: "15px", borderRadius: "var(--radius-md)" };
     }
   };
 
