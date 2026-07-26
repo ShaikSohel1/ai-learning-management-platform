@@ -1,0 +1,44 @@
+/* Enterprise Admin Dashboard Styling */
+
+.admin-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.admin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-users-table th {
+  text-align: left;
+  padding: 12px 14px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.admin-users-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.admin-users-table tr:hover td {
+  background: var(--bg-surface-hover);
+}

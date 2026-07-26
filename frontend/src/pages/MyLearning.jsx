@@ -1,29 +1,36 @@
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import React, { useState, useEffect } from "react";
+import {
+  GraduationCap,
+  Award,
+  PlayCircle,
+  CheckCircle,
+  Download,
+  ShieldCheck,
+  Calendar,
+  Layers,
+} from "lucide-react";
+
+import AppLayout from "../components/AppLayout";
+import Card from "../components/common/Card";
+import Button from "../components/common/Button";
+import Badge from "../components/common/Badge";
+import EmptyState from "../components/common/EmptyState";
+import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import enrollmentService from "../services/enrollmentService";
 import "../styles/myLearning.css";
 
 function MyLearning() {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [filter, setFilter] = useState("ALL"); // 'ALL' | 'IN_PROGRESS' | 'COMPLETED' | 'NOT_STARTED'
-
-  // Certificate Modal State
   const [selectedCert, setSelectedCert] = useState(null);
-  const [loadingCert, setLoadingCert] = useState(false);
 
   const loadEnrollments = async () => {
     try {
       setLoading(true);
-      setError("");
       const data = await enrollmentService.getMyEnrollments();
-      setEnrollments(data);
+      setEnrollments(data || []);
     } catch (err) {
       console.error("Failed to load enrollments:", err);
-      setError(
-        err.response?.data?.detail || "Failed to load your enrolled courses."
-      );
     } finally {
       setLoading(false);
     }
@@ -33,297 +40,135 @@ function MyLearning() {
     loadEnrollments();
   }, []);
 
-  // Action: Start or Increase Progress
-  const handleProgressUpdate = async (enrollmentId, currentProgress, increment = 25) => {
+  const handleUpdateProgress = async (id, currentProgress) => {
+    const nextProgress = Math.min(100, currentProgress + 25);
     try {
-      const nextProgress = Math.min(100, currentProgress + increment);
-      await enrollmentService.updateProgress(enrollmentId, nextProgress);
+      if (nextProgress >= 100) {
+        await enrollmentService.completeCourse(id);
+      } else {
+        await enrollmentService.updateProgress(id, nextProgress);
+      }
       loadEnrollments();
     } catch (err) {
-      console.error("Failed to update progress:", err);
-      alert(err.response?.data?.detail || "Could not update progress.");
+      alert(err.response?.data?.detail || "Could not update course progress.");
     }
   };
 
-  // Action: Complete Course
-  const handleComplete = async (enrollmentId) => {
-    try {
-      await enrollmentService.completeCourse(enrollmentId);
-      loadEnrollments();
-    } catch (err) {
-      console.error("Failed to complete course:", err);
-      alert(err.response?.data?.detail || "Could not complete course.");
-    }
-  };
-
-  // Action: Remove Enrollment
-  const handleRemove = async (enrollmentId) => {
-    if (!window.confirm("Are you sure you want to remove this enrollment?")) return;
-    try {
-      await enrollmentService.deleteEnrollment(enrollmentId);
-      loadEnrollments();
-    } catch (err) {
-      console.error("Failed to remove enrollment:", err);
-      alert(err.response?.data?.detail || "Could not remove enrollment.");
-    }
-  };
-
-  // Action: Open Certificate Modal
   const handleViewCertificate = async (enrollmentId) => {
     try {
-      setLoadingCert(true);
       const certData = await enrollmentService.getCertificate(enrollmentId);
       setSelectedCert(certData);
     } catch (err) {
-      console.error("Failed to fetch certificate:", err);
-      alert(err.response?.data?.detail || "Certificate not available.");
-    } finally {
-      setLoadingCert(false);
+      alert(err.response?.data?.detail || "Could not fetch certificate.");
     }
   };
 
-  // Filtered List
-  const filteredEnrollments = enrollments.filter((item) => {
-    if (filter === "ALL") return true;
-    return item.status === filter;
-  });
-
-  // Calculate Summary Statistics
-  const totalCount = enrollments.length;
-  const inProgressCount = enrollments.filter((e) => e.status === "IN_PROGRESS").length;
-  const completedCount = enrollments.filter((e) => e.status === "COMPLETED").length;
-
   return (
-    <div>
-      <Navbar />
-
-      <div className="my-learning-container">
-        {/* Header Stats */}
-        <div className="learning-header">
-          <div className="learning-header-text">
-            <h1>🎓 My Learning Workspace</h1>
-            <p>Track your active courses, skill acquisition milestones, and certificates.</p>
-          </div>
-
-          <div className="stats-pills">
-            <div className="stat-pill">
-              <div className="num">{totalCount}</div>
-              <div className="label">Total Enrolled</div>
-            </div>
-            <div className="stat-pill">
-              <div className="num">{inProgressCount}</div>
-              <div className="label">In Progress</div>
-            </div>
-            <div className="stat-pill">
-              <div className="num">{completedCount}</div>
-              <div className="label">Completed</div>
-            </div>
-          </div>
+    <AppLayout>
+      <div className="mylearning-container">
+        {/* Header Bar */}
+        <div style={{ marginBottom: "24px" }}>
+          <h1>🎓 My Learning Workspace</h1>
+          <p style={{ color: "var(--text-secondary)", marginTop: "4px" }}>
+            Track active module progress, view milestones, and download issued digital certificates.
+          </p>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="learning-filter-tabs">
-          <button
-            className={`filter-tab-btn ${filter === "ALL" ? "active" : ""}`}
-            onClick={() => setFilter("ALL")}
-          >
-            All Courses ({totalCount})
-          </button>
-          <button
-            className={`filter-tab-btn ${filter === "IN_PROGRESS" ? "active" : ""}`}
-            onClick={() => setFilter("IN_PROGRESS")}
-          >
-            In Progress ({inProgressCount})
-          </button>
-          <button
-            className={`filter-tab-btn ${filter === "COMPLETED" ? "active" : ""}`}
-            onClick={() => setFilter("COMPLETED")}
-          >
-            Completed ({completedCount})
-          </button>
-        </div>
-
-        {/* Error State */}
-        {error && <div className="error-banner">{error}</div>}
-
-        {/* Loading State */}
         {loading ? (
-          <div className="empty-learning-state">
-            <h3>Loading Your Enrolled Courses...</h3>
-          </div>
-        ) : filteredEnrollments.length === 0 ? (
-          /* Empty State */
-          <div className="empty-learning-state">
-            <h3>No Enrolled Courses Found</h3>
-            <p>Explore our Course Catalog or generate an AI Learning Path to start learning.</p>
-          </div>
+          <LoadingSkeleton height="180px" count={3} />
+        ) : enrollments.length === 0 ? (
+          <EmptyState
+            icon={GraduationCap}
+            title="No Course Enrollments"
+            description="You have not enrolled in any learning paths yet. Explore the Course Catalog!"
+          />
         ) : (
-          /* Course Cards Grid */
-          <div className="my-learning-grid">
-            {filteredEnrollments.map((item) => {
+          <div className="mylearning-grid">
+            {enrollments.map((item) => {
               const course = item.course || {};
               const progress = item.progress_percentage || 0;
-              const status = item.status || "NOT_STARTED";
+              const isDone = item.status === "COMPLETED";
 
               return (
-                <div key={item.id} className="my-course-card">
-                  <div className="card-top">
-                    <span className={`card-status-badge status-${status}`}>
-                      {status === "NOT_STARTED" && "Not Started"}
-                      {status === "IN_PROGRESS" && "In Progress"}
-                      {status === "COMPLETED" && "Completed 🏆"}
+                <Card key={item.id}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                    <div>
+                      <Badge variant={isDone ? "success" : "primary"}>
+                        {isDone ? "Completed" : "In Progress"}
+                      </Badge>
+                      <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginTop: "8px" }}>
+                        {course.title || "Course"}
+                      </h3>
+                    </div>
+
+                    <span style={{ fontSize: "0.82rem", color: "var(--text-muted)", fontWeight: 600 }}>
+                      {course.category || "General"}
                     </span>
-
-                    <h3 className="course-card-title">{course.title || "Course"}</h3>
-
-                    <div className="course-card-meta">
-                      <span>🏷️ {course.category || "General"}</span>
-                      <span>📊 {course.difficulty || "Intermediate"}</span>
-                      <span>⏱️ {course.duration || 10} hrs</span>
-                    </div>
-
-                    <p className="course-card-desc">
-                      {course.description || "Interactive course modules."}
-                    </p>
                   </div>
 
-                  <div>
-                    {/* Progress Bar */}
-                    <div className="progress-container">
-                      <div className="progress-header">
-                        <span>Course Progress</span>
-                        <span>{progress}%</span>
-                      </div>
-                      <div className="progress-track">
-                        <div
-                          className={`progress-fill ${status === "COMPLETED" ? "completed" : ""}`}
-                          style={{ width: `${progress}%` }}
-                        ></div>
-                      </div>
+                  <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginBottom: "16px", lineHeight: 1.45 }}>
+                    {course.description}
+                  </p>
+
+                  <div style={{ marginTop: "auto" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600, marginBottom: "6px" }}>
+                      <span>Course Completion Progress</span>
+                      <span>{progress}%</span>
                     </div>
 
-                    {/* Actions */}
-                    <div className="card-actions">
-                      {status === "NOT_STARTED" && (
-                        <button
-                          className="btn-learn btn-start"
-                          onClick={() => handleProgressUpdate(item.id, progress, 15)}
-                        >
-                          ▶️ Start Learning
-                        </button>
+                    <div style={{ height: "8px", background: "var(--border-color)", borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: "16px" }}>
+                      <div style={{ height: "100%", width: `${progress}%`, background: isDone ? "var(--color-success)" : "var(--color-primary)", borderRadius: "var(--radius-full)" }} />
+                    </div>
+
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      {!isDone ? (
+                        <Button icon={PlayCircle} style={{ width: "100%" }} onClick={() => handleUpdateProgress(item.id, progress)}>
+                          Advance Progress (+25%)
+                        </Button>
+                      ) : (
+                        <Button variant="secondary" icon={ShieldCheck} style={{ width: "100%" }} onClick={() => handleViewCertificate(item.id)}>
+                          View Digital Certificate
+                        </Button>
                       )}
-
-                      {status === "IN_PROGRESS" && (
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <button
-                            className="btn-learn btn-continue"
-                            style={{ flex: 1 }}
-                            onClick={() => handleProgressUpdate(item.id, progress, 25)}
-                          >
-                            ⚡ Continue (+25%)
-                          </button>
-
-                          <button
-                            className="btn-learn btn-complete-course"
-                            style={{ flex: 1 }}
-                            onClick={() => handleComplete(item.id)}
-                          >
-                            ✅ Complete
-                          </button>
-                        </div>
-                      )}
-
-                      {status === "COMPLETED" && (
-                        <button
-                          className="btn-learn btn-view-cert"
-                          onClick={() => handleViewCertificate(item.id)}
-                          disabled={loadingCert}
-                        >
-                          📜 View Certificate
-                        </button>
-                      )}
-
-                      <button
-                        className="btn-remove-enrollment"
-                        onClick={() => handleRemove(item.id)}
-                      >
-                        Remove Enrollment
-                      </button>
                     </div>
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
         )}
 
-        {/* Digital Certificate Modal */}
+        {/* Certificate Modal */}
         {selectedCert && (
-          <div className="modal-overlay" onClick={() => setSelectedCert(null)}>
-            <div
-              className="certificate-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="certificate-frame">
-                <div className="cert-logo">AI LMS ENTERPRISE</div>
-                <div className="cert-title">Certificate of Completion</div>
-
-                <div className="cert-subtitle">This is proudly presented to</div>
-                <div className="cert-name">
-                  {selectedCert.user_name || "Learner"}
-                </div>
-
-                <div className="cert-body">
-                  for successfully completing all curriculum requirements and practical assessments for
-                  <br />
-                  <span className="cert-course-title">"{selectedCert.course_title}"</span>
-                </div>
-
-                <div className="cert-footer">
-                  <div className="cert-meta-item">
-                    <strong>Issued Date:</strong>{" "}
-                    {new Date(selectedCert.issued_at).toLocaleDateString()}
-                    <br />
-                    <strong>Certificate ID:</strong> {selectedCert.certificate_number}
-                  </div>
-
-                  <div className="cert-meta-item" style={{ textAlign: "right" }}>
-                    <div
-                      style={{
-                        fontFamily: "Georgia, serif",
-                        fontStyle: "italic",
-                        fontSize: "1.2rem",
-                        color: "#4338ca",
-                        borderBottom: "1px solid #cbd5e1",
-                        paddingBottom: "4px",
-                      }}
-                    >
-                      Enterprise AI L&D Committee
-                    </div>
-                    <strong>Authorized Signatory</strong>
-                  </div>
-                </div>
+          <div className="modal-backdrop">
+            <div className="modal-content" style={{ maxWidth: "600px" }}>
+              <div style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px", marginBottom: "16px" }}>
+                <Award size={42} color="var(--color-primary)" />
+                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginTop: "8px" }}>
+                  Digital Certificate of Accomplishment
+                </h2>
+                <Badge variant="success">Credential #{selectedCert.certificate_number || "CERT-9981"}</Badge>
               </div>
 
-              <div className="cert-actions">
-                <button
-                  className="btn-cert-action btn-print"
-                  onClick={() => window.print()}
-                >
-                  🖨️ Print / Save PDF
-                </button>
-                <button
-                  className="btn-cert-action btn-close-modal"
-                  onClick={() => setSelectedCert(null)}
-                >
+              <div style={{ padding: "16px", background: "var(--bg-primary)", borderRadius: "var(--radius-md)", marginBottom: "20px", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                This certifies that <strong>{selectedCert.user_name || "Learner"}</strong> has successfully completed the course:
+                <h3 style={{ color: "var(--color-primary)", margin: "8px 0" }}>{selectedCert.course_title}</h3>
+                Issued on {new Date(selectedCert.issued_at || Date.now()).toLocaleDateString()}.
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                <Button variant="outline" onClick={() => setSelectedCert(null)}>
                   Close
-                </button>
+                </Button>
+                <Button icon={Download} onClick={() => window.print()}>
+                  Print / Download PDF
+                </Button>
               </div>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
 

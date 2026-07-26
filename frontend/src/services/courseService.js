@@ -78,3 +78,12 @@ export const deleteCourse = async (courseId) => {
     throw error;
   }
 };
+
+export const courseService = {
+  getCourses,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+};
+
+export default courseService;
