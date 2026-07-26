@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai_lms_postgres
+    environment:
+      POSTGRES_USER: shaiksohel
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ai_learning_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shaiksohel -d ai_learning_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai_lms_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://shaiksohel:password@postgres:5432/ai_learning_db
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-your_gemini_api_key_here}
+      GEMINI_MODEL: gemini-2.0-flash
+      SECRET_KEY: ${SECRET_KEY:-your_jwt_secret_key_here}
+    volumes:
+      - ./backend/chroma_db:/app/chroma_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai_lms_frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

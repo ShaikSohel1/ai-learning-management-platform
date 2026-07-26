@@ -6,6 +6,7 @@ import Courses from "./pages/Courses";
 import AIAssistant from "./pages/AIAssistant";
 import MyLearning from "./pages/MyLearning";
 import KnowledgeBase from "./pages/KnowledgeBase";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -55,6 +56,15 @@ function App() {
         element={
           <ProtectedRoute>
             <KnowledgeBase />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />

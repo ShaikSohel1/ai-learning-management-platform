@@ -81,6 +81,13 @@ function Navbar() {
         >
           📖 Knowledge Base
         </Link>
+
+        <Link
+          to="/admin"
+          className={location.pathname === "/admin" ? "active" : ""}
+        >
+          ⚙️ Admin
+        </Link>
       </div>
 
       <div className="navbar-user" style={{ position: "relative" }}>

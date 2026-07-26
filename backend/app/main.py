@@ -12,6 +12,8 @@ from app.routers.enrollment import router as enrollment_router
 from app.routers.knowledge import router as knowledge_router
 from app.routers.agents import router as agents_router
 from app.routers.notifications import router as notifications_router
+from app.routers.health import router as health_router
+from app.routers.admin import router as admin_router
 
 from sqlalchemy import text
 
@@ -63,6 +65,8 @@ app.include_router(enrollment_router)
 app.include_router(knowledge_router)
 app.include_router(agents_router)
 app.include_router(notifications_router)
+app.include_router(health_router)
+app.include_router(admin_router)
 
 
 @app.get("/")
