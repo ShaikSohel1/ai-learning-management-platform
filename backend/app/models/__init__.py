@@ -8,3 +8,5 @@ from .certificate import Certificate
 from .learning_path import LearningPath
 from .learning_path_course import LearningPathCourse
 from .ai_recommendation import AIRecommendation
+from .notification import Notification
+from .audit_log import AuditLog

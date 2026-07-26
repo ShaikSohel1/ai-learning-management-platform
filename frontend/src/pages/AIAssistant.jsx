@@ -1,393 +1,273 @@
-import { useState, useEffect } from "react";
-import Navbar from "./Navbar";
-import aiService from "../services/aiService";
+import { useState } from "react";
+import Navbar from "../components/Navbar";
+import agentService from "../services/agentService";
 import enrollmentService from "../services/enrollmentService";
-import { getCourses } from "../services/courseService";
 import "../styles/aiAssistant.css";
 
 function AIAssistant() {
-  const [activeTab, setActiveTab] = useState("learning_path"); // 'learning_path' | 'chat'
+  const [activeTab, setActiveTab] = useState("agents");
 
-  // Learning Path State
-  const [careerGoal, setCareerGoal] = useState("");
-  const [skillInput, setSkillInput] = useState("");
-  const [skills, setSkills] = useState(["Python", "SQL"]);
-  const [learningPathData, setLearningPathData] = useState(null);
-  const [loadingPath, setLoadingPath] = useState(false);
-  const [pathError, setPathError] = useState("");
+  const [goalQuery, setGoalQuery] = useState("");
+  const [loadingAgent, setLoadingAgent] = useState(false);
+  const [agentResponse, setAgentResponse] = useState(null);
+  const [agentError, setAgentError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
 
-  // Enrollment tracking
-  const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
-  const [availableCourses, setAvailableCourses] = useState([]);
-  const [enrollingIdx, setEnrollingIdx] = useState(null);
+  const handleRunAgentWorkflow = async (queryText) => {
+    const q = queryText || goalQuery;
+    if (!q.trim()) return;
 
-  // Chat State
-  const [chatMessage, setChatMessage] = useState("");
-  const [chatMessages, setChatMessages] = useState([
-    {
-      role: "assistant",
-      content:
-        "Hello! I am your AI Business Assistant. How can I help with your career planning, skill development, or course guidance today?",
-    },
-  ]);
-  const [loadingChat, setLoadingChat] = useState(false);
-  const [chatError, setChatError] = useState("");
-
-  const loadEnrollmentsAndCourses = async () => {
-    try {
-      const enrollData = await enrollmentService.getMyEnrollments();
-      setEnrolledCourseIds(enrollData.map((e) => e.course_id));
-
-      const catalog = await getCourses({ limit: 100 });
-      setAvailableCourses(catalog);
-    } catch (err) {
-      console.error("Error fetching courses or enrollments:", err);
-    }
-  };
-
-  useEffect(() => {
-    loadEnrollmentsAndCourses();
-  }, []);
-
-  // Handler: Add Skill Tag
-  const handleAddSkill = (e) => {
-    e.preventDefault();
-    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
-      setSkills([...skills, skillInput.trim()]);
-      setSkillInput("");
-    }
-  };
-
-  // Handler: Remove Skill Tag
-  const handleRemoveSkill = (skillToRemove) => {
-    setSkills(skills.filter((s) => s !== skillToRemove));
-  };
-
-  // Handler: Generate Learning Path
-  const handleGeneratePath = async (e) => {
-    e.preventDefault();
-    if (!careerGoal.trim()) {
-      setPathError("Please enter your target career goal.");
-      return;
-    }
-
-    setPathError("");
-    setLoadingPath(true);
+    setLoadingAgent(true);
+    setAgentError("");
+    setActionSuccess("");
+    setAgentResponse(null);
 
     try {
-      const data = await aiService.generateLearningPath({
-        career_goal: careerGoal.trim(),
-        current_skills: skills,
+      const res = await agentService.sendAgentChat({
+        message: q.trim(),
+        career_goal: q.trim(),
+        current_skills: ["Python", "HTML", "Git"],
       });
-      setLearningPathData(data);
+      setAgentResponse(res);
     } catch (err) {
-      console.error("Failed to generate learning path:", err);
-      setPathError(
-        err.response?.data?.detail ||
-          "Failed to generate learning path. Please try again."
+      console.error("Agent execution error:", err);
+      setAgentError(
+        err.response?.data?.detail || "Failed to execute agentic workflow."
       );
     } finally {
-      setLoadingPath(false);
+      setLoadingAgent(false);
     }
   };
 
-  // Handler: Instant Course Enrollment from AI Recommendation
-  const handleAIEnroll = async (recCourse, idx) => {
-    setEnrollingIdx(idx);
+  const handleExecuteRecommendedAction = async (action) => {
+    if (!action || !action.course_id) return;
+
     try {
-      // Find matching course in database catalog by title or category
-      let match = availableCourses.find(
-        (c) => c.title.toLowerCase().includes(recCourse.title.toLowerCase()) ||
-               recCourse.title.toLowerCase().includes(c.title.toLowerCase())
-      );
-
-      let courseIdToEnroll = match ? match.id : null;
-
-      // Fallback: If no catalog match, use first available course or ID 1
-      if (!courseIdToEnroll && availableCourses.length > 0) {
-        courseIdToEnroll = availableCourses[0].id;
-      }
-
-      if (courseIdToEnroll) {
-        await enrollmentService.enrollInCourse(courseIdToEnroll);
-        setEnrolledCourseIds((prev) => [...prev, courseIdToEnroll]);
-        alert(`Enrolled successfully in "${recCourse.title}"!`);
-      } else {
-        alert("Course currently not in active catalog.");
-      }
+      await enrollmentService.enrollUser(action.course_id);
+      setActionSuccess(`Successfully enrolled in "${action.course_title}"! Check your 'My Learning' tab.`);
     } catch (err) {
-      console.error("AI recommendation enrollment failed:", err);
-      alert(err.response?.data?.detail || "Already enrolled or failed to enroll.");
-    } finally {
-      setEnrollingIdx(null);
+      alert(err.response?.data?.detail || "Could not complete course enrollment.");
     }
   };
 
-  // Handler: Send Chat Message
-  const handleSendChatMessage = async (e) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
-
-    const userText = chatMessage.trim();
-    setChatMessage("");
-    setChatError("");
-
-    setChatMessages((prev) => [...prev, { role: "user", content: userText }]);
-    setLoadingChat(true);
-
-    try {
-      const response = await aiService.sendMessage({
-        message: userText,
-        career_goal: careerGoal || undefined,
-        current_skills: skills.length > 0 ? skills : undefined,
-      });
-
-      setChatMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: response.response },
-      ]);
-    } catch (err) {
-      console.error("AI chat error:", err);
-      setChatError(
-        err.response?.data?.detail || "AI Assistant could not respond right now."
-      );
-    } finally {
-      setLoadingChat(false);
-    }
+  // 1-Click Calendar Export Action
+  const handleExportCalendar = () => {
+    const token = localStorage.getItem("token");
+    window.open(`http://127.0.0.1:8000/agents/calendar/export-ics?course_title=Backend%20Architecture&token=${token}`, "_blank");
+    setActionSuccess("Downloading iCalendar (.ics) study schedule!");
   };
 
-  // Handler: Clear Chat History
-  const handleClearHistory = async () => {
-    try {
-      await aiService.clearHistory();
-      setChatMessages([
-        {
-          role: "assistant",
-          content:
-            "Conversation history cleared. What topic would you like to explore next?",
-        },
-      ]);
-    } catch (err) {
-      console.error("Failed to clear chat history:", err);
-    }
+  // 1-Click Report CSV Action
+  const handleExportProgressReport = () => {
+    const token = localStorage.getItem("token");
+    window.open(`http://127.0.0.1:8000/agents/reports/progress-csv?token=${token}`, "_blank");
+    setActionSuccess("Downloading Learning Progress CSV Report!");
   };
 
   return (
     <div>
       <Navbar />
 
-      <div className="ai-assistant-container">
-        {/* Banner */}
+      <div className="ai-container">
         <div className="ai-header">
-          <h1>✨ AI Business Assistant</h1>
+          <h1>⚡ Enterprise AI Action Assistant</h1>
           <p>
-            Accelerate your career development with AI-driven personalized learning paths and interactive career advice.
+            Autonomous specialized AI agents executing real tool actions across course enrollments, study schedules, notifications, and analytics reports.
           </p>
         </div>
 
-        {/* Navigation Tabs */}
         <div className="ai-tabs">
           <button
-            className={`ai-tab-btn ${activeTab === "learning_path" ? "active" : ""}`}
-            onClick={() => setActiveTab("learning_path")}
+            className={`ai-tab-btn ${activeTab === "agents" ? "active" : ""}`}
+            onClick={() => setActiveTab("agents")}
           >
-            🚀 Learning Path Generator
+            🤖 Enterprise AI Action Platform
           </button>
           <button
             className={`ai-tab-btn ${activeTab === "chat" ? "active" : ""}`}
             onClick={() => setActiveTab("chat")}
           >
-            💬 Interactive Assistant Chat
+            💬 Direct Assistant Chat
           </button>
         </div>
 
-        {/* Tab 1: Learning Path Generator */}
-        {activeTab === "learning_path" && (
+        {activeTab === "agents" && (
           <div>
             <div className="ai-card">
-              <h2 className="ai-card-title">🎯 Define Your Goal & Skills</h2>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "15px" }}>
+                🎯 State Your Career Goal or Tool Execution Instruction
+              </h2>
 
-              {pathError && <div className="error-banner">{pathError}</div>}
+              {actionSuccess && <div className="success-banner">{actionSuccess}</div>}
+              {agentError && <div className="error-banner">{agentError}</div>}
 
-              <form onSubmit={handleGeneratePath}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleRunAgentWorkflow();
+                }}
+              >
                 <div className="form-group">
-                  <label htmlFor="careerGoal">Target Career Goal / Role</label>
-                  <input
-                    id="careerGoal"
-                    type="text"
-                    className="form-control"
-                    placeholder="e.g. Backend Developer, Data Scientist, DevOps Engineer"
-                    value={careerGoal}
-                    onChange={(e) => setCareerGoal(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="skillInput">Current Skill Inventory</label>
                   <div style={{ display: "flex", gap: "10px" }}>
                     <input
-                      id="skillInput"
                       type="text"
                       className="form-control"
-                      placeholder="Add a skill (e.g. Java, Docker, SQL)"
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
+                      placeholder="e.g. 'I want to become a Backend Developer' or 'Enroll me in Python'"
+                      value={goalQuery}
+                      onChange={(e) => setGoalQuery(e.target.value)}
+                      required
                     />
                     <button
-                      type="button"
-                      onClick={handleAddSkill}
-                      className="ai-tab-btn"
-                      style={{ borderRadius: "10px", whiteSpace: "nowrap" }}
+                      type="submit"
+                      className="btn-ai-primary"
+                      style={{ width: "auto", padding: "0 28px", whiteSpace: "nowrap" }}
+                      disabled={loadingAgent}
                     >
-                      + Add Skill
+                      {loadingAgent ? "Executing Actions..." : "Execute AI Tools"}
                     </button>
                   </div>
-
-                  <div className="skills-tags-container">
-                    {skills.map((skill, idx) => (
-                      <span key={idx} className="skill-tag">
-                        {skill}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSkill(skill)}
-                          title="Remove skill"
-                        >
-                          &times;
-                        </button>
-                      </span>
-                    ))}
-                  </div>
                 </div>
-
-                <button
-                  type="submit"
-                  className="btn-ai-primary"
-                  disabled={loadingPath}
-                >
-                  {loadingPath ? (
-                    <>
-                      <span>Generating Customized Path...</span>
-                    </>
-                  ) : (
-                    <>⚡ Generate AI Learning Path</>
-                  )}
-                </button>
               </form>
+
+              {/* 1-Click Action Preset Toolbar */}
+              <div style={{ marginTop: "20px" }}>
+                <h4 style={{ fontSize: "0.9rem", color: "#475569", marginBottom: "10px" }}>
+                  ⚡ 1-Click Enterprise Action Triggers:
+                </h4>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className="knowledge-tab-btn"
+                    style={{ background: "#f0fdf4", borderColor: "#86efac", color: "#166534" }}
+                    onClick={() => {
+                      setGoalQuery("Enroll me in course 1 and send notification");
+                      handleRunAgentWorkflow("Enroll me in course 1 and send notification");
+                    }}
+                  >
+                    🎓 Enroll in Course 1
+                  </button>
+
+                  <button
+                    type="button"
+                    className="knowledge-tab-btn"
+                    style={{ background: "#eff6ff", borderColor: "#93c5fd", color: "#1e40af" }}
+                    onClick={handleExportCalendar}
+                  >
+                    📅 Export Study Plan (.ics)
+                  </button>
+
+                  <button
+                    type="button"
+                    className="knowledge-tab-btn"
+                    style={{ background: "#fef3c7", borderColor: "#fde047", color: "#854d0e" }}
+                    onClick={handleExportProgressReport}
+                  >
+                    📊 Export Progress CSV Report
+                  </button>
+
+                  <button
+                    type="button"
+                    className="knowledge-tab-btn"
+                    style={{ background: "#f3e8ff", borderColor: "#d8b4fe", color: "#6b21a8" }}
+                    onClick={() => {
+                      setGoalQuery("Assess my skills for Senior Developer role");
+                      handleRunAgentWorkflow("Assess my skills for Senior Developer role");
+                    }}
+                  >
+                    📝 Skill Assessment Tool
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Loading Indicator */}
-            {loadingPath && (
+            {loadingAgent && (
               <div className="ai-card">
                 <div className="loading-pulse">
                   <div className="pulse-dot"></div>
                   <div className="pulse-dot"></div>
                   <div className="pulse-dot"></div>
-                  <span>Architecting your tailored roadmap with Gemini AI...</span>
+                  <span>Running Tool Executions (Planning ➔ Searching ➔ Tool Calling ➔ Completed)...</span>
                 </div>
               </div>
             )}
 
-            {/* Generated Output Display */}
-            {learningPathData && !loadingPath && (
-              <div>
-                {/* Executive Summary Card */}
-                <div className="ai-card">
-                  <h2 className="ai-card-title">
-                    📋 Learning Roadmap Summary for {learningPathData.career_goal}
-                  </h2>
-                  <div className="summary-banner">
-                    <p>{learningPathData.summary}</p>
+            {agentResponse && !loadingAgent && (
+              <div className="ai-card">
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "15px" }}>
+                  🔄 Agent Tool Execution Timeline
+                </h3>
 
-                    <div className="summary-meta">
-                      <span className="meta-badge duration">
-                        ⏱️ Duration: {learningPathData.estimated_duration}
-                      </span>
-                      <span className="meta-badge difficulty">
-                        📊 Level: {learningPathData.difficulty}
-                      </span>
+                <div className="pipeline-timeline">
+                  {agentResponse.steps.map((step, idx) => (
+                    <div key={idx} className="pipeline-step completed">
+                      <div className="pipeline-node">✓</div>
+                      <div className="pipeline-label">{step.agent_name.replace(" Agent", "")}</div>
                     </div>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Recommended Courses Card */}
-                {learningPathData.recommended_courses?.length > 0 && (
-                  <div className="ai-card">
-                    <h2 className="ai-card-title">
-                      📚 Recommended Courses ({learningPathData.recommended_courses.length})
-                    </h2>
-                    <div className="courses-grid">
-                      {learningPathData.recommended_courses.map((course, idx) => {
-                        const isEnrolled = enrolledCourseIds.length > 0 && idx < enrolledCourseIds.length;
+                <div className="rag-header-meta" style={{ marginBottom: "20px" }}>
+                  <span className="rag-header-badge badge-confidence">
+                    Overall Confidence: {agentResponse.overall_confidence}%
+                  </span>
+                  <span className="rag-header-badge badge-latency">
+                    ⚡ Total Latency: {agentResponse.total_execution_time_ms} ms
+                  </span>
+                  <span className="rag-header-badge badge-intent">
+                    🎯 Intent: {agentResponse.workflow_intent}
+                  </span>
+                </div>
 
-                        return (
-                          <div key={idx} className="rec-course-card">
-                            <div>
-                              <div className="rec-course-header">
-                                <div className="rec-course-title">{course.title}</div>
-                                <span className="rec-course-category">
-                                  {course.category || "General"}
-                                </span>
-                              </div>
-                              <p className="rec-course-desc">{course.description}</p>
-                            </div>
-                            <div className="rec-course-reason" style={{ marginBottom: "15px" }}>
-                              <strong>Why Recommended:</strong> {course.reason}
-                            </div>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "15px" }}>
+                  🛠️ Tool Calling & Execution Log ({agentResponse.steps.length})
+                </h3>
 
-                            <button
-                              onClick={() => handleAIEnroll(course, idx)}
-                              disabled={enrollingIdx === idx}
-                              style={{
-                                background: "#2563eb",
-                                color: "white",
-                                border: "none",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                fontWeight: "600",
-                                fontSize: "0.88rem",
-                                width: "100%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "6px",
-                              }}
-                            >
-                              {enrollingIdx === idx ? "Enrolling..." : "🎓 Enroll Now"}
-                            </button>
-                          </div>
-                        );
-                      })}
+                {agentResponse.steps.map((step, idx) => (
+                  <div key={idx} className="agent-step-card">
+                    <div className="agent-step-head">
+                      <div className="agent-name-badge">
+                        🤖 {step.agent_name}
+                      </div>
+                      <div>
+                        <span className="agent-meta-badge">{step.confidence_score}% Confidence</span>
+                        <span className="agent-meta-badge" style={{ marginLeft: "6px" }}>{step.execution_time_ms} ms</span>
+                      </div>
                     </div>
+
+                    <div className="agent-reasoning-text">{step.reasoning}</div>
+
+                    {step.tool_calls?.length > 0 && (
+                      <div style={{ marginTop: "10px", fontSize: "0.82rem", color: "#047857", background: "#f0fdf4", padding: "8px 12px", borderRadius: "6px" }}>
+                        🛠️ <strong>Tool Executed:</strong> {step.tool_calls.map(t => t.tool_name).join(", ")}
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
 
-                {/* Weekly Roadmap Timeline */}
-                {learningPathData.learning_path?.length > 0 && (
-                  <div className="ai-card">
-                    <h2 className="ai-card-title">🗺️ Weekly Execution Roadmap</h2>
-                    <div className="timeline">
-                      {learningPathData.learning_path.map((step, idx) => (
-                        <div key={idx} className="timeline-item">
-                          <div className="timeline-marker"></div>
-                          <div className="timeline-content">
-                            <div className="timeline-week">Week {step.week}</div>
-                            <div className="timeline-topic">{step.topic}</div>
-                            <p className="timeline-desc">{step.description}</p>
+                <div className="rag-answer-box" style={{ marginTop: "25px" }}>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: "#1e3a8a", marginBottom: "10px" }}>
+                    📋 Executive Orchestrator Final Response
+                  </h3>
+                  <div className="rag-answer-text">{agentResponse.final_summary}</div>
+                </div>
 
-                            {step.skills_to_acquire?.length > 0 && (
-                              <div className="timeline-skills">
-                                {step.skills_to_acquire.map((skill, sIdx) => (
-                                  <span key={sIdx} className="timeline-skill-chip">
-                                    {skill}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                {agentResponse.recommended_action && (
+                  <div className="executable-action-box">
+                    <div>
+                      <div className="executable-action-title">
+                        ⚡ Recommended Action Ready for Execution
+                      </div>
+                      <div style={{ fontSize: "0.88rem", color: "#047857", marginTop: "2px" }}>
+                        {agentResponse.recommended_action.course_title}
+                      </div>
                     </div>
+
+                    <button
+                      className="btn-action-execute"
+                      onClick={() => handleExecuteRecommendedAction(agentResponse.recommended_action)}
+                    >
+                      {agentResponse.recommended_action.label}
+                    </button>
                   </div>
                 )}
               </div>
@@ -395,69 +275,14 @@ function AIAssistant() {
           </div>
         )}
 
-        {/* Tab 2: AI Assistant Chat */}
         {activeTab === "chat" && (
           <div className="ai-card">
-            <div className="chat-window">
-              <div className="chat-header">
-                <span style={{ fontWeight: 700, color: "#1e293b" }}>
-                  💬 Interactive AI Assistant
-                </span>
-                <button
-                  onClick={handleClearHistory}
-                  className="btn-clear"
-                  title="Clear conversation history"
-                >
-                  Clear History
-                </button>
-              </div>
-
-              <div className="chat-messages">
-                {chatMessages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`chat-bubble ${msg.role}`}
-                  >
-                    {msg.content}
-                  </div>
-                ))}
-
-                {loadingChat && (
-                  <div className="chat-bubble assistant">
-                    <span style={{ fontStyle: "italic", color: "#64748b" }}>
-                      AI is typing...
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {chatError && (
-                <div style={{ padding: "0 16px 10px 16px" }}>
-                  <div className="error-banner" style={{ margin: 0 }}>
-                    {chatError}
-                  </div>
-                </div>
-              )}
-
-              <form onSubmit={handleSendChatMessage} className="chat-input-box">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Ask any question about skills, courses, or career guidance..."
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  disabled={loadingChat}
-                />
-                <button
-                  type="submit"
-                  className="btn-ai-primary"
-                  style={{ width: "auto", padding: "0 24px" }}
-                  disabled={loadingChat}
-                >
-                  Send
-                </button>
-              </form>
-            </div>
+            <h2 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "15px" }}>
+              💬 Direct Assistant Chat
+            </h2>
+            <p style={{ color: "#64748b" }}>
+              Use the Enterprise AI Action Platform tab above for autonomous tool execution.
+            </p>
           </div>
         )}
       </div>

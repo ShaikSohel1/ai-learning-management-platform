@@ -10,6 +10,8 @@ from app.routers.courses import router as course_router
 from app.routers.ai import router as ai_router
 from app.routers.enrollment import router as enrollment_router
 from app.routers.knowledge import router as knowledge_router
+from app.routers.agents import router as agents_router
+from app.routers.notifications import router as notifications_router
 
 from sqlalchemy import text
 
@@ -59,6 +61,8 @@ app.include_router(course_router)
 app.include_router(ai_router)
 app.include_router(enrollment_router)
 app.include_router(knowledge_router)
+app.include_router(agents_router)
+app.include_router(notifications_router)
 
 
 @app.get("/")

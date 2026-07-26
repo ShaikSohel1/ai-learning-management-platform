@@ -125,6 +125,60 @@ function Dashboard() {
           </div>
         </section>
 
+        {/* AI Agent Insights & Risk Forecast Widget */}
+        <section className="welcome-card" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)", color: "white", marginBottom: "30px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+            <h3 style={{ fontSize: "1.2rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "8px" }}>
+              🤖 AI Agent Insights & Risk Forecast
+            </h3>
+            <span style={{ fontSize: "0.8rem", background: "rgba(255,255,255,0.15)", padding: "4px 12px", borderRadius: "20px", fontWeight: 700 }}>
+              {completionRate >= 50 ? "🟢 LOW DROP-OFF RISK" : (completionRate >= 20 ? "🟡 MEDIUM DROP-OFF RISK" : "🔴 HIGH DROP-OFF RISK")}
+            </span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "15px", fontSize: "0.9rem", color: "#e0e7ff" }}>
+            <div style={{ background: "rgba(255,255,255,0.08)", padding: "15px", borderRadius: "10px" }}>
+              <div style={{ fontWeight: 700, color: "#a5b4fc", marginBottom: "4px" }}>🎯 Target Role Alignment</div>
+              <div>Backend Developer Roadmap (88% Target Readiness)</div>
+            </div>
+
+            <div style={{ background: "rgba(255,255,255,0.08)", padding: "15px", borderRadius: "10px" }}>
+              <div style={{ fontWeight: 700, color: "#a5b4fc", marginBottom: "4px" }}>📅 Completion Forecast</div>
+              <div>Estimated completion in 3 weeks at current velocity</div>
+            </div>
+
+            <div style={{ background: "rgba(255,255,255,0.08)", padding: "15px", borderRadius: "10px" }}>
+              <div style={{ fontWeight: 700, color: "#a5b4fc", marginBottom: "4px" }}>⚡ Weekly AI Recommendation</div>
+              <div>Complete 2 lessons per week to maintain optimal momentum</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Today's Learning Plan & Tasks */}
+        <section className="welcome-card" style={{ marginBottom: "30px" }}>
+          <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: "#0f172a", marginBottom: "15px", display: "flex", alignItems: "center", gap: "8px" }}>
+            📅 Today's AI Suggested Learning Plan & Tasks
+          </h3>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", padding: "12px 16px", borderRadius: "8px", borderLeft: "4px solid #3b82f6" }}>
+              <div>
+                <span style={{ fontWeight: 700, color: "#1e293b" }}>Task 1: Complete Module 2 Video Lessons</span>
+                <div style={{ fontSize: "0.82rem", color: "#64748b", marginTop: "2px" }}>Est. 45 mins • Course: Python & FastAPI Architecture</div>
+              </div>
+              <span style={{ fontSize: "0.75rem", background: "#dbeafe", color: "#1e40af", padding: "2px 8px", borderRadius: "10px", fontWeight: 700 }}>HIGH PRIORITY</span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", padding: "12px 16px", borderRadius: "8px", borderLeft: "4px solid #10b981" }}>
+              <div>
+                <span style={{ fontWeight: 700, color: "#1e293b" }}>Task 2: Practice PostgreSQL Relational Queries</span>
+                <div style={{ fontSize: "0.82rem", color: "#64748b", marginTop: "2px" }}>Est. 30 mins • Lab: Database Migrations</div>
+              </div>
+              <span style={{ fontSize: "0.75rem", background: "#d1fae5", color: "#065f46", padding: "2px 8px", borderRadius: "10px", fontWeight: 700 }}>RECOMMENDED</span>
+            </div>
+          </div>
+        </section>
+
         {/* Continue Learning Quick Access */}
         <section className="continue-learning-section">
           <h3 style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1e293b" }}>
