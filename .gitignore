@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ChromaDB
+backend/chroma_db/
+backend/chroma_db/chroma.sqlite3
+
+# Frontend Node Modules
+frontend/node_modules/
