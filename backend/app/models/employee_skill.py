@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.database.base import Base
 
+
 class EmployeeSkill(Base):
     __tablename__ = "employee_skills"
 

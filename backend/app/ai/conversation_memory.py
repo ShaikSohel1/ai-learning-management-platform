@@ -5,9 +5,9 @@ Manages multi-turn conversation memory per user session in memory.
 Supports adding messages, retrieving contextual window, and resetting history (DELETE /ai/history).
 """
 
-from typing import Dict, List, Any
 import threading
 from datetime import datetime
+from typing import Any
 
 
 class ConversationMessage:
@@ -16,7 +16,7 @@ class ConversationMessage:
         self.content = content
         self.timestamp = datetime.utcnow()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "role": self.role,
             "content": self.content,
@@ -28,7 +28,7 @@ class ConversationMemoryStore:
     """Thread-safe multi-user conversation history memory store."""
 
     def __init__(self, max_history_per_user: int = 20) -> None:
-        self._store: Dict[int, List[ConversationMessage]] = {}
+        self._store: dict[int, list[ConversationMessage]] = {}
         self.max_history_per_user = max_history_per_user
         self._lock = threading.Lock()
 
@@ -47,7 +47,7 @@ class ConversationMemoryStore:
             if len(self._store[user_id]) > self.max_history_per_user:
                 self._store[user_id] = self._store[user_id][-self.max_history_per_user :]
 
-    def get_history(self, user_id: int) -> List[Dict[str, Any]]:
+    def get_history(self, user_id: int) -> list[dict[str, Any]]:
         with self._lock:
             messages = self._store.get(user_id, [])
             return [m.to_dict() for m in messages]

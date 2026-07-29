@@ -6,9 +6,9 @@ Combines semantic vector similarity, keyword term overlap frequency, document fr
 and chunk deduplication to prioritize high-precision context snippets.
 """
 
-import math
 import logging
-from typing import List, Dict, Any, Tuple
+import math
+
 from app.schemas.knowledge import KnowledgeCitation
 
 logger = logging.getLogger(__name__)
@@ -35,17 +35,17 @@ class Reranker:
 
     def rerank(
         self,
-        citations: List[KnowledgeCitation],
-        query_keywords: List[str],
+        citations: list[KnowledgeCitation],
+        query_keywords: list[str],
         top_k: int = 4
-    ) -> List[RankedChunk]:
+    ) -> list[RankedChunk]:
         """
         Reranks and deduplicates candidate citations.
         """
         if not citations:
             return []
 
-        ranked_results: List[RankedChunk] = []
+        ranked_results: list[RankedChunk] = []
         seen_texts = set()
 
         for cite in citations:
@@ -83,7 +83,7 @@ class Reranker:
         ranked_results.sort(key=lambda r: r.final_score, reverse=True)
         return ranked_results[:top_k]
 
-    def _compute_keyword_score(self, text: str, keywords: List[str]) -> float:
+    def _compute_keyword_score(self, text: str, keywords: list[str]) -> float:
         if not keywords or not text:
             return 0.0
 

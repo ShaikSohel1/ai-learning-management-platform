@@ -5,7 +5,8 @@ Carries shared state, user profile, career goal, current skills, active DB sessi
 and intermediate step outputs across multi-agent workflow execution.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Any
+
 from sqlalchemy.orm import Session
 
 
@@ -19,9 +20,9 @@ class AgentContext:
         user_email: str,
         user_role: str,
         query: str,
-        career_goal: Optional[str] = None,
-        current_skills: Optional[List[str]] = None,
-        db: Optional[Session] = None
+        career_goal: str | None = None,
+        current_skills: list[str] | None = None,
+        db: Session | None = None
     ):
         self.user_id = user_id
         self.user_name = user_name
@@ -33,8 +34,8 @@ class AgentContext:
         self.db = db
 
         # Shared accumulator dictionary for agent outputs
-        self.state: Dict[str, Any] = {}
-        self.step_history: List[Any] = []
+        self.state: dict[str, Any] = {}
+        self.step_history: list[Any] = []
 
     def set(self, key: str, value: Any) -> None:
         self.state[key] = value

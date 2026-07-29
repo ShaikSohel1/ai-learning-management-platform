@@ -7,7 +7,7 @@ Implements in-memory embedding caching, batch processing, and offline fallback v
 
 import hashlib
 import logging
-from typing import List, Dict, Optional
+
 import httpx
 
 from app.core.config import settings
@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 class EmbeddingService:
     """Service generating vector embeddings for text chunks using Gemini text-embedding-004."""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "text-embedding-004") -> None:
+    def __init__(self, api_key: str | None = None, model: str = "text-embedding-004") -> None:
         self.api_key = api_key or settings.GEMINI_API_KEY
         self.model = model
         self.base_url = "https://generativelanguage.googleapis.com/v1beta/models"
-        self._cache: Dict[str, List[float]] = {}
+        self._cache: dict[str, list[float]] = {}
         self.embedding_dimension = 768
 
-    def get_embedding(self, text: str) -> List[float]:
+    def get_embedding(self, text: str) -> list[float]:
         """
         Fetches embedding vector for single string. Uses cache if available.
         """
@@ -63,13 +63,13 @@ class EmbeddingService:
             self._cache[text_hash] = vec
             return vec
 
-    def get_embeddings_batch(self, texts: List[str]) -> List[List[float]]:
+    def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]:
         """
         Generates vector embeddings for a list of text strings.
         """
         return [self.get_embedding(t) for t in texts]
 
-    def _generate_fallback_vector(self, text: str) -> List[float]:
+    def _generate_fallback_vector(self, text: str) -> list[float]:
         """
         Generates a deterministic 768-dimensional normalized float vector from text hash.
         Guarantees offline testing & dev mode without external API failures.

@@ -5,9 +5,9 @@ Extracts sentence-level highlights and key phrases matching query keywords from 
 Reduces redundant text context before sending to Gemini LLM for prompt token optimization.
 """
 
-import re
 import logging
-from typing import List
+import re
+
 from app.schemas.knowledge import KnowledgeCitation
 
 logger = logging.getLogger(__name__)
@@ -18,8 +18,8 @@ class ContextCompressor:
 
     def compress_citations(
         self,
-        citations: List[KnowledgeCitation],
-        query_keywords: List[str],
+        citations: list[KnowledgeCitation],
+        query_keywords: list[str],
         max_total_chars: int = 2500
     ) -> str:
         """
@@ -29,7 +29,7 @@ class ContextCompressor:
         if not citations:
             return ""
 
-        context_blocks: List[str] = []
+        context_blocks: list[str] = []
         total_chars = 0
 
         for cite in citations:

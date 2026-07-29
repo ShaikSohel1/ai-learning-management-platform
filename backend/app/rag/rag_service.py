@@ -10,26 +10,25 @@ High-level business service orchestrating:
 - Knowledge base analytics and re-indexing.
 """
 
-import time
-from datetime import datetime, UTC
-import uuid
 import logging
-from typing import List, Dict, Any, Optional
+import time
+import uuid
+from datetime import UTC, datetime
+from typing import Any
 
-from app.rag.document_loader import document_loader
-from app.rag.text_chunker import text_chunker
-from app.rag.embedding_service import embedding_service
-from app.rag.vector_store import vector_store
-from app.rag.retriever import retriever
-from app.rag.context_compressor import context_compressor
-from app.rag.search_history import search_history_store
 from app.ai.gemini_client import GeminiClient
 from app.ai.retry_handler import retry_handler
+from app.rag.context_compressor import context_compressor
+from app.rag.document_loader import document_loader
+from app.rag.embedding_service import embedding_service
+from app.rag.retriever import retriever
+from app.rag.search_history import search_history_store
+from app.rag.text_chunker import text_chunker
+from app.rag.vector_store import vector_store
 from app.schemas.knowledge import (
     DocumentMetadata,
-    KnowledgeAskResponse,
-    KnowledgeCitation,
     KnowledgeAnalyticsResponse,
+    KnowledgeAskResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,7 +37,7 @@ logger = logging.getLogger(__name__)
 class RAGService:
     """Unified Enterprise Semantic Search Platform Service Facade."""
 
-    def __init__(self, gemini_client: Optional[GeminiClient] = None) -> None:
+    def __init__(self, gemini_client: GeminiClient | None = None) -> None:
         self.loader = document_loader
         self.chunker = text_chunker
         self.embeddings = embedding_service
@@ -92,12 +91,12 @@ class RAGService:
             document_size=size_str
         )
 
-    def get_all_documents(self) -> List[DocumentMetadata]:
+    def get_all_documents(self) -> list[DocumentMetadata]:
         metadatas = self.vector_db.list_all_metadatas()
         if not metadatas:
             return []
 
-        doc_groups: Dict[str, Dict[str, Any]] = {}
+        doc_groups: dict[str, dict[str, Any]] = {}
         for m in metadatas:
             doc_id = m.get("doc_id")
             if not doc_id:
@@ -138,7 +137,7 @@ class RAGService:
             threshold=threshold
         )
 
-        referenced_docs = sorted(list({c.document_name for c in citations}))
+        referenced_docs = sorted({c.document_name for c in citations})
 
         if citations and confidence_score >= (threshold * 100):
             # Compress context at sentence level
@@ -224,7 +223,7 @@ class RAGService:
                 referenced_documents=[]
             )
 
-    def get_user_search_history(self, user_id: int) -> List[Dict[str, Any]]:
+    def get_user_search_history(self, user_id: int) -> list[dict[str, Any]]:
         return self.history_store.get_user_history(user_id)
 
     def clear_user_search_history(self, user_id: int) -> bool:
@@ -254,7 +253,7 @@ class RAGService:
             knowledge_base_size_bytes=size_str
         )
 
-    def reindex_collection(self) -> Dict[str, Any]:
+    def reindex_collection(self) -> dict[str, Any]:
         """Re-indexes collection metadata in ChromaDB."""
         docs = self.get_all_documents()
         return {

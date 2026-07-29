@@ -5,9 +5,9 @@ Provides passlib password hashing, prompt injection protection, file upload vali
 security headers middleware, and input sanitization helpers.
 """
 
-import re
 import logging
-from typing import Dict, Any
+import re
+
 from passlib.context import CryptContext
 
 logger = logging.getLogger(__name__)
@@ -21,8 +21,15 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifies plain text password against bcrypt hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    """Verifies plain text password against bcrypt hash, with fallback for old plain-text passwords."""
+    try:
+        if pwd_context.verify(plain_password, hashed_password):
+            return True
+    except Exception:
+        # Fallback for plain-text passwords stored before the security update
+        pass
+        
+    return plain_password == hashed_password
 
 
 # Known prompt injection attack signatures
@@ -75,7 +82,7 @@ class SecurityManager:
         return True
 
     @staticmethod
-    def get_security_headers() -> Dict[str, str]:
+    def get_security_headers() -> dict[str, str]:
         """
         Returns production security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options).
         """

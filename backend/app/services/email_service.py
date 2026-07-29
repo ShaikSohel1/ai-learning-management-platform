@@ -5,7 +5,7 @@ Formulates transactional email notifications (Course Completion, Reminders, Cert
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class EmailService:
         user_name: str,
         course_title: str,
         certificate_number: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         subject = f"🏆 Congratulations! You completed '{course_title}'"
         body = (
             f"Dear {user_name},\n\n"
@@ -36,7 +36,7 @@ class EmailService:
         to_email: str,
         user_name: str,
         course_title: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         subject = f"⏰ Reminder: Continue your course '{course_title}'"
         body = (
             f"Hello {user_name},\n\n"

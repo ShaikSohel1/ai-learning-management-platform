@@ -5,12 +5,12 @@ Provides granular health check endpoints for Database, Gemini AI, ChromaDB Vecto
 and overall System Health status.
 """
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.database.database import get_db
-from app.rag import get_rag_service, RAGService
+from app.rag import RAGService, get_rag_service
 
 router = APIRouter(
     tags=["Health Monitoring"]

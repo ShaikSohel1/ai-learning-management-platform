@@ -147,6 +147,15 @@ npm run build
 5. **Notification Bell**: Click **🔔 Bell Icon** in Navbar to view automated course enrollment & certificate alerts.
 6. **Admin Dashboard**: Navigate to **⚙️ Admin** tab $\rightarrow$ View component health status badges (`PostgreSQL DB`, `ChromaDB`, `Gemini LLM`) and audit logs.
 
+## 📚 Enterprise Documentation
+
+Please refer to the following guides for production setup, security, and deployments:
+- [Supabase Setup Guide](./SUPABASE_SETUP.md)
+- [Database Architecture](./DATABASE.md)
+- [Security Guidelines](./SECURITY.md)
+- [Deployment Guide](./DEPLOYMENT.md)
+- [Migration Guide](./MIGRATION_GUIDE.md)
+
 ---
 
 ## 📄 License

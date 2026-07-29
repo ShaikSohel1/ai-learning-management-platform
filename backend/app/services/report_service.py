@@ -4,14 +4,15 @@ Report Generation Service Module.
 Generates Learning Progress, Course, Skill Gap, and Knowledge Base Usage Reports in CSV and JSON formats.
 """
 
-import io
 import csv
-from datetime import datetime, UTC
-from typing import Dict, Any, List
+import io
+from datetime import UTC, datetime
+from typing import Any
+
 from sqlalchemy.orm import Session
 
-from app.services.enrollment_service import get_user_enrollments
 from app.rag import get_rag_service
+from app.services.enrollment_service import get_user_enrollments
 
 
 class ReportService:
@@ -41,7 +42,7 @@ class ReportService:
             
         return output.getvalue()
 
-    def generate_knowledge_usage_report(self) -> Dict[str, Any]:
+    def generate_knowledge_usage_report(self) -> dict[str, Any]:
         rag = get_rag_service()
         stats = rag.get_statistics()
         docs = rag.get_all_documents()

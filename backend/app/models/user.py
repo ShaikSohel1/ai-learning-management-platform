@@ -1,7 +1,10 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
+
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
+
 from app.database.base import Base
+
 
 class User(Base):
     __tablename__ = "users"

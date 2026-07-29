@@ -6,12 +6,12 @@ Integrates result reranking and confidence scoring.
 """
 
 import logging
-from typing import List, Dict, Any, Tuple, Optional
+from typing import Any
 
 from app.rag.embedding_service import embedding_service
+from app.rag.query_processor import ProcessedQuery, query_processor
+from app.rag.reranker import RankedChunk, reranker
 from app.rag.vector_store import vector_store
-from app.rag.query_processor import query_processor, ProcessedQuery
-from app.rag.reranker import reranker, RankedChunk
 from app.schemas.knowledge import KnowledgeCitation
 
 logger = logging.getLogger(__name__)
@@ -31,8 +31,8 @@ class Retriever:
         query: str,
         top_k: int = 4,
         threshold: float = 0.3,
-        metadata_filter: Optional[Dict[str, Any]] = None
-    ) -> Tuple[List[KnowledgeCitation], float, ProcessedQuery]:
+        metadata_filter: dict[str, Any] | None = None
+    ) -> tuple[list[KnowledgeCitation], float, ProcessedQuery]:
         """
         Executes Hybrid Search Pipeline:
         1. Query Processing (normalization, abbreviation expansion, intent detection).
@@ -58,7 +58,7 @@ class Retriever:
         metadatas_list = search_res.get("metadatas", [[]])[0]
         distances_list = search_res.get("distances", [[]])[0]
 
-        candidate_citations: List[KnowledgeCitation] = []
+        candidate_citations: list[KnowledgeCitation] = []
 
         for doc_text, meta, dist in zip(documents_list, metadatas_list, distances_list):
             if not doc_text:
@@ -88,7 +88,7 @@ class Retriever:
             ))
 
         # Step 3: Multi-Criteria Reranking
-        ranked_chunks: List[RankedChunk] = self.reranker.rerank(
+        ranked_chunks: list[RankedChunk] = self.reranker.rerank(
             citations=candidate_citations,
             query_keywords=proc_query.keywords,
             top_k=top_k

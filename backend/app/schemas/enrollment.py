@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 from app.schemas.course import CourseResponse
 
 
@@ -20,8 +21,8 @@ class ProgressUpdate(BaseModel):
 
 
 class EnrollmentUpdate(BaseModel):
-    status: Optional[str] = Field(None, description="Enrollment status: NOT_STARTED, IN_PROGRESS, COMPLETED")
-    progress_percentage: Optional[int] = Field(None, ge=0, le=100)
+    status: str | None = Field(None, description="Enrollment status: NOT_STARTED, IN_PROGRESS, COMPLETED")
+    progress_percentage: int | None = Field(None, ge=0, le=100)
 
 
 class CertificateResponse(BaseModel):
@@ -29,10 +30,10 @@ class CertificateResponse(BaseModel):
     user_id: int
     course_id: int
     certificate_number: str
-    user_name: Optional[str] = None
-    course_title: Optional[str] = None
+    user_name: str | None = None
+    course_title: str | None = None
     issued_at: datetime
-    certificate_url: Optional[str] = None
+    certificate_url: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -43,12 +44,12 @@ class EnrollmentResponse(BaseModel):
     course_id: int
     status: str
     progress_percentage: int
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     certificate_generated: bool
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    course: Optional[CourseResponse] = None
-    certificate: Optional[CertificateResponse] = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    course: CourseResponse | None = None
+    certificate: CertificateResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,8 @@
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
+
 from app.database.base import Base
+
 
 class LearningPathCourse(Base):
     __tablename__ = "learning_path_courses"

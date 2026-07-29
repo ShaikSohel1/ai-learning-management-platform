@@ -5,19 +5,18 @@ Provides system analytics, user management stats, course metrics, knowledge base
 and system health monitoring for administrator users.
 """
 
-from typing import List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 from app.dependencies.auth import get_current_user
-from app.models.user import User
+from app.models.audit_log import AuditLog
+from app.models.certificate import Certificate
 from app.models.course import Course
 from app.models.enrollment import Enrollment
-from app.models.certificate import Certificate
-from app.models.audit_log import AuditLog
-from app.rag import get_rag_service, RAGService
+from app.models.user import User
+from app.rag import RAGService, get_rag_service
 
 router = APIRouter(
     prefix="/admin",

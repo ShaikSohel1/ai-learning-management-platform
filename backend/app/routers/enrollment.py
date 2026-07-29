@@ -1,15 +1,15 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.schemas.enrollment import (
+    CertificateResponse,
     EnrollmentCreate,
     EnrollmentResponse,
     ProgressUpdate,
-    CertificateResponse,
 )
 from app.services import enrollment_service
 
@@ -21,7 +21,7 @@ router = APIRouter(
 
 @router.get(
     "",
-    response_model=List[EnrollmentResponse],
+    response_model=list[EnrollmentResponse],
     summary="Get authenticated user's enrolled courses"
 )
 def get_my_enrollments(
