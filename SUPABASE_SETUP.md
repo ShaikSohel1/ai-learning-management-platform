@@ -1,37 +1,66 @@
 # Supabase Setup Guide
 
-This document outlines the step-by-step process for configuring your Supabase project for the AI Learning Management Platform.
+This project leverages Supabase as the primary PostgreSQL database and object storage provider.
 
-## 1. Create a Supabase Project
-1. Go to the [Supabase Dashboard](https://app.supabase.com/) and create a new project.
-2. Store your Database Password securely.
-3. Wait for the database provisioning to complete.
+---
 
-## 2. Obtain Credentials
-1. Go to **Project Settings -> Database**.
-2. Under "Connection string", select "URI" and copy the URL. It should look like:
-   `postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres`
-3. Go to **Project Settings -> API**.
-4. Copy the `anon` `public` key and the `service_role` `secret` key.
-5. Add these credentials to your `backend/.env` file:
-   ```env
-   DATABASE_URL=your_database_url_here
-   SUPABASE_URL=https://[PROJECT_REF].supabase.co
-   SUPABASE_ANON_KEY=your_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   ```
+## 1. Project Creation
 
-## 3. Storage Configuration
-1. Open the Supabase SQL Editor in your dashboard.
-2. Open the `backend/supabase_setup.sql` file from your project.
-3. Copy the contents and execute them in the Supabase SQL Editor.
-4. This script automatically:
-   - Creates the `main-bucket` storage bucket.
-   - Configures public read access policies.
-   - Configures authenticated write access policies.
+1. Go to [Supabase](https://supabase.com/) and create an account.
+2. Click **New Project**, select an organization, and choose a deployment region close to your primary user base.
+3. Provide a strong **Database Password**. *Store this safely, as you will need it for the connection string.*
 
-## 4. Row Level Security (RLS)
-The `supabase_setup.sql` script also enables RLS on your core tables. Since the backend interacts with the database via SQLAlchemy using a service/superuser role, RLS policies act as a safety net against direct API access and do not interfere with your FastAPI logic.
+---
 
-## 5. Verify the Connection
-Start your FastAPI backend locally. If it starts without connection errors, your setup is complete!
+## 2. API Keys & Connection Strings
+
+Once the project is provisioned, navigate to **Project Settings -> Database**.
+
+You will need the **Connection String (URI)**. For FastAPI / SQLAlchemy, it is crucial to use the **Session Pooler** string rather than the direct connection.
+
+- **Standard Pooler Connection**:
+  ```ini
+  DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require"
+  ```
+- *Note the port `6543` which routes through PgBouncer, preventing connection exhaustion from the FastAPI workers.*
+
+Save this string to your `backend/.env` file.
+
+---
+
+## 3. Database Migration (Alembic)
+
+Do NOT manually create tables in the Supabase SQL editor. The schema is entirely defined by SQLAlchemy and managed by Alembic.
+
+To push the schema to your fresh Supabase project:
+```bash
+cd backend
+alembic upgrade head
+```
+This will automatically construct all 12+ tables (`users`, `courses`, `enrollments`, etc.).
+
+---
+
+## 4. Authentication (JWT vs Supabase Auth)
+
+**Important Architecture Note**: 
+This project uses **FastAPI + JWT Authentication (passlib/bcrypt)**, storing passwords directly in the `users` table as `hashed_password`. 
+We **do not** use Supabase Auth (`auth.users`) for this application to maintain strict separation of concerns and allow custom RBAC logic natively in FastAPI.
+
+---
+
+## 5. Storage (Optional)
+
+If your platform needs to handle user avatars, course thumbnails, or PDF certificates, you should set up Supabase Storage:
+1. Navigate to **Storage** in the Supabase dashboard.
+2. Create a new bucket (e.g., `learning-assets`).
+3. Make the bucket **Public** if serving images directly to the frontend.
+4. Retrieve the `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the Project Settings -> API to allow FastAPI to upload objects via the `supabase-py` client.
+
+---
+
+## 6. Row Level Security (RLS)
+
+Because the FastAPI backend connects to Supabase using a standard PostgreSQL URI as an admin/superuser role, **Row Level Security (RLS) is bypassed by default** for backend queries. 
+
+All access control, role verification (`admin`, `manager`, `employee`), and data masking is handled explicitly by the **FastAPI Dependency Injection** layer (e.g., `get_current_user`, `require_admin`).

@@ -1,34 +1,180 @@
-# Database Architecture & Management
+# Database Schema & Architecture
 
-The AI Learning Management Platform uses **PostgreSQL (Supabase)** as its core relational database. The application interacts with the database entirely via **SQLAlchemy ORM**.
+This document provides a comprehensive overview of the PostgreSQL database schema used in the AI Learning Management Platform. The schema is optimized for fast read/writes and integrates fully with Supabase.
 
-## 1. ORM and Migrations
-- **SQLAlchemy Models**: All models are defined in `backend/app/models/`. These map directly to database tables (e.g., `users`, `courses`, `enrollments`).
-- **Alembic**: We use Alembic to handle schema migrations. The configuration is stored in `backend/alembic.ini` and `backend/alembic/env.py`.
+---
 
-### Migration Commands
-Whenever you make changes to a model in `app/models/`, run the following commands to sync the database:
-```bash
-# Generate a new migration script
-alembic revision --autogenerate -m "Description of change"
+## 🏗️ Entity Relationship Diagram (ERD)
 
-# Apply the migration to the database
-alembic upgrade head
+```mermaid
+erDiagram
+    users {
+        Integer id PK
+        String email
+        String hashed_password
+        String name
+        String role
+        String department
+        String designation
+        DateTime created_at
+    }
+
+    courses {
+        Integer id PK
+        String title
+        String description
+        String difficulty
+        Integer duration_minutes
+        DateTime created_at
+    }
+
+    lessons {
+        Integer id PK
+        Integer course_id FK
+        String title
+        String content
+        Integer order
+    }
+
+    enrollments {
+        Integer id PK
+        Integer user_id FK
+        Integer course_id FK
+        String status
+        Float progress
+        DateTime enrolled_at
+        DateTime completed_at
+    }
+
+    skills {
+        Integer id PK
+        String name
+        String category
+    }
+
+    employee_skills {
+        Integer id PK
+        Integer user_id FK
+        Integer skill_id FK
+        Integer proficiency_level
+    }
+
+    learning_paths {
+        Integer id PK
+        String title
+        String description
+        String target_role
+    }
+
+    learning_path_courses {
+        Integer id PK
+        Integer path_id FK
+        Integer course_id FK
+        Integer order
+    }
+
+    certificates {
+        Integer id PK
+        Integer user_id FK
+        Integer course_id FK
+        String certificate_url
+        DateTime issued_at
+    }
+
+    audit_logs {
+        Integer id PK
+        Integer user_id FK
+        String action
+        String resource_type
+        Integer resource_id
+        String details
+        DateTime timestamp
+    }
+
+    ai_recommendations {
+        Integer id PK
+        Integer user_id FK
+        String recommendation_type
+        Integer item_id
+        Float score
+        String reasoning
+    }
+
+    notifications {
+        Integer id PK
+        Integer user_id FK
+        String title
+        String message
+        Boolean read
+        DateTime created_at
+    }
+
+    %% Relationships
+    users ||--o{ enrollments : "has"
+    courses ||--o{ enrollments : "contains"
+    courses ||--o{ lessons : "has"
+    users ||--o{ employee_skills : "possesses"
+    skills ||--o{ employee_skills : "linked_to"
+    learning_paths ||--o{ learning_path_courses : "includes"
+    courses ||--o{ learning_path_courses : "part_of"
+    users ||--o{ certificates : "earns"
+    courses ||--o{ certificates : "awards"
+    users ||--o{ audit_logs : "generates"
+    users ||--o{ ai_recommendations : "receives"
+    users ||--o{ notifications : "receives"
 ```
 
-## 2. Connection Pooling
-To ensure high performance and prevent database connection exhaustion, `backend/app/database/database.py` is configured with:
-- `pool_size=10`: Keeps 10 connections open per worker.
-- `max_overflow=20`: Allows up to 20 additional connections during spikes.
-- `pool_pre_ping=True`: Verifies a connection is active before using it, preventing stale connection errors.
+---
 
-## 3. Storage
-Files (PDFs, Profile Pictures, Certificates) are stored in **Supabase Storage**.
-- The `backend/app/services/storage_service.py` handles communication with the Supabase Storage API using the official `supabase-py` client.
-- The default bucket used is `main-bucket`.
+## 🗄️ Tables Detailed Breakdown
 
-## 4. Rollback Steps
-If a database migration causes issues in production:
-1. Identify the previous stable revision ID (`alembic history`).
-2. Run `alembic downgrade [REVISION_ID]`.
-3. Revert your code changes to match the database schema.
+### `users`
+Stores all employee, manager, and administrator credentials and profiles.
+- **`role`**: Defines access control (`admin`, `manager`, `employee`).
+- **Indexes**: `ix_users_id`, `ix_users_email` (unique).
+
+### `courses` & `lessons`
+Represents the hierarchical learning materials.
+- **`courses`**: Top-level containers representing a module.
+- **`lessons`**: Sequential content pieces belonging to a course.
+- **Foreign Keys**: `lessons.course_id -> courses.id`
+
+### `enrollments`
+Tracks learner progress through courses.
+- **`status`**: Enums for `enrolled`, `in_progress`, `completed`.
+- **`progress`**: Float value from `0.0` to `100.0`.
+- **Indexes**: `ix_enrollments_id`.
+
+### `skills` & `employee_skills`
+Manages the platform's competency matrix.
+- **`skills`**: Master list of competencies (e.g., "Python", "Leadership").
+- **`employee_skills`**: Junction table tying users to skills with a `proficiency_level` (1-5).
+
+### `learning_paths` & `learning_path_courses`
+Curated journeys for role-specific upskilling.
+- **`learning_paths`**: Defines the overarching goal (e.g., "Senior Developer Path").
+- **`learning_path_courses`**: Junction table establishing the ordered sequence of courses.
+
+### `certificates`
+Automatically generated and tracked when an employee hits 100% course progress.
+- **`certificate_url`**: Points to the generated asset (often in Supabase Storage).
+
+### `audit_logs`
+Crucial for enterprise compliance.
+- Records user interactions, logins, AI queries, and administrative actions.
+- **Indexes**: `ix_audit_logs_user_id` for fast user-history lookups.
+
+### `ai_recommendations`
+Stores offline/batch computed recommendations generated by Google Gemini.
+- **`reasoning`**: Stored LLM explanation of *why* this was recommended, surfaced directly in the UI.
+
+### `notifications`
+Real-time alerting system for users.
+- Pushed via websockets or long-polling when courses are assigned or deadlines approach.
+
+---
+
+## 🚀 Migration & ORM Notes
+- The platform uses **SQLAlchemy 2.0** with `DeclarativeBase`.
+- Migrations are managed fully by **Alembic**.
+- Alembic tracking table: `alembic_version`.
