@@ -1,7 +1,7 @@
 """
 Gemini API Client Module.
 
-Encapsulates authentication, HTTP payload formatting, and raw requests to Google's Gemini API endpoints.
+Encapsulates authentication and requests to Google's Gemini API using the official google-genai SDK.
 Provides standard generation calls with JSON response mode configuration.
 """
 
@@ -9,7 +9,9 @@ import json
 import logging
 from typing import Any
 
-import httpx
+from google import genai
+from google.genai import types
+from google.genai.errors import APIError
 
 from app.core.config import settings
 
@@ -26,7 +28,12 @@ class GeminiClient:
     ) -> None:
         self.api_key = api_key or settings.GEMINI_API_KEY
         self.model = model or settings.GEMINI_MODEL
-        self.base_url = "https://generativelanguage.googleapis.com/v1beta/models"
+        
+        # Initialize official Google GenAI Client if a valid key is present
+        if self.api_key and self.api_key != "your_gemini_api_key_here":
+            self.client = genai.Client(api_key=self.api_key)
+        else:
+            self.client = None
 
     def generate_content(
         self,
@@ -35,7 +42,7 @@ class GeminiClient:
         json_mode: bool = True
     ) -> str:
         """
-        Sends a content generation request to Gemini REST API.
+        Sends a content generation request to Gemini API.
 
         Args:
             prompt: The full user/prompt text.
@@ -45,52 +52,44 @@ class GeminiClient:
         Returns:
             Raw response text from Gemini model.
         """
-        if not self.api_key or self.api_key == "your_gemini_api_key_here":
+        if not self.client:
             logger.warning("No valid GEMINI_API_KEY configured. Returning fallback mock response.")
             return self._generate_mock_fallback(prompt, json_mode)
 
-        endpoint = f"{self.base_url}/{self.model}:generateContent?key={self.api_key}"
-
-        contents = [{"parts": [{"text": prompt}]}]
-
-        payload: dict[str, Any] = {
-            "contents": contents
-        }
-
-        generation_config: dict[str, Any] = {
-            "temperature": 0.3,
-            "maxOutputTokens": 2048,
-        }
+        # Configure model generation parameters
+        config = types.GenerateContentConfig(
+            temperature=0.3,
+            max_output_tokens=2048,
+        )
 
         if json_mode:
-            generation_config["responseMimeType"] = "application/json"
-
-        payload["generationConfig"] = generation_config
+            config.response_mime_type = "application/json"
 
         if system_instruction:
-            payload["systemInstruction"] = {
-                "parts": [{"text": system_instruction}]
-            }
+            config.system_instruction = system_instruction
 
-        headers = {
-            "Content-Type": "application/json"
-        }
-
-        with httpx.Client(timeout=30.0) as client:
-            response = client.post(endpoint, json=payload, headers=headers)
+        try:
+            # Send request using the official SDK
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config=config
+            )
             
-            # Check for HTTP status errors (e.g. 429 rate limits, 500 server error)
-            if response.status_code != 200:
-                logger.error(f"Gemini API returned error code {response.status_code}: {response.text}")
-                response.raise_for_status()
+            if not response.text:
+                logger.error(f"Gemini API returned an empty text response for model '{self.model}'.")
+                raise ValueError(f"Gemini API returned an empty response for model '{self.model}'.")
 
-            data = response.json()
-            try:
-                text = data["candidates"][0]["content"]["parts"][0]["text"]
-                return text
-            except (KeyError, IndexError) as e:
-                logger.error(f"Failed to parse Gemini API response payload structure: {data}")
-                raise ValueError(f"Malformed response structure from Gemini API: {e}")
+            return response.text
+
+        except APIError as e:
+            logger.error(
+                f"Gemini APIError [Code {getattr(e, 'code', 'Unknown')}]: {e.message if hasattr(e, 'message') else e}"
+            )
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error communicating with Gemini API: {e}")
+            raise
 
     def _generate_mock_fallback(self, prompt: str, json_mode: bool) -> str:
         """
