@@ -12,14 +12,13 @@ Implements 8 domain-specialized agents inheriting from BaseAgent:
 8. DashboardInsightsAgent: Learning risk forecasting, statistics analysis & engagement advice.
 """
 
-import time
 import logging
-from typing import Dict, Any, List
+import time
 
-from app.agents.base_agent import BaseAgent
 from app.agents.agent_context import AgentContext
+from app.agents.base_agent import BaseAgent
 from app.agents.tool_registry import tool_registry
-from app.schemas.agents import AgentStepResult, ToolCallRecord
+from app.schemas.agents import AgentStepResult
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +69,8 @@ class SkillGapAgent(BaseAgent):
 
     def execute(self, context: AgentContext) -> AgentStepResult:
         start_time = time.perf_counter()
-        current_skills = set(s.lower() for s in context.current_skills)
-        goal = context.career_goal.lower()
+        current_skills = {s.lower() for s in context.current_skills}
+        context.career_goal.lower()
 
         required_tech = ["python", "sql", "fastapi", "postgresql", "docker", "jwt auth", "system design"]
         missing = [t.title() for t in required_tech if t not in current_skills]

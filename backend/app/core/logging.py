@@ -7,7 +7,7 @@ errors, and AI tool execution latency.
 
 import logging
 import sys
-from typing import Dict, Any
+from typing import Any
 
 
 class StructuredLogger:
@@ -38,7 +38,7 @@ class StructuredLogger:
             f"AI_EXECUTION agent='{agent_name}' tool='{tool_name}' status={status} latency={latency_ms:.2f}ms"
         )
 
-    def log_error(self, error_msg: str, context: Dict[str, Any] = None) -> None:
+    def log_error(self, error_msg: str, context: dict[str, Any] | None = None) -> None:
         self.logger.error(f"ERROR_LOG msg='{error_msg}' context={context or {}}")
 
 

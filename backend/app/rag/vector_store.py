@@ -5,9 +5,10 @@ Encapsulates persistent ChromaDB vector store operations.
 Manages document embeddings, chunk metadata, similarity vector queries, and document deletion.
 """
 
-import os
 import logging
-from typing import List, Dict, Any, Optional
+import os
+from typing import Any
+
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 
@@ -38,8 +39,8 @@ class VectorStore:
         filename: str,
         uploader: str,
         upload_date: str,
-        chunks: List[str],
-        embeddings: List[List[float]]
+        chunks: list[str],
+        embeddings: list[list[float]]
     ) -> int:
         """
         Stores vector embeddings, text chunks, and metadata into ChromaDB collection.
@@ -70,9 +71,9 @@ class VectorStore:
 
     def similarity_search(
         self,
-        query_embedding: List[float],
+        query_embedding: list[float],
         top_k: int = 4
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Performs vector similarity search in ChromaDB using query embedding.
         """
@@ -95,7 +96,7 @@ class VectorStore:
             logger.error(f"Error deleting doc_id='{doc_id}' from ChromaDB: {e}")
             return False
 
-    def list_all_metadatas(self) -> List[Dict[str, Any]]:
+    def list_all_metadatas(self) -> list[dict[str, Any]]:
         """
         Retrieves all chunk metadatas to compile document summary catalog.
         """

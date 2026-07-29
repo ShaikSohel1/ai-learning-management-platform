@@ -1,14 +1,13 @@
-from datetime import datetime, UTC
-import uuid
 import logging
-from typing import List, Optional
+import uuid
+from datetime import UTC, datetime
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
+from app.models.certificate import Certificate
 from app.models.course import Course
 from app.models.enrollment import Enrollment
-from app.models.certificate import Certificate
-from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +56,7 @@ def enroll_user(db: Session, user_id: int, course_id: int) -> Enrollment:
     return new_enrollment
 
 
-def get_user_enrollments(db: Session, user_id: int) -> List[Enrollment]:
+def get_user_enrollments(db: Session, user_id: int) -> list[Enrollment]:
     """
     Fetches all course enrollments for the specified user with course & certificate details.
     """
@@ -172,7 +171,7 @@ def generate_certificate_internal(
     return certificate
 
 
-def get_certificate_for_enrollment(db: Session, enrollment_id: int, user_id: int) -> Optional[Certificate]:
+def get_certificate_for_enrollment(db: Session, enrollment_id: int, user_id: int) -> Certificate | None:
     """
     Fetches the issued certificate for a specific completed enrollment.
     """

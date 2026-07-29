@@ -1,11 +1,11 @@
-from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
-from app.schemas.notification import NotificationResponse, NotificationCreate
+from app.schemas.notification import NotificationCreate, NotificationResponse
 from app.services.notification_service import notification_service
 
 router = APIRouter(
@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get(
     "",
-    response_model=List[NotificationResponse],
+    response_model=list[NotificationResponse],
     summary="Get user notifications list"
 )
 def get_notifications(

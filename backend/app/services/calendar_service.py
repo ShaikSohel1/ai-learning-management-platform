@@ -4,16 +4,16 @@ Calendar Service Module.
 Generates structured study plans, learning milestones, and exports iCalendar (.ics) calendar files.
 """
 
-from datetime import datetime, timedelta, UTC
-from typing import Dict, Any, List
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 
 class CalendarService:
     """Generates study plans and iCalendar (.ics) exports."""
 
-    def generate_study_plan(self, course_title: str, weeks: int = 4) -> Dict[str, Any]:
+    def generate_study_plan(self, course_title: str, weeks: int = 4) -> dict[str, Any]:
         start_date = datetime.now(UTC)
-        weekly_sessions: List[Dict[str, Any]] = []
+        weekly_sessions: list[dict[str, Any]] = []
 
         for w in range(1, weeks + 1):
             session_date = start_date + timedelta(days=(w - 1) * 7 + 1)

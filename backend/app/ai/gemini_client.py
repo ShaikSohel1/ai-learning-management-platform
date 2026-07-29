@@ -7,7 +7,8 @@ Provides standard generation calls with JSON response mode configuration.
 
 import json
 import logging
-from typing import Any, Dict, Optional, List
+from typing import Any
+
 import httpx
 
 from app.core.config import settings
@@ -20,8 +21,8 @@ class GeminiClient:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None
+        api_key: str | None = None,
+        model: str | None = None
     ) -> None:
         self.api_key = api_key or settings.GEMINI_API_KEY
         self.model = model or settings.GEMINI_MODEL
@@ -30,7 +31,7 @@ class GeminiClient:
     def generate_content(
         self,
         prompt: str,
-        system_instruction: Optional[str] = None,
+        system_instruction: str | None = None,
         json_mode: bool = True
     ) -> str:
         """
@@ -52,11 +53,11 @@ class GeminiClient:
 
         contents = [{"parts": [{"text": prompt}]}]
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "contents": contents
         }
 
-        generation_config: Dict[str, Any] = {
+        generation_config: dict[str, Any] = {
             "temperature": 0.3,
             "maxOutputTokens": 2048,
         }

@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.database.base import Base
 
+
 class LearningPath(Base):
     __tablename__ = "learning_paths"
 

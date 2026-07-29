@@ -6,35 +6,34 @@ based on user intent classification.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
 
 from app.agents.base_agent import BaseAgent
 from app.agents.specialized_agents import (
-    CareerPlannerAgent,
-    SkillGapAgent,
-    CourseRecommendationAgent,
     AssessmentAgent,
+    CareerPlannerAgent,
+    CertificateAgent,
+    CourseRecommendationAgent,
+    DashboardInsightsAgent,
     EnrollmentAgent,
     KnowledgeAgent,
-    CertificateAgent,
-    DashboardInsightsAgent,
+    SkillGapAgent,
 )
 
 logger = logging.getLogger(__name__)
 
 
-Tuple_Pipeline = Tuple[str, str, List[BaseAgent]]
+Tuple_Pipeline = tuple[str, str, list[BaseAgent]]
 
 
 class AgentManager:
     """Central registry and intelligent router for all specialized platform agents."""
 
     def __init__(self) -> None:
-        self._agents: Dict[str, BaseAgent] = {}
+        self._agents: dict[str, BaseAgent] = {}
         self._register_agents()
 
     def _register_agents(self) -> None:
-        agents_list: List[BaseAgent] = [
+        agents_list: list[BaseAgent] = [
             CareerPlannerAgent(),
             SkillGapAgent(),
             CourseRecommendationAgent(),
@@ -48,10 +47,10 @@ class AgentManager:
         for ag in agents_list:
             self._agents[ag.name] = ag
 
-    def get_agent(self, name: str) -> Optional[BaseAgent]:
+    def get_agent(self, name: str) -> BaseAgent | None:
         return self._agents.get(name)
 
-    def list_agents(self) -> List[BaseAgent]:
+    def list_agents(self) -> list[BaseAgent]:
         return list(self._agents.values())
 
     def route_query(self, query: str) -> Tuple_Pipeline:
@@ -89,6 +88,6 @@ class AgentManager:
             ]
 
 
-Tuple_Pipeline = tuple[str, str, List[BaseAgent]]
+Tuple_Pipeline = tuple[str, str, list[BaseAgent]]
 
 agent_manager = AgentManager()

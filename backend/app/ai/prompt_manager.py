@@ -5,7 +5,7 @@ Decouples prompt engineering, system directives, and prompt templates from API e
 Provides prompt versioning (V1, V2), template parameter substitution, and prompt builder tools.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 
 class PromptTemplate:
@@ -27,7 +27,7 @@ class PromptBuilder:
 
     def __init__(self, template: PromptTemplate):
         self.template = template
-        self.params: Dict[str, Any] = {}
+        self.params: dict[str, Any] = {}
 
     def set_param(self, key: str, value: Any) -> "PromptBuilder":
         self.params[key] = value
@@ -165,11 +165,11 @@ class PromptManager:
     """Central registry to retrieve and configure prompts by version."""
 
     def __init__(self) -> None:
-        self._learning_path_templates: Dict[str, PromptTemplate] = {
+        self._learning_path_templates: dict[str, PromptTemplate] = {
             "V1": PROMPT_LEARNING_PATH_V1,
             "V2": PROMPT_LEARNING_PATH_V2,
         }
-        self._chat_templates: Dict[str, PromptTemplate] = {
+        self._chat_templates: dict[str, PromptTemplate] = {
             "V1": PROMPT_CHAT_V1,
         }
         self.default_version = "V2"
@@ -177,8 +177,8 @@ class PromptManager:
     def get_learning_path_builder(
         self,
         career_goal: str,
-        current_skills: List[str],
-        version: Optional[str] = None
+        current_skills: list[str],
+        version: str | None = None
     ) -> PromptBuilder:
         v = version or self.default_version
         template = self._learning_path_templates.get(v, PROMPT_LEARNING_PATH_V2)
@@ -194,9 +194,9 @@ class PromptManager:
         self,
         user_message: str,
         conversation_history: str = "",
-        career_goal: Optional[str] = None,
-        current_skills: Optional[List[str]] = None,
-        version: Optional[str] = None
+        career_goal: str | None = None,
+        current_skills: list[str] | None = None,
+        version: str | None = None
     ) -> PromptBuilder:
         v = version or "V1"
         template = self._chat_templates.get(v, PROMPT_CHAT_V1)

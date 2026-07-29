@@ -8,7 +8,8 @@ and validates structure using Pydantic schemas. Guarantees structured output int
 import json
 import logging
 import re
-from typing import Any, Dict
+from typing import Any
+
 from pydantic import ValidationError
 
 from app.schemas.ai import LearningPathResponse
@@ -68,7 +69,7 @@ class ResponseParser:
             logger.warning(f"Pydantic validation warning on AI response: {val_err}. Sanitizing dictionary structure.")
             return self._sanitize_and_salvage(data, default_career_goal)
 
-    def _sanitize_and_salvage(self, data: Dict[str, Any], default_goal: str) -> LearningPathResponse:
+    def _sanitize_and_salvage(self, data: dict[str, Any], default_goal: str) -> LearningPathResponse:
         """
         Attempts to salvage key fields from partial or slightly non-conforming dict.
         """

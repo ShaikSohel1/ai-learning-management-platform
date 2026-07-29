@@ -1,9 +1,21 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://shaiksohel@localhost/ai_learning_db"
+from app.core.config import settings
 
-engine = create_engine(DATABASE_URL)
+# For Supabase, sslmode=require might be needed in production.
+# We add basic connection pooling for performance.
+connect_args = {}
+if "supabase" in settings.DATABASE_URL.lower() or "sslmode=require" in settings.DATABASE_URL.lower():
+    connect_args["sslmode"] = "require"
+
+engine = create_engine(
+    settings.DATABASE_URL,
+    connect_args=connect_args,
+    pool_pre_ping=True,
+    pool_size=10,
+    max_overflow=20
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -17,4 +29,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
