@@ -1,45 +1,108 @@
 # Deployment Guide
 
-This guide details how to deploy the AI Learning Management Platform into production, specifically focusing on the backend FastAPI server and React Vite frontend.
+This guide covers deploying the AI Learning Management Platform for both Local Development and Production environments.
 
-## 1. Prerequisites
-- A live Supabase project.
-- Accounts on deployment platforms (e.g., Render, Railway, Fly.io for Backend; Vercel or Netlify for Frontend).
-- Access to the platform's Environment Variables settings.
+---
 
-## 2. Backend Deployment (Render / Railway)
+## 💻 Local Development
 
-### Environment Variables
-Configure the following secrets in your deployment dashboard:
-- `DATABASE_URL`: Your Supabase connection string (ensure it uses port 6543 for pooling).
-- `SECRET_KEY`: A strong, randomly generated string for JWT signing.
-- `ALGORITHM`: `HS256`
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: `30` (or your preferred duration)
-- `GEMINI_API_KEY`: Your Google Gemini API key.
-- `SUPABASE_URL`: Your Supabase Project URL.
-- `SUPABASE_ANON_KEY`: Your Supabase public anon key.
-- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase private service role key.
+### 1. Prerequisites
+- **Node.js** (v18 or higher)
+- **Python** (3.11 or higher)
+- **Docker & Docker Compose** (Optional, but recommended)
+- **PostgreSQL** (Or an active Supabase project)
 
-### Build & Run Commands
-- **Build Command**: `pip install -r requirements.txt`
-- **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+### 2. Environment Setup
 
-### Database Migrations
-Before handling real traffic, ensure your database schema is up to date. You can run migrations locally pointing to your production database, or add a pre-deploy script to your CI/CD pipeline:
-```bash
-alembic upgrade head
+**Backend (`backend/.env`)**:
+```ini
+DATABASE_URL="postgresql://[USER]:[PASSWORD]@[HOST]:[PORT]/[DB_NAME]?sslmode=require"
+SECRET_KEY="generate-a-strong-secret-key-here"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES="30"
+
+# AI Integration
+GEMINI_API_KEY="your_google_gemini_api_key"
+
+# CORS Configuration
+FRONTEND_URLS="http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174"
 ```
 
-## 3. Frontend Deployment (Vercel)
+**Frontend (`frontend/.env`)**:
+```ini
+VITE_API_URL="http://127.0.0.1:8000"
+```
 
-### Environment Variables
-Configure the following in Vercel:
-- `VITE_API_URL`: The public URL of your deployed backend (e.g., `https://my-backend.onrender.com`).
+### 3. Running Services
 
-### Build Settings
-- **Framework Preset**: Vite
-- **Build Command**: `npm run build`
-- **Output Directory**: `dist`
+**Backend**:
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
 
-## 4. Supabase Connection Pooling
-Your `database.py` is pre-configured with `pool_size` and `max_overflow`. Ensure your `DATABASE_URL` connects to Supabase via IPv4 (port `6543`) using PgBouncer to prevent connection limits from being exhausted in serverless or highly concurrent environments.
+**Frontend**:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🐳 Docker Deployment
+
+To spin up the entire stack seamlessly, you can use the provided `docker-compose.yml`.
+
+```bash
+# Build and start all services
+docker-compose up --build -d
+
+# View logs
+docker-compose logs -f
+```
+*Note: Make sure your `.env` files are correctly configured in both the root and child directories before running Docker.*
+
+---
+
+## 🚀 Production Deployment
+
+### 1. Backend (FastAPI)
+The backend is completely containerized and stateless (aside from ChromaDB, which should mount a persistent volume).
+
+- **Host**: AWS EC2, Google Cloud Run, or Render.
+- **Run Command**:
+  ```bash
+  uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4
+  ```
+- **ChromaDB**: In production, consider hosting ChromaDB as a separate microservice rather than embedding it, to allow the FastAPI workers to scale horizontally.
+
+### 2. Frontend (React/Vite)
+- Build the static assets:
+  ```bash
+  cd frontend
+  npm run build
+  ```
+- **Host**: Vercel, Netlify, or AWS S3 + CloudFront.
+- Ensure that the build environment variable `VITE_API_URL` points to your production FastAPI domain (e.g., `https://api.yourdomain.com`).
+
+### 3. Database (Supabase)
+- The database is managed entirely by Supabase Serverless Postgres.
+- Ensure your `DATABASE_URL` uses the **Session Pooler** string (typically port `6543`) to prevent connection exhaustion from FastAPI workers.
+
+---
+
+## ⚠️ Troubleshooting
+
+**1. CORS Errors (400 Bad Request)**
+- If the frontend fails to communicate with the backend, verify that the frontend origin is exactly matched in the `FRONTEND_URLS` environment variable in the backend.
+
+**2. Alembic Empty Migrations**
+- Ensure that `alembic/env.py` has imported `app.models` so that `Base.metadata` can discover the tables.
+
+**3. ChromaDB SQLite Errors**
+- Do NOT track `backend/chroma_db/chroma.sqlite3` in Git. It will cause merge conflicts. It is automatically generated at runtime.
