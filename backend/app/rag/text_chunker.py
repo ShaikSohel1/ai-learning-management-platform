@@ -4,7 +4,7 @@ Text Chunker Module.
 Splits long document text into overlapping text chunks to preserve semantic context across chunk boundaries.
 """
 
-from typing import List, Dict, Any
+from typing import Any
 
 
 class TextChunk:
@@ -14,7 +14,7 @@ class TextChunk:
         self.start_char = start_char
         self.end_char = end_char
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "text": self.text,
             "index": self.index,
@@ -30,7 +30,7 @@ class TextChunker:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
 
-    def chunk_text(self, text: str) -> List[TextChunk]:
+    def chunk_text(self, text: str) -> list[TextChunk]:
         """
         Splits text into chunks of maximum size with configured overlap.
         Preserves sentence or paragraph boundaries where possible.
@@ -38,7 +38,7 @@ class TextChunker:
         if not text:
             return []
 
-        chunks: List[TextChunk] = []
+        chunks: list[TextChunk] = []
         text_length = len(text)
         
         if text_length <= self.chunk_size:

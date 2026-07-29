@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta, UTC
-from jose import jwt, JWTError
+from datetime import UTC, datetime, timedelta
+
+from jose import JWTError, jwt
 
 SECRET_KEY = "your-super-secret-key-change-later"
 ALGORITHM = "HS256"

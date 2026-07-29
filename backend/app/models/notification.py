@@ -1,5 +1,6 @@
-from datetime import datetime, UTC
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from datetime import UTC, datetime
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base

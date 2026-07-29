@@ -1,5 +1,9 @@
 import { createContext, useEffect, useState } from "react";
-import { getCurrentUser } from "../services/authService";
+import {
+  loginUser,
+  registerUser,
+  getCurrentUser,
+} from "../services/authService";
 
 export const AuthContext = createContext();
 
@@ -13,12 +17,14 @@ export function AuthProvider({ children }) {
     try {
       const userData = await getCurrentUser();
       setUser(userData);
+      return userData;
     } catch (error) {
       console.error("Authentication failed:", error);
 
       localStorage.removeItem("token");
       setToken(null);
       setUser(null);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -26,16 +32,28 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (token) {
-      fetchUser();
+      fetchUser().catch(() => { });
     } else {
       setLoading(false);
     }
   }, [token]);
 
   // Login
-  const login = (jwtToken) => {
-    localStorage.setItem("token", jwtToken);
-    setToken(jwtToken);
+  const login = async (email, password) => {
+    const response = await loginUser(email, password);
+
+    localStorage.setItem("token", response.access_token);
+
+    setToken(response.access_token);
+
+    await fetchUser();
+
+    return response;
+  };
+
+  // Register
+  const register = async (userData) => {
+    return await registerUser(userData);
   };
 
   // Logout
@@ -52,6 +70,7 @@ export function AuthProvider({ children }) {
         user,
         loading,
         login,
+        register,
         logout,
         fetchUser,
       }}

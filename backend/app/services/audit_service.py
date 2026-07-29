@@ -4,7 +4,7 @@ Audit Logging Service Module.
 Records agent tool executions in database for compliance and auditing.
 """
 
-from typing import List
+
 from sqlalchemy.orm import Session
 
 from app.models.audit_log import AuditLog
@@ -34,7 +34,7 @@ class AuditService:
         db.refresh(log)
         return log
 
-    def get_user_audit_logs(self, db: Session, user_id: int) -> List[AuditLog]:
+    def get_user_audit_logs(self, db: Session, user_id: int) -> list[AuditLog]:
         return (
             db.query(AuditLog)
             .filter(AuditLog.user_id == user_id)

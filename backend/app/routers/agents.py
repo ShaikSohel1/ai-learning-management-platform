@@ -1,25 +1,23 @@
-from typing import List, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from app.agents import (
+    WorkflowEngine,
+    agent_manager,
+    agent_memory_store,
+    get_workflow_engine,
+    tool_registry,
+)
 from app.database.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.schemas.agents import (
     AgentChatRequest,
     AgentChatResponse,
-    AgentWorkflowRequest,
     AgentExecuteToolRequest,
-    AgentSystemStatusResponse,
     AgentStatusInfo,
-)
-from app.agents import (
-    workflow_engine,
-    get_workflow_engine,
-    WorkflowEngine,
-    agent_manager,
-    tool_registry,
-    agent_memory_store,
+    AgentSystemStatusResponse,
+    AgentWorkflowRequest,
 )
 from app.services.audit_service import audit_service
 from app.services.calendar_service import calendar_service
@@ -57,7 +55,7 @@ def agent_chat(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Agent workflow execution error: {str(exc)}"
+            detail=f"Agent workflow execution error: {exc!s}"
         )
 
 
@@ -191,7 +189,7 @@ def export_ics(
     return Response(
         content=ics_content,
         media_type="text/calendar",
-        headers={"Content-Disposition": f"attachment; filename=study_schedule.ics"}
+        headers={"Content-Disposition": "attachment; filename=study_schedule.ics"}
     )
 
 
@@ -211,5 +209,5 @@ def export_progress_csv(
     return Response(
         content=csv_content,
         media_type="text/csv",
-        headers={"Content-Disposition": f"attachment; filename=learning_progress_report.csv"}
+        headers={"Content-Disposition": "attachment; filename=learning_progress_report.csv"}
     )

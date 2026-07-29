@@ -5,14 +5,14 @@ Normalizes user search queries, expands domain abbreviations, detects query inte
 extracts key phrases, and formulates optimized search queries for hybrid retrieval.
 """
 
-import re
 import logging
-from typing import List, Dict, Any, Tuple
+import re
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 # Common enterprise abbreviation mapping
-ABBREVIATION_MAP: Dict[str, str] = {
+ABBREVIATION_MAP: dict[str, str] = {
     "lms": "learning management system",
     "hr": "human resources",
     "sop": "standard operating procedure",
@@ -48,8 +48,8 @@ class ProcessedQuery:
         normalized_query: str,
         optimized_query: str,
         intent: str,
-        keywords: List[str],
-        expanded_terms: List[str]
+        keywords: list[str],
+        expanded_terms: list[str]
     ):
         self.original_query = original_query
         self.normalized_query = normalized_query
@@ -58,7 +58,7 @@ class ProcessedQuery:
         self.keywords = keywords
         self.expanded_terms = expanded_terms
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "original_query": self.original_query,
             "normalized_query": self.normalized_query,
@@ -85,8 +85,8 @@ class QueryProcessor:
         intent = self._detect_intent(raw.lower(), tokens)
 
         # Expand abbreviations & collect expanded terms
-        expanded_terms: List[str] = []
-        expanded_tokens: List[str] = []
+        expanded_terms: list[str] = []
+        expanded_tokens: list[str] = []
 
         for token in tokens:
             if token in ABBREVIATION_MAP:
@@ -114,7 +114,7 @@ class QueryProcessor:
             expanded_terms=expanded_terms,
         )
 
-    def _detect_intent(self, text: str, tokens: List[str]) -> str:
+    def _detect_intent(self, text: str, tokens: list[str]) -> str:
         """Categorizes query intent into: policy, technical, procedure, or general."""
         if any(w in text for w in ["policy", "rule", "leave", "holiday", "benefit", "pto", "allowance", "salary", "reimbursement"]):
             return "policy"

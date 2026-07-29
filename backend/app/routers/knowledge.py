@@ -1,18 +1,17 @@
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
 from app.dependencies.auth import get_current_user
 from app.models.user import User
+from app.rag import RAGService, get_rag_service
 from app.schemas.knowledge import (
     DocumentMetadata,
+    KnowledgeAnalyticsResponse,
     KnowledgeAskRequest,
     KnowledgeAskResponse,
     KnowledgeSearchResponse,
-    SemanticSearchRequest,
     SearchHistoryItem,
-    KnowledgeAnalyticsResponse,
+    SemanticSearchRequest,
 )
-from app.rag import RAGService, get_rag_service
 
 router = APIRouter(
     prefix="/knowledge",
@@ -53,13 +52,13 @@ async def upload_document(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to ingest document: {str(exc)}"
+            detail=f"Failed to ingest document: {exc!s}"
         )
 
 
 @router.get(
     "/documents",
-    response_model=List[DocumentMetadata],
+    response_model=list[DocumentMetadata],
     summary="List uploaded knowledge base documents"
 )
 def list_documents(
@@ -137,13 +136,13 @@ def ask_knowledge_base(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to answer question via Knowledge RAG: {str(exc)}"
+            detail=f"Failed to answer question via Knowledge RAG: {exc!s}"
         )
 
 
 @router.get(
     "/history",
-    response_model=List[SearchHistoryItem],
+    response_model=list[SearchHistoryItem],
     summary="Get user search history log"
 )
 def get_search_history(

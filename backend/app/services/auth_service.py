@@ -1,10 +1,11 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from app.core.jwt import create_access_token
+from app.core.security import hash_password, verify_password
 from app.models.user import User
 from app.schemas.auth import RegisterRequest
-from app.core.security import hash_password
-from sqlalchemy import select
-from app.core.jwt import create_access_token
-from app.core.security import verify_password
+
 
 def register_user(db: Session, user: RegisterRequest):
     db_user = User(

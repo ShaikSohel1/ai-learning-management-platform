@@ -5,9 +5,9 @@ Maintains thread-safe user search history logs, execution latency metrics,
 confidence scores, and aggregate knowledge base analytics.
 """
 
-from datetime import datetime, UTC
 import threading
-from typing import List, Dict, Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 
 class SearchHistoryEntry:
@@ -18,7 +18,7 @@ class SearchHistoryEntry:
         question: str,
         timestamp: str,
         response_time_ms: float,
-        documents_used: List[str],
+        documents_used: list[str],
         confidence_score: float,
         rag_used: bool
     ):
@@ -31,7 +31,7 @@ class SearchHistoryEntry:
         self.confidence_score = confidence_score
         self.rag_used = rag_used
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "entry_id": self.entry_id,
             "user_id": self.user_id,
@@ -48,7 +48,7 @@ class SearchHistoryStore:
     """Thread-safe search history logger and analytics tracker."""
 
     def __init__(self, max_history_per_user: int = 50) -> None:
-        self._store: Dict[int, List[SearchHistoryEntry]] = {}
+        self._store: dict[int, list[SearchHistoryEntry]] = {}
         self.max_history_per_user = max_history_per_user
         self._lock = threading.Lock()
 
@@ -57,7 +57,7 @@ class SearchHistoryStore:
         user_id: int,
         question: str,
         response_time_ms: float,
-        documents_used: List[str],
+        documents_used: list[str],
         confidence_score: float,
         rag_used: bool
     ) -> SearchHistoryEntry:
@@ -82,7 +82,7 @@ class SearchHistoryStore:
 
         return entry
 
-    def get_user_history(self, user_id: int) -> List[Dict[str, Any]]:
+    def get_user_history(self, user_id: int) -> list[dict[str, Any]]:
         with self._lock:
             entries = self._store.get(user_id, [])
             return [e.to_dict() for e in entries]
@@ -94,9 +94,9 @@ class SearchHistoryStore:
                 return True
             return False
 
-    def get_analytics_metrics(self) -> Dict[str, Any]:
+    def get_analytics_metrics(self) -> dict[str, Any]:
         """Calculates global search analytics metrics."""
-        all_entries: List[SearchHistoryEntry] = []
+        all_entries: list[SearchHistoryEntry] = []
         with self._lock:
             for user_entries in self._store.values():
                 all_entries.extend(user_entries)

@@ -1,11 +1,11 @@
-from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
 class NotificationCreate(BaseModel):
     title: str = Field(..., min_length=2)
     message: str = Field(..., min_length=2)
-    notification_type: Optional[str] = Field("INFO")
+    notification_type: str | None = Field("INFO")
 
 
 class NotificationResponse(BaseModel):

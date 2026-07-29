@@ -8,15 +8,16 @@ Exposes RESTful endpoints for:
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.ai import AIService, get_ai_service
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.schemas.ai import (
-    LearningPathRequest,
-    LearningPathResponse,
     AIChatRequest,
     AIChatResponse,
+    LearningPathRequest,
+    LearningPathResponse,
 )
-from app.ai import AIService, get_ai_service
 
 router = APIRouter(
     prefix="/ai",
@@ -48,7 +49,7 @@ def generate_learning_path(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate learning path: {str(exc)}"
+            detail=f"Failed to generate learning path: {exc!s}"
         )
 
 
@@ -77,7 +78,7 @@ def chat_with_assistant(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"AI chat assistant encountered an error: {str(exc)}"
+            detail=f"AI chat assistant encountered an error: {exc!s}"
         )
 
 
@@ -93,7 +94,7 @@ def clear_chat_history(
     """
     Resets and clears active conversation context memory for the authenticated user.
     """
-    cleared = ai_service.clear_user_history(user_id=current_user.id)
+    ai_service.clear_user_history(user_id=current_user.id)
     return {
         "success": True,
         "message": "Conversation history cleared successfully.",

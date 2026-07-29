@@ -7,7 +7,9 @@ network timeouts, connection drops) when communicating with external LLM APIs.
 
 import logging
 import time
-from typing import Callable, TypeVar, Any
+from collections.abc import Callable
+from typing import Any, TypeVar
+
 import httpx
 
 from app.core.config import settings
@@ -57,7 +59,7 @@ class RetryHandler:
                     logger.error(
                         f"Non-retryable or max attempts ({attempt}/{self.max_retries}) reached for error: {exc}"
                     )
-                    raise exc
+                    raise
 
                 logger.warning(
                     f"Retryable attempt {attempt}/{self.max_retries} failed with error: {exc}. Retrying in {delay:.2f}s..."

@@ -5,17 +5,13 @@ from app.database.database import get_db
 from app.dependencies.auth import get_current_user
 from app.dependencies.roles import require_admin
 from app.models.user import User
-from app.schemas.course import (
-    CourseCreate,
-    CourseUpdate,
-    CourseResponse
-)
+from app.schemas.course import CourseCreate, CourseResponse, CourseUpdate
 from app.services.course_service import (
     create_course,
+    delete_course,
     get_all_courses,
     get_course_by_id,
     update_course,
-    delete_course
 )
 
 router = APIRouter(

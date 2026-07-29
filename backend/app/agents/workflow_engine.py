@@ -5,9 +5,9 @@ Orchestrates multi-agent workflow execution, passes context between collaboratin
 synthesizes unified executive responses via Gemini, and calculates execution metrics.
 """
 
-import time
 import logging
-from typing import List, Optional
+import time
+
 from sqlalchemy.orm import Session
 
 from app.agents.agent_context import AgentContext
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class WorkflowEngine:
     """Orchestrates collaborative multi-agent workflow pipelines."""
 
-    def __init__(self, gemini_client: Optional[GeminiClient] = None) -> None:
+    def __init__(self, gemini_client: GeminiClient | None = None) -> None:
         self.client = gemini_client or GeminiClient()
         self.manager = agent_manager
         self.memory = agent_memory_store
@@ -35,9 +35,9 @@ class WorkflowEngine:
         user_email: str,
         user_role: str,
         query: str,
-        career_goal: Optional[str] = None,
-        current_skills: Optional[List[str]] = None,
-        db: Optional[Session] = None
+        career_goal: str | None = None,
+        current_skills: list[str] | None = None,
+        db: Session | None = None
     ) -> AgentChatResponse:
         start_time = time.perf_counter()
 
@@ -58,7 +58,7 @@ class WorkflowEngine:
 
         logger.info(f"Executing Agentic Workflow intent='{intent_name}' with {len(agents_to_run)} specialized agents for user_id={user_id}")
 
-        step_results: List[AgentStepResult] = []
+        step_results: list[AgentStepResult] = []
 
         # Step 3: Sequential Agent Execution & Communication
         for agent in agents_to_run:

@@ -1,4 +1,3 @@
-from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 
 
@@ -14,8 +13,8 @@ class DocumentMetadata(BaseModel):
 
 class KnowledgeAskRequest(BaseModel):
     question: str = Field(..., min_length=3, description="User question for RAG knowledge base", example="What is the employee leave policy?")
-    top_k: Optional[int] = Field(4, ge=1, le=10, description="Top K relevant chunks to retrieve")
-    threshold: Optional[float] = Field(0.3, ge=0.0, le=1.0, description="Minimum similarity confidence threshold")
+    top_k: int | None = Field(4, ge=1, le=10, description="Top K relevant chunks to retrieve")
+    threshold: float | None = Field(0.3, ge=0.0, le=1.0, description="Minimum similarity confidence threshold")
 
 
 class KnowledgeCitation(BaseModel):
@@ -31,15 +30,15 @@ class KnowledgeAskResponse(BaseModel):
     confidence_score: float = Field(..., description="Overall confidence percentage (0.0 to 100.0%)")
     response_time_ms: float = Field(..., description="Execution latency in milliseconds")
     search_intent: str = Field(..., description="Detected query intent (policy, procedure, technical, general)")
-    citations: List[KnowledgeCitation] = Field(default_factory=list, description="Source document citations")
-    referenced_documents: List[str] = Field(default_factory=list, description="List of unique source document titles")
+    citations: list[KnowledgeCitation] = Field(default_factory=list, description="Source document citations")
+    referenced_documents: list[str] = Field(default_factory=list, description="List of unique source document titles")
 
 
 class SemanticSearchRequest(BaseModel):
     query: str = Field(..., min_length=2, description="Search query string")
-    top_k: Optional[int] = Field(4, ge=1, le=20)
-    threshold: Optional[float] = Field(0.3, ge=0.0, le=1.0)
-    filename_filter: Optional[str] = Field(None, description="Optional filename filter")
+    top_k: int | None = Field(4, ge=1, le=20)
+    threshold: float | None = Field(0.3, ge=0.0, le=1.0)
+    filename_filter: str | None = Field(None, description="Optional filename filter")
 
 
 class KnowledgeSearchResponse(BaseModel):
@@ -47,7 +46,7 @@ class KnowledgeSearchResponse(BaseModel):
     results_count: int
     confidence_score: float
     search_intent: str
-    citations: List[KnowledgeCitation]
+    citations: list[KnowledgeCitation]
 
 
 class SearchHistoryItem(BaseModel):
@@ -56,7 +55,7 @@ class SearchHistoryItem(BaseModel):
     question: str
     timestamp: str
     response_time_ms: float
-    documents_used: List[str]
+    documents_used: list[str]
     confidence_score: float
     rag_used: bool
 

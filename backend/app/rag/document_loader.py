@@ -6,11 +6,11 @@ Applies text cleaning and normalization for clean vector chunk generation.
 """
 
 import io
-import re
 import logging
-from typing import Tuple
-from pypdf import PdfReader
+import re
+
 import docx
+from pypdf import PdfReader
 
 logger = logging.getLogger(__name__)
 

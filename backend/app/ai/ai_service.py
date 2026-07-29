@@ -6,14 +6,13 @@ Provides high-level business functions for generating learning paths and handlin
 """
 
 import logging
-from typing import List, Optional
 
+from app.ai.conversation_memory import memory_store
 from app.ai.gemini_client import GeminiClient
 from app.ai.prompt_manager import prompt_manager
 from app.ai.response_parser import response_parser
 from app.ai.retry_handler import retry_handler
-from app.ai.conversation_memory import memory_store
-from app.schemas.ai import LearningPathResponse, AIChatResponse
+from app.schemas.ai import AIChatResponse, LearningPathResponse
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +20,14 @@ logger = logging.getLogger(__name__)
 class AIService:
     """Unified service facade for AI features in the LMS platform."""
 
-    def __init__(self, gemini_client: Optional[GeminiClient] = None) -> None:
+    def __init__(self, gemini_client: GeminiClient | None = None) -> None:
         self.client = gemini_client or GeminiClient()
 
     def generate_learning_path(
         self,
         career_goal: str,
-        current_skills: List[str],
-        version: Optional[str] = "V2"
+        current_skills: list[str],
+        version: str | None = "V2"
     ) -> LearningPathResponse:
         """
         Generates a structured learning path for user's career goal and skills using versioned prompts.
@@ -64,8 +63,8 @@ class AIService:
         self,
         user_id: int,
         message: str,
-        career_goal: Optional[str] = None,
-        current_skills: Optional[List[str]] = None
+        career_goal: str | None = None,
+        current_skills: list[str] | None = None
     ) -> AIChatResponse:
         """
         Processes multi-turn AI chat assistant queries using user conversation context memory.
