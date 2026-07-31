@@ -5,13 +5,14 @@ from app.database.database import get_db
 from app.dependencies.auth import get_current_user
 from app.dependencies.roles import require_admin
 from app.models.user import User
-from app.schemas.auth import LoginRequest, RegisterRequest
-from app.services.auth_service import login_user, register_user
+from app.schemas.auth import LoginRequest, RegisterRequest, UpdatePasswordRequest
+from app.services.auth_service import login_user, register_user, update_user_password
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
+
 
 @router.post("/register")
 def register(
@@ -65,4 +66,15 @@ def admin_dashboard(
     return {
         "message": "Welcome Admin",
         "user": current_user.name
+    }
+
+@router.post("/update-password")
+def update_password(
+    data: UpdatePasswordRequest,
+    db: Session = Depends(get_db)
+):
+    update_user_password(db, data.email, data.new_password)
+    return {
+        "success": True,
+        "message": "Password updated successfully"
     }

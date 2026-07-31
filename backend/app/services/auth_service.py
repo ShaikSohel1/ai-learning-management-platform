@@ -40,3 +40,26 @@ def login_user(db: Session, user):
 
     token = create_access_token({"sub": str(db_user.id)})
     return token
+
+
+def update_user_password(db: Session, email: str, new_password: str):
+    if len(new_password) < 8:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 8 characters long"
+        )
+    
+    statement = select(User).where(User.email == email)
+    db_user = db.scalar(statement)
+
+    if db_user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User account not found"
+        )
+
+    db_user.password = hash_password(new_password)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+

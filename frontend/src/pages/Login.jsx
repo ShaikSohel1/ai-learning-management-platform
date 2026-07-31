@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { BrainCircuit, Mail, Lock, User, Briefcase, Sparkles, LogIn, UserPlus } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
+import ToastNotification from "../components/common/ToastNotification";
 import "../styles/login.css";
 
 function Login() {
@@ -15,6 +16,7 @@ function Login() {
   const [department, setDepartment] = useState("");
   const [designation, setDesignation] = useState("");
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login, register } = useAuth();
@@ -23,12 +25,13 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccessMsg("");
     setLoading(true);
 
     try {
       if (isRegister) {
         await register({ name, email, password, department, designation });
-        alert("Registration successful! Please login.");
+        setSuccessMsg("Registration successful! Please sign in with your credentials.");
         setIsRegister(false);
       } else {
         await login(email, password);
@@ -80,6 +83,10 @@ function Login() {
               Register
             </button>
           </div>
+
+          {successMsg && (
+            <ToastNotification message={successMsg} type="success" onClose={() => setSuccessMsg("")} />
+          )}
 
           {error && <div className="login-error-banner">{error}</div>}
 
@@ -145,7 +152,22 @@ function Login() {
             </div>
 
             <div className="login-input-group">
-              <label>Password</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label>Password</label>
+                {!isRegister && (
+                  <Link
+                    to="/forgot-password"
+                    style={{
+                      fontSize: "0.80rem",
+                      color: "#60A5FA",
+                      textDecoration: "none",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Forgot Password?
+                  </Link>
+                )}
+              </div>
               <div className="login-input-box">
                 <Lock size={18} color="var(--text-muted)" />
                 <input
