@@ -13,6 +13,7 @@ from typing import Any, TypeVar
 
 from google.genai.errors import APIError
 
+from app.ai.gemini_client import AllGeminiModelsQuotaExhaustedError
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -39,9 +40,7 @@ class RetryHandler:
     def execute(self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         """
         Executes function with exponential backoff retries.
-
-        Retries on transient status codes (429, 500, 502, 503, 504) and connection/timeout errors.
-        Does NOT retry on non-transient client errors (400, 401, 403, 404).
+        Delegates model failovers to GeminiClient and passes through AllGeminiModelsQuotaExhaustedError.
         """
         delay = self.initial_delay
         last_exception = None
@@ -49,7 +48,11 @@ class RetryHandler:
         for attempt in range(1, self.max_retries + 1):
             try:
                 return func(*args, **kwargs)
+            except AllGeminiModelsQuotaExhaustedError:
+                raise
             except (APIError, TimeoutError, ConnectionError, ValueError) as exc:
+                last_exception = exc
+
                 last_exception = exc
                 
                 # Retrieve the HTTP status code from the google-genai APIError if present

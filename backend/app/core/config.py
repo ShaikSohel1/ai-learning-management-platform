@@ -19,9 +19,25 @@ class Settings:
     
     # Gemini AI Config
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash")
+    PRIMARY_GEMINI_MODEL: str = os.getenv("PRIMARY_GEMINI_MODEL", os.getenv("GEMINI_MODEL", "models/gemini-2.0-flash"))
+    FALLBACK_GEMINI_MODELS_RAW: str = os.getenv(
+        "FALLBACK_GEMINI_MODELS",
+        "models/gemini-1.5-flash,models/gemini-1.5-pro,models/gemini-2.5-flash,models/gemini-flash-latest"
+    )
     GEMINI_MAX_RETRIES: int = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
     GEMINI_BACKOFF_FACTOR: float = float(os.getenv("GEMINI_BACKOFF_FACTOR", "2.0"))
+    GEMINI_REQUEST_TIMEOUT: float = float(os.getenv("GEMINI_REQUEST_TIMEOUT", "30.0"))
+
+    @property
+    def GEMINI_MODEL(self) -> str:
+        """Backward compatible property for primary model."""
+        return self.PRIMARY_GEMINI_MODEL
+
+    @property
+    def FALLBACK_GEMINI_MODELS(self) -> list[str]:
+        """Parsed list of fallback model identifiers."""
+        return [m.strip() for m in self.FALLBACK_GEMINI_MODELS_RAW.split(",") if m.strip()]
+
 
     # Supabase Config
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")

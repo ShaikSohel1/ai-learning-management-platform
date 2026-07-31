@@ -18,13 +18,13 @@ export const systemService = {
         const fallback = await api.get("/health/ai");
         return {
           provider: fallback.data?.provider || "Google Gemini",
-          model: fallback.data?.model || "models/gemini-2.5-flash",
+          model: fallback.data?.model || "models/gemini-2.0-flash",
           status: fallback.data?.status || "Operational",
         };
       } catch (err) {
         return {
           provider: "Google Gemini",
-          model: "models/gemini-2.5-flash",
+          model: "models/gemini-2.0-flash",
           status: "Operational",
         };
       }
@@ -32,12 +32,12 @@ export const systemService = {
   },
 
   /**
-   * Formats raw model string (e.g., 'models/gemini-2.5-flash' -> 'Gemini 2.5 Flash').
+   * Formats raw model string (e.g., 'models/gemini-2.0-flash' -> 'Gemini 2.0 Flash').
    * @param {string} rawModel
    * @returns {string}
    */
   formatModelName(rawModel) {
-    if (!rawModel) return "Gemini 2.5 Flash";
+    if (!rawModel) return "Gemini 2.0 Flash";
     let name = rawModel.replace("models/", "");
     const parts = name.split("-");
     return parts

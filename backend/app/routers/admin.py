@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.ai.gemini_client import GeminiClient
 from app.database.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.audit_log import AuditLog
@@ -22,6 +23,7 @@ router = APIRouter(
     prefix="/admin",
     tags=["Admin Dashboard"]
 )
+
 
 
 @router.get(
@@ -92,7 +94,8 @@ def get_admin_system_health(
         "components": {
             "database": {"status": "HEALTHY", "name": "PostgreSQL DB"},
             "vector_store": {"status": "HEALTHY", "name": "ChromaDB (hnsw:cosine)", "chunks": rag_service.get_statistics().total_chunks},
-            "ai_engine": {"status": "HEALTHY", "name": f"Google Gemini ({settings.GEMINI_MODEL})"},
+            "ai_engine": {"status": "HEALTHY", "name": f"Google Gemini ({GeminiClient.get_active_model()})"},
             "agent_orchestrator": {"status": "HEALTHY", "agents": 8}
+
         }
     }

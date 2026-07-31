@@ -34,6 +34,7 @@ import Badge from "../components/common/Badge";
 import EmptyState from "../components/common/EmptyState";
 import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import MarkdownRenderer from "../components/common/MarkdownRenderer";
+import systemService from "../services/systemService";
 import knowledgeService from "../services/knowledgeService";
 import "../styles/knowledgeBase.css";
 
@@ -48,6 +49,11 @@ function KnowledgeBase() {
   const [searchingRag, setSearchingRag] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
+  const [systemInfo, setSystemInfo] = useState({
+    provider: "Google Gemini",
+    model: "models/gemini-2.0-flash",
+    status: "Operational"
+  });
 
   // UI Accordion & Modal States
   const [expandedDocId, setExpandedDocId] = useState(null);
@@ -79,6 +85,11 @@ function KnowledgeBase() {
 
   useEffect(() => {
     fetchDocs();
+    systemService.getSystemInfo().then((info) => {
+      if (info && info.model) {
+        setSystemInfo(info);
+      }
+    }).catch(() => {});
   }, []);
 
   // Keyboard Shortcut (⌘K / Ctrl+K)
@@ -169,10 +180,16 @@ function KnowledgeBase() {
     try {
       const res = await knowledgeService.askKnowledge({ question: q.trim() });
       setRagResult(res);
+      systemService.getSystemInfo().then((info) => info && info.model && setSystemInfo(info)).catch(() => {});
     } catch (err) {
+      const rawDetail = err.response?.data?.detail || "";
+      const isModelError = rawDetail.includes("404") || rawDetail.includes("NOT_FOUND") || rawDetail.includes("models/gemini");
+      const cleanText = isModelError
+        ? "The AI service is temporarily unavailable. Please try again shortly."
+        : (rawDetail || "RAG query execution failed.");
       setStatusMessage({
         type: "error",
-        text: err.response?.data?.detail || "RAG query execution failed."
+        text: cleanText
       });
     } finally {
       setSearchingRag(false);
@@ -200,7 +217,7 @@ function KnowledgeBase() {
             </div>
             <div className="hero-pill-badge">
               <Cpu size={13} color="var(--color-primary)" />
-              <span>Gemini 2.5 Flash</span>
+              <span>{systemService.formatModelName(systemInfo.model)}</span>
             </div>
             <div className="hero-pill-badge">
               <Database size={13} color="var(--color-primary)" />
@@ -332,8 +349,9 @@ function KnowledgeBase() {
                       </div>
                       <div className="subtle-badge-item">
                         <Cpu size={14} color="var(--color-primary)" />
-                        <span>Model: <strong>Gemini 2.5 Flash</strong></span>
+                        <span>Model: <strong>{systemService.formatModelName(systemInfo.model)}</strong></span>
                       </div>
+
                       <div className="subtle-badge-item">
                         <Clock size={14} color="var(--color-secondary)" />
                         <span>Latency: <strong>{ragResult.response_time_ms || 385} ms</strong></span>
@@ -588,8 +606,9 @@ function KnowledgeBase() {
               </div>
               <div className="sidebar-kv-row">
                 <span className="sidebar-kv-label">Current Model:</span>
-                <span className="sidebar-kv-value" style={{ color: "var(--color-primary)" }}>Gemini 2.5 Flash</span>
+                <span className="sidebar-kv-value" style={{ color: "var(--color-primary)" }}>{systemService.formatModelName(systemInfo.model)}</span>
               </div>
+
               <div className="sidebar-kv-row">
                 <span className="sidebar-kv-label">Fallback Enabled:</span>
                 <span className="sidebar-kv-value" style={{ color: "var(--color-success)" }}>Yes (7 Fallbacks)</span>
