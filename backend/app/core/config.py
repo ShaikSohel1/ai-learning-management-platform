@@ -29,10 +29,36 @@ class Settings:
     SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
     # CORS Config
-    FRONTEND_URLS: str = os.getenv("FRONTEND_URLS", "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://ai-learning-management-platform.vercel.app")
+    FRONTEND_URLS: str = os.getenv("FRONTEND_URLS", "")
 
     @property
     def cors_origins(self) -> list[str]:
-        return [url.strip() for url in self.FRONTEND_URLS.split(",") if url.strip()]
+        defaults = [
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
+            "https://ai-learning-management-platform.vercel.app",
+        ]
+        custom = []
+        for raw_env in (self.FRONTEND_URL, self.FRONTEND_URLS):
+            if raw_env:
+                for url in raw_env.split(","):
+                    cleaned = url.strip().rstrip("/")
+                    if cleaned:
+                        custom.append(cleaned)
+        
+        all_origins = []
+        for origin in defaults + custom:
+            normalized = origin.strip().rstrip("/")
+            if normalized and normalized not in all_origins:
+                all_origins.append(normalized)
+        return all_origins
+
+    @property
+    def cors_origin_regex(self) -> str:
+        return r"https://.*\.vercel\.app"
+
 
 settings = Settings()
