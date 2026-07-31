@@ -28,6 +28,11 @@ class Settings:
     SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")
     SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
+    # Resend Email Config
+    RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "")
+    RESEND_FROM_EMAIL: str = os.getenv("RESEND_FROM_EMAIL", "AI Learning Platform <onboarding@resend.dev>")
+
+
     # CORS Config
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://ai-learning-management-platform.vercel.app")
     FRONTEND_URLS: str = os.getenv("FRONTEND_URLS", "")

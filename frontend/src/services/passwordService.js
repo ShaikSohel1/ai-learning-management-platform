@@ -1,75 +1,39 @@
 import api from "./api";
-import { supabase } from "./supabaseClient";
 
 /**
- * Service for managing password reset and synchronization
- * between Supabase Auth email recovery and the FastAPI SQL database.
+ * Enterprise Service for managing token-based password reset flows
+ * via FastAPI REST backend endpoints.
  */
 export const passwordService = {
   /**
-   * Sends a password reset email via Supabase Auth.
-   * Never exposes whether an email exists in the system for security.
+   * Sends a password reset request email via FastAPI backend.
    */
   async sendResetEmail(email) {
-    const rawAppUrl = import.meta.env.VITE_APP_URL || window.location.origin;
-    const appUrl = rawAppUrl.replace(/\/+$/, "");
-    const redirectTo = `${appUrl}/reset-password`;
-
-    try {
-      await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo,
-      });
-    } catch (err) {
-      console.warn("Supabase reset email warning:", err);
-    }
-
-    // Always return generic success message to prevent user enumeration attacks
-    return {
-      success: true,
-      message: "If an account exists for this email, a password reset link has been sent.",
-    };
-  },
-
-  /**
-   * Updates password in Supabase Auth recovery session,
-   * then synchronizes the updated password hash with the FastAPI SQL database.
-   */
-  async updatePassword(newPassword, email) {
-    // 1. Update password in Supabase Auth recovery session
-    const { data: supabaseData, error: supabaseError } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-
-    if (supabaseError) {
-      throw new Error(supabaseError.message || "Failed to update password in identity provider.");
-    }
-
-    // Determine target email from parameter or active Supabase user session
-    const targetEmail = email || supabaseData?.user?.email;
-
-    if (!targetEmail) {
-      throw new Error("Unable to determine user email for password update synchronization.");
-    }
-
-    // 2. Synchronize password update with FastAPI SQL database
-    const response = await api.post("/auth/update-password", {
-      email: targetEmail,
-      new_password: newPassword,
-    });
-
+    const response = await api.post("/auth/forgot-password", { email });
     return response.data;
   },
 
   /**
-   * Gets current Supabase session to verify recovery token validity.
+   * Validates if a plaintext reset token is valid, unused, and unexpired.
    */
-  async getRecoverySession() {
-    const { data, error } = await supabase.auth.getSession();
-    if (error || !data?.session) {
-      return null;
-    }
-    return data.session;
+  async validateResetToken(token) {
+    const response = await api.get(`/auth/validate-reset-token?token=${encodeURIComponent(token)}`);
+    return response.data;
+  },
+
+  /**
+   * Submits new password and confirmation to reset password via token.
+   */
+  async resetPassword(token, password, confirmPassword) {
+    const response = await api.post("/auth/reset-password", {
+      token,
+      password,
+      confirm_password: confirmPassword,
+    });
+    return response.data;
   },
 };
+
+export const authService = passwordService;
 
 export default passwordService;

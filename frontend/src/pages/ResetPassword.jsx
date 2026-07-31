@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { BrainCircuit, KeyRound, AlertOctagon, ArrowLeft } from "lucide-react";
 import Card from "../components/common/Card";
 import PasswordInput from "../components/common/PasswordInput";
@@ -8,15 +8,18 @@ import LoadingButton from "../components/common/LoadingButton";
 import SuccessCard from "../components/common/SuccessCard";
 import ToastNotification from "../components/common/ToastNotification";
 import passwordService from "../services/passwordService";
-import { supabase } from "../services/supabaseClient";
 import "../styles/login.css";
 
 export function ResetPassword() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [verifyingSession, setVerifyingSession] = useState(true);
   const [invalidLink, setInvalidLink] = useState(false);
+  const [invalidReason, setInvalidReason] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [success, setSuccess] = useState(false);
   const [toast, setToast] = useState(null);
@@ -26,62 +29,50 @@ export function ResetPassword() {
   useEffect(() => {
     let mounted = true;
 
-    async function checkRecoverySession() {
-      try {
-        // 1. Check existing session
-        const session = await passwordService.getRecoverySession();
-        if (session && session.user) {
-          if (mounted) {
-            setUserEmail(session.user.email);
-            setVerifyingSession(false);
-          }
-          return;
-        }
-
-        // 2. Listen to Supabase auth state change (e.g., when magic link recovery token resolves)
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-          if (event === "PASSWORD_RECOVERY" || (session && session.user)) {
-            if (mounted) {
-              setUserEmail(session?.user?.email || "");
-              setInvalidLink(false);
-              setVerifyingSession(false);
-            }
-          }
-        });
-
-        // Give auth listener a brief moment to process URL hash fragment
-        setTimeout(() => {
-          if (mounted && verifyingSession) {
-            supabase.auth.getSession().then(({ data }) => {
-              if (data?.session?.user) {
-                setUserEmail(data.session.user.email);
-                setInvalidLink(false);
-              } else {
-                setInvalidLink(true);
-              }
-              setVerifyingSession(false);
-            });
-          }
-        }, 1200);
-
-        return () => {
-          authListener?.subscription?.unsubscribe();
-        };
-      } catch (err) {
-        console.error("Recovery session error:", err);
+    async function checkTokenValidity() {
+      if (!token) {
         if (mounted) {
           setInvalidLink(true);
+          setInvalidReason("No recovery token was provided in the URL.");
+          setVerifyingSession(false);
+        }
+        return;
+      }
+
+      try {
+        const res = await passwordService.validateResetToken(token);
+        if (mounted) {
+          if (res.valid) {
+            setUserEmail(res.email || "");
+            setInvalidLink(false);
+          } else {
+            setInvalidLink(true);
+            if (res.reason === "expired") {
+              setInvalidReason("This password reset link has expired (30-minute limit).");
+            } else if (res.reason === "used") {
+              setInvalidReason("This password reset link has already been used.");
+            } else {
+              setInvalidReason("This password reset link is invalid or malformed.");
+            }
+          }
+          setVerifyingSession(false);
+        }
+      } catch (err) {
+        console.error("Token validation error:", err);
+        if (mounted) {
+          setInvalidLink(true);
+          setInvalidReason("Unable to validate security token.");
           setVerifyingSession(false);
         }
       }
     }
 
-    checkRecoverySession();
+    checkTokenValidity();
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,13 +91,13 @@ export function ResetPassword() {
     setLoading(true);
 
     try {
-      await passwordService.updatePassword(newPassword, userEmail);
+      await passwordService.resetPassword(token, newPassword, confirmPassword);
       setSuccess(true);
     } catch (err) {
       console.error("Password update error:", err);
       setToast({
         type: "error",
-        message: err.response?.data?.detail || err.message || "Failed to update password.",
+        message: err.response?.data?.detail || err.message || "Failed to reset password.",
       });
     } finally {
       setLoading(false);
@@ -122,7 +113,7 @@ export function ResetPassword() {
               <BrainCircuit size={28} />
             </div>
             <p style={{ marginTop: "16px", color: "var(--text-muted)", fontSize: "0.92rem" }}>
-              Verifying security recovery link...
+              Verifying security reset token...
             </p>
           </Card>
         </div>
@@ -154,7 +145,7 @@ export function ResetPassword() {
               Invalid or Expired Link
             </h2>
             <p style={{ fontSize: "0.92rem", color: "var(--text-muted)", marginBottom: "24px", lineHeight: "1.5" }}>
-              This password reset link is invalid, expired, or has already been used. Please request a new recovery link.
+              {invalidReason || "This password reset link is invalid or has expired. Please request a new recovery link."}
             </p>
             <Link to="/forgot-password" style={{ textDecoration: "none" }}>
               <LoadingButton variant="glow" style={{ width: "100%" }}>

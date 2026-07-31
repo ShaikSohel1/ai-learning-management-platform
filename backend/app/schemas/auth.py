@@ -12,6 +12,14 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+    confirm_password: str
+
 class UpdatePasswordRequest(BaseModel):
     email: EmailStr
     new_password: str
@@ -19,6 +27,7 @@ class UpdatePasswordRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
     
 
     
