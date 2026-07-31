@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.ai.gemini_client import AllGeminiModelsQuotaExhaustedError
 from app.core.config import settings
 from app.routers.admin import router as admin_router
 from app.routers.agents import router as agents_router
@@ -18,6 +20,16 @@ app = FastAPI(
     description="Backend APIs for AI-Native Learning & Development Platform",
     version="1.0.0"
 )
+
+@app.exception_handler(AllGeminiModelsQuotaExhaustedError)
+async def quota_exhausted_exception_handler(request: Request, exc: AllGeminiModelsQuotaExhaustedError):
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={
+            "success": False,
+            "error": exc.message
+        }
+    )
 
 # Enable CORS dynamically based on environment config
 app.add_middleware(

@@ -12,7 +12,7 @@ class DocumentMetadata(BaseModel):
 
 
 class KnowledgeAskRequest(BaseModel):
-    question: str = Field(..., min_length=3, description="User question for RAG knowledge base", example="What is the employee leave policy?")
+    question: str = Field(..., min_length=3, description="User question for RAG knowledge base", json_schema_extra={"example": "What is the employee leave policy?"})
     top_k: int | None = Field(4, ge=1, le=10, description="Top K relevant chunks to retrieve")
     threshold: float | None = Field(0.3, ge=0.0, le=1.0, description="Minimum similarity confidence threshold")
 

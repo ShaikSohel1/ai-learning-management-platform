@@ -1,10 +1,9 @@
-
 from pydantic import BaseModel, Field
 
 
 class LearningPathRequest(BaseModel):
-    current_skills: list[str] = Field(..., description="List of skills the user currently possesses", example=["Java", "SQL"])
-    career_goal: str = Field(..., description="Target career role or goal", example="Backend Developer")
+    current_skills: list[str] = Field(..., description="List of skills the user currently possesses", json_schema_extra={"example": ["Java", "SQL"]})
+    career_goal: str = Field(..., description="Target career role or goal", json_schema_extra={"example": "Backend Developer"})
 
 
 class RecommendedCourse(BaseModel):
@@ -32,7 +31,7 @@ class LearningPathResponse(BaseModel):
 
 
 class AIChatRequest(BaseModel):
-    message: str = Field(..., description="User message or prompt for the AI assistant", example="How do I prepare for a Senior Java Developer interview?")
+    message: str = Field(..., description="User message or prompt for the AI assistant", json_schema_extra={"example": "How do I prepare for a Senior Java Developer interview?"})
     career_goal: str | None = Field(default=None, description="Optional current user career goal for context")
     current_skills: list[str] | None = Field(default=None, description="Optional user skills for context")
 

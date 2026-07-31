@@ -1,5 +1,6 @@
 import uuid
 
+# pyrefly: ignore [missing-import]
 from supabase import Client, create_client
 
 from app.core.config import settings

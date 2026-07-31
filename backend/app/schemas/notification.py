@@ -1,5 +1,4 @@
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NotificationCreate(BaseModel):
@@ -17,5 +16,4 @@ class NotificationResponse(BaseModel):
     is_read: bool
     created_at: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -19,7 +19,7 @@ class Settings:
     
     # Gemini AI Config
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash")
     GEMINI_MAX_RETRIES: int = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
     GEMINI_BACKOFF_FACTOR: float = float(os.getenv("GEMINI_BACKOFF_FACTOR", "2.0"))
 

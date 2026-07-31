@@ -129,6 +129,9 @@ def ask_knowledge_base(
         response = rag_service.ask_question(
             question=payload.question,
             user_id=current_user.id,
+            user_name=current_user.name or "Enterprise Learner",
+            user_email=current_user.email or "user@enterprise.com",
+            user_department=current_user.department or "Engineering",
             top_k=payload.top_k or 4,
             threshold=payload.threshold if payload.threshold is not None else 0.3
         )

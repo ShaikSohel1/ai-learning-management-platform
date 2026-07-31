@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.database.database import get_db
 from app.rag import RAGService, get_rag_service
 
@@ -26,6 +27,19 @@ def get_health():
         "status": "HEALTHY",
         "service": "AI Learning Management Platform API",
         "version": "1.0.0"
+    }
+
+
+@router.get(
+    "/system/info",
+    summary="Get active AI provider, model, and system status"
+)
+def get_system_info():
+    from app.ai.gemini_client import GeminiClient
+    return {
+        "provider": "Google Gemini",
+        "model": GeminiClient.get_active_model(),
+        "status": "Operational"
     }
 
 
@@ -57,9 +71,10 @@ def check_ai_health():
     from app.ai.gemini_client import GeminiClient
     client = GeminiClient()
     return {
+        "provider": "Google Gemini",
         "component": "Google Gemini LLM",
         "model": client.model,
-        "status": "HEALTHY",
+        "status": "Operational",
         "message": "AI client ready."
     }
 
@@ -107,10 +122,12 @@ def get_full_system_status(
 
     overall = "HEALTHY" if (db_ok and vector_ok) else "DEGRADED"
 
+    from app.ai.gemini_client import GeminiClient
     return {
         "overall_status": overall,
         "database": "HEALTHY" if db_ok else "DEGRADED",
         "vector_store": "HEALTHY" if vector_ok else "DEGRADED",
         "ai_engine": "HEALTHY",
-        "agents_platform": "HEALTHY"
+        "agents_platform": "HEALTHY",
+        "model": GeminiClient.get_active_model()
     }

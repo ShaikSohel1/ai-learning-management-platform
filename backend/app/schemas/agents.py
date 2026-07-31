@@ -22,7 +22,7 @@ class AgentStepResult(BaseModel):
 
 
 class AgentChatRequest(BaseModel):
-    message: str = Field(..., min_length=2, description="User goal or query string", example="I want to become a Backend Developer")
+    message: str = Field(..., min_length=2, description="User goal or query string", json_schema_extra={"example": "I want to become a Backend Developer"})
     career_goal: str | None = Field(None, description="Optional career goal context")
     current_skills: list[str] | None = Field(default_factory=list, description="Optional user skills context")
 

@@ -92,7 +92,7 @@ def get_admin_system_health(
         "components": {
             "database": {"status": "HEALTHY", "name": "PostgreSQL DB"},
             "vector_store": {"status": "HEALTHY", "name": "ChromaDB (hnsw:cosine)", "chunks": rag_service.get_statistics().total_chunks},
-            "ai_engine": {"status": "HEALTHY", "name": "Google Gemini 2.0 Flash"},
+            "ai_engine": {"status": "HEALTHY", "name": f"Google Gemini ({settings.GEMINI_MODEL})"},
             "agent_orchestrator": {"status": "HEALTHY", "agents": 8}
         }
     }

@@ -87,10 +87,25 @@ class VectorStore:
     def delete_document(self, doc_id: str) -> bool:
         """
         Deletes all chunks belonging to a document from ChromaDB vector collection.
+        Returns True if matching document chunks were found and deleted, False otherwise.
         """
         try:
-            self.collection.delete(where={"doc_id": doc_id})
-            logger.info(f"Deleted vector entries for doc_id='{doc_id}' from ChromaDB")
+            # Check if matching chunks exist by doc_id
+            existing = self.collection.get(where={"doc_id": doc_id})
+            target_filter = {"doc_id": doc_id}
+
+            if not existing or not existing.get("ids"):
+                # Fallback: check if doc_id was passed as filename
+                existing = self.collection.get(where={"filename": doc_id})
+                target_filter = {"filename": doc_id}
+
+            if not existing or not existing.get("ids"):
+                logger.warning(f"No ChromaDB vector chunks found matching doc_id or filename '{doc_id}'")
+                return False
+
+            chunk_ids = existing.get("ids", [])
+            self.collection.delete(where=target_filter)
+            logger.info(f"Deleted {len(chunk_ids)} vector entries for '{doc_id}' from ChromaDB collection '{self.collection_name}'")
             return True
         except Exception as e:
             logger.error(f"Error deleting doc_id='{doc_id}' from ChromaDB: {e}")
