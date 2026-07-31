@@ -61,7 +61,7 @@ class GeminiClient:
     @classmethod
     def get_active_model(cls) -> str:
         """Returns currently active Gemini model name."""
-        if not cls._active_model:
+        if not cls._active_model or "gemini-2.5-flash" in cls._active_model:
             cls._active_model = cls._normalize_model_name(settings.PRIMARY_GEMINI_MODEL)
         return cls._active_model
 
@@ -87,10 +87,9 @@ class GeminiClient:
         return cleaned
 
     def get_model_chain(self) -> list[str]:
-
         """
         Constructs the prioritized model chain starting from preferred/primary model,
-        followed by fallback models without duplicates.
+        followed by fallback models without duplicates. Filters out deprecated gemini-2.5-flash.
         """
         primary = self._normalize_model_name(settings.PRIMARY_GEMINI_MODEL)
         fallbacks = [
@@ -102,14 +101,17 @@ class GeminiClient:
             if m not in chain:
                 chain.append(m)
 
+        # Filter out deprecated or broken model strings
+        chain = [m for m in chain if "gemini-2.5-flash" not in m]
+
         # Fallback defaults if chain is empty
         if not chain:
             chain = [
                 "models/gemini-2.0-flash",
                 "models/gemini-1.5-flash",
                 "models/gemini-1.5-pro",
-                "models/gemini-2.5-flash",
                 "models/gemini-flash-latest",
+                "models/gemini-pro-latest",
             ]
         return chain
 
@@ -158,8 +160,11 @@ class GeminiClient:
         failover_count = 0
         attempted_errors: list[str] = []
 
-        for model_candidate in model_chain:
-            logger.info(f"Trying Gemini model candidate: '{model_candidate}'")
+        total_candidates = len(model_chain)
+        for idx, model_candidate in enumerate(model_chain):
+            logger.info("----------------------------------------------------")
+            logger.info(f"Trying model:\n{model_candidate}")
+            logger.info("----------------------------------------------------")
             delay = 1.0
 
             for attempt in range(1, max_retries + 1):
@@ -177,33 +182,27 @@ class GeminiClient:
 
                     # Update active model cache if failover occurred
                     if model_candidate != GeminiClient._active_model:
-                        logger.info(f"Fallback succeeded! Switching active Gemini model to '{model_candidate}'")
                         GeminiClient.set_active_model(model_candidate)
 
-                    logger.info(
-                        f"Response generated successfully using '{model_candidate}' "
-                        f"(latency: {latency_ms}ms, failovers: {failover_count}, attempt: {attempt})"
-                    )
+                    logger.info("Success")
+                    logger.info(f"Current model:\n{model_candidate}")
+                    logger.info(f"Latency: {latency_ms}ms (Failovers: {failover_count}, Attempt: {attempt})")
                     return response.text
 
                 except Exception as exc:
                     err_msg = str(exc)
                     status_code = getattr(exc, "code", None)
                     is_not_found = "404" in err_msg or "NOT_FOUND" in err_msg or status_code == 404
-                    is_deprecated = "no longer available" in err_msg.lower() or "deprecated" in err_msg.lower()
+                    is_deprecated = "no longer available" in err_msg.lower() or "deprecated" in err_msg.lower() or "not found" in err_msg.lower()
 
-                    logger.warning(
-                        f"Attempt {attempt}/{max_retries} failed on '{model_candidate}' "
-                        f"[Code: {status_code or 'N/A'}]: {exc}"
-                    )
+                    logger.warning(f"Failed:\n{status_code or '404/Error'} - {exc}")
 
                     # 404 / Deprecated / Unavailable -> Skip remaining retries for THIS model and failover immediately
                     if is_not_found or is_deprecated:
                         attempted_errors.append(f"{model_candidate} (404/Deprecated)")
-                        logger.warning(
-                            f"Model '{model_candidate}' is unavailable or deprecated. "
-                            f"Failing over to next candidate model immediately."
-                        )
+                        if idx + 1 < total_candidates:
+                            next_model = model_chain[idx + 1]
+                            logger.info(f"Switching to:\n{next_model}")
                         break
 
                     # If not last attempt for this model, exponential backoff retry
@@ -213,7 +212,9 @@ class GeminiClient:
                         delay *= backoff_factor
                     else:
                         attempted_errors.append(f"{model_candidate} ({err_msg[:60]})")
-                        logger.warning(f"Exhausted all {max_retries} retries for model '{model_candidate}'.")
+                        if idx + 1 < total_candidates:
+                            next_model = model_chain[idx + 1]
+                            logger.info(f"Switching to:\n{next_model}")
 
             failover_count += 1
 

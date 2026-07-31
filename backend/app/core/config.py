@@ -22,8 +22,9 @@ class Settings:
     PRIMARY_GEMINI_MODEL: str = os.getenv("PRIMARY_GEMINI_MODEL", os.getenv("GEMINI_MODEL", "models/gemini-2.0-flash"))
     FALLBACK_GEMINI_MODELS_RAW: str = os.getenv(
         "FALLBACK_GEMINI_MODELS",
-        "models/gemini-1.5-flash,models/gemini-1.5-pro,models/gemini-2.5-flash,models/gemini-flash-latest"
+        "models/gemini-1.5-flash,models/gemini-1.5-pro,models/gemini-flash-latest,models/gemini-pro-latest"
     )
+
     GEMINI_MAX_RETRIES: int = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
     GEMINI_BACKOFF_FACTOR: float = float(os.getenv("GEMINI_BACKOFF_FACTOR", "2.0"))
     GEMINI_REQUEST_TIMEOUT: float = float(os.getenv("GEMINI_REQUEST_TIMEOUT", "30.0"))

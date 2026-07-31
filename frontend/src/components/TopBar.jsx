@@ -18,9 +18,10 @@ export function TopBar({ collapsed }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [systemInfo, setSystemInfo] = useState({
     provider: "Google Gemini",
-    model: "models/gemini-2.5-flash",
+    model: "models/gemini-2.0-flash",
     status: "Operational",
   });
+
 
   useEffect(() => {
     systemService.getSystemInfo().then(setSystemInfo).catch(() => {});

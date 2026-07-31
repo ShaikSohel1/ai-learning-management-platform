@@ -147,3 +147,16 @@ def send_password_reset_email(to_email: str, user_name: str, reset_token: str) -
     except Exception as e:
       logger.error(f"[Resend Email Service] Failed to send email to {to_email}: {e}")
       return False
+
+
+class EmailService:
+    def send_password_reset_email(self, to_email: str, user_name: str, reset_token: str) -> bool:
+        return send_password_reset_email(to_email, user_name, reset_token)
+
+    def send_notification_email(self, to_email: str, subject: str, message: str) -> bool:
+        logger.info(f"[EmailService] Mock notification email sent to {to_email}: {subject}")
+        return True
+
+
+email_service = EmailService()
+
