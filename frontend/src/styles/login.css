@@ -1,4 +1,4 @@
-/* 21 Hours on the Moon — Login */
+/* Enterprise Light Theme Auth Styles */
 
 .login-shell {
   min-height: 100dvh;
@@ -14,12 +14,12 @@
 .login-shell::before {
   content: "";
   position: absolute;
-  top: -200px;
+  top: -150px;
   left: 50%;
   transform: translateX(-50%);
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(228, 181, 146, 0.12) 0%, transparent 70%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(234, 88, 12, 0.06) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -28,18 +28,23 @@
   max-width: 440px;
   position: relative;
   z-index: 10;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-8);
 }
 
 .login-brand-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--gradient-brand);
   color: var(--text-inverse);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-sm);
 }
 
 .login-toggle-bar {
@@ -56,9 +61,9 @@
   padding: 8px;
   border: none;
   background: transparent;
-  color: var(--text-muted);
-  font-weight: 700;
-  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
   border-radius: var(--radius-xs);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-spring);
@@ -66,8 +71,10 @@
 }
 
 .login-toggle-btn.active {
-  background: var(--color-primary);
-  color: var(--text-inverse);
+  background: var(--bg-surface);
+  color: var(--color-primary);
+  font-weight: 700;
+  box-shadow: var(--shadow-xs);
 }
 
 .login-input-group {
@@ -76,9 +83,9 @@
 
 .login-input-group label {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
@@ -90,31 +97,33 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
-  transition: border-color var(--duration-fast) var(--ease-spring);
+  transition: all var(--duration-fast) var(--ease-spring);
 }
 
 .login-input-box:focus-within {
   border-color: var(--color-primary);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .login-input-box input {
   border: none;
   background: transparent;
   outline: none;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--text-primary);
   width: 100%;
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .login-error-banner {
-  background: var(--color-danger-light);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
   color: var(--color-danger);
   padding: 10px 14px;
   border-radius: var(--radius-sm);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: var(--space-4);
   text-align: center;

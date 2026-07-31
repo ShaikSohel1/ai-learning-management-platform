@@ -1,4 +1,4 @@
-/* 21 Hours on the Moon — AI Assistant */
+/* Enterprise AI Assistant & Conversational Workspace Styles */
 
 .ai-container {
   max-width: 1240px;
@@ -8,30 +8,51 @@
 .ai-hero-banner {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: var(--space-8);
+  border-radius: var(--radius-md);
+  padding: var(--space-6) var(--space-8);
   margin-bottom: var(--space-6);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-5);
-  box-shadow: var(--shadow-surface);
+  box-shadow: var(--shadow-sm);
   color: var(--text-primary);
 }
 
 .ai-hero-banner h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin: 6px 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 4px 0;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
 .ai-hero-banner p {
   color: var(--text-secondary);
-  font-size: 0.88rem;
-  max-width: 640px;
-  font-weight: 600;
+  font-size: 0.95rem;
+  max-width: 680px;
+  font-weight: 500;
+}
+
+/* Metadata Inline Info Row */
+.ai-meta-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  margin-top: 12px;
+}
+
+.ai-meta-dot-divider {
+  color: var(--text-tertiary);
+  font-weight: bold;
 }
 
 /* Multi-Agent Pipeline Timeline */
@@ -42,11 +63,12 @@
   gap: var(--space-3);
   padding: var(--space-5);
   background: var(--bg-surface);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   margin-bottom: var(--space-6);
   overflow-x: auto;
   color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .pipeline-step {
@@ -54,35 +76,35 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  min-width: 120px;
+  min-width: 110px;
 }
 
 .pipeline-node {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--color-primary-light);
   color: var(--color-primary);
-  border: 1px solid rgba(228, 181, 146, 0.3);
+  border: 1px solid rgba(234, 88, 12, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   margin-bottom: var(--space-2);
 }
 
 .pipeline-label {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 /* Executable Action Box */
 .executable-action-box {
   background: var(--color-primary-light);
-  border: 1px solid rgba(228, 181, 146, 0.3);
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  border-radius: var(--radius-md);
   padding: var(--space-5);
   display: flex;
   justify-content: space-between;
@@ -93,12 +115,17 @@
 /* Chat Layout */
 .chatgpt-layout {
   width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 .chatgpt-header {
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-surface-elevated);
+  background: var(--bg-surface);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -111,19 +138,20 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  background: var(--bg-surface);
+  gap: var(--space-5);
+  background: var(--bg-app);
   min-height: 420px;
-  max-height: 520px;
+  max-height: 540px;
 }
 
 .chat-bubble {
-  max-width: 82%;
+  max-width: 85%;
   padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   line-height: 1.6;
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-xs);
 }
 
 .chat-bubble.user-bubble {
@@ -135,7 +163,7 @@
 
 .chat-bubble.ai-bubble {
   align-self: flex-start;
-  background: var(--bg-surface-elevated);
+  background: var(--bg-surface);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
@@ -145,11 +173,10 @@
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 400;
-  margin-bottom: 6px;
-  opacity: 0.7;
-  letter-spacing: -0.1px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-muted);
 }
 
 .chat-suggestions {
@@ -167,7 +194,7 @@
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -191,19 +218,21 @@
 .chat-input-bar input {
   flex: 1;
   padding: 12px 18px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-color);
   background: var(--bg-surface-elevated);
   color: var(--text-primary);
   outline: none;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-family: var(--font-sans);
-  font-weight: 600;
-  transition: border-color var(--duration-fast) var(--ease-spring);
+  font-weight: 500;
+  transition: all var(--duration-fast) var(--ease-spring);
 }
 
 .chat-input-bar input:focus {
   border-color: var(--color-primary);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .typing-indicator {
@@ -234,23 +263,23 @@
 }
 
 .success-banner {
-  background: var(--color-success-light);
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
   color: var(--color-success);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-4);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .error-banner {
-  background: var(--color-danger-light);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
   color: var(--color-danger);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-4);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }

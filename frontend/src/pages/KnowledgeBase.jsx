@@ -341,30 +341,17 @@ function KnowledgeBase() {
                       <MarkdownRenderer content={ragResult.answer || ragResult.response || ""} />
                     </div>
 
-                    {/* Metadata Badges Underneath */}
-                    <div className="ai-answer-badges">
-                      <div className="subtle-badge-item">
-                        <ShieldCheck size={14} color="var(--color-success)" />
-                        <span>Confidence: <strong style={{ color: "var(--color-success)" }}>{ragResult.confidence_score || 94}%</strong></span>
-                      </div>
-                      <div className="subtle-badge-item">
-                        <Cpu size={14} color="var(--color-primary)" />
-                        <span>Model: <strong>{systemService.formatModelName(systemInfo.model)}</strong></span>
-                      </div>
-
-                      <div className="subtle-badge-item">
-                        <Clock size={14} color="var(--color-secondary)" />
-                        <span>Latency: <strong>{ragResult.response_time_ms || 385} ms</strong></span>
-                      </div>
-                      <div className="subtle-badge-item">
-                        <Layers size={14} color="var(--color-primary)" />
-                        <span>RAG: <strong>{ragResult.rag_used ? "Enabled" : "Direct AI"}</strong></span>
-                      </div>
-                      <div className="subtle-badge-item">
-                        <FileText size={14} color="var(--color-primary)" />
-                        <span>Sources: <strong>{ragResult.citations?.length || 1} Document</strong></span>
-                      </div>
+                    {/* Metadata Single Info Row */}
+                    <div className="ai-meta-info-row">
+                      <span>{systemService.formatModelName(systemInfo.model)}</span>
+                      <span className="ai-meta-dot-divider">•</span>
+                      <span>{ragResult.response_time_ms || 385} ms</span>
+                      <span className="ai-meta-dot-divider">•</span>
+                      <span>{ragResult.confidence_score || 94}% Confidence</span>
+                      <span className="ai-meta-dot-divider">•</span>
+                      <span>{ragResult.citations?.length || 1} Citation{(ragResult.citations?.length || 1) > 1 ? "s" : ""}</span>
                     </div>
+
 
                     {/* 4. Source Evidence Explorer */}
                     {ragResult.citations && ragResult.citations.length > 0 && (

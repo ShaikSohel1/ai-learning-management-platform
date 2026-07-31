@@ -25,11 +25,13 @@ export function Card({
         };
       case "glass":
         return {
-          background: "rgba(0, 0, 0, 0.75)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          background: "rgba(255, 255, 255, 0.85)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
           border: "1px solid var(--border-color)",
+          boxShadow: "var(--shadow-sm)",
         };
+
       case "outline":
         return {
           background: "transparent",

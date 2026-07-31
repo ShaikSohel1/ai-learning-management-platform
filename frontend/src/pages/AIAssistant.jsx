@@ -275,10 +275,14 @@ function AIAssistant() {
                     ))}
                   </div>
 
-                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
-                    <Badge variant="glow">Confidence: {agentResponse.overall_confidence}%</Badge>
-                    <Badge variant="emerald">Latency: {agentResponse.total_execution_time_ms} ms</Badge>
-                    <Badge variant="warning">Intent: {agentResponse.workflow_intent}</Badge>
+                  <div className="ai-meta-info-row" style={{ marginBottom: "20px" }}>
+                    <span>{systemService.formatModelName(systemInfo.model)}</span>
+                    <span className="ai-meta-dot-divider">•</span>
+                    <span>{agentResponse.total_execution_time_ms} ms</span>
+                    <span className="ai-meta-dot-divider">•</span>
+                    <span>{agentResponse.overall_confidence}% Confidence</span>
+                    <span className="ai-meta-dot-divider">•</span>
+                    <span>Multi-Agent Orchestrator</span>
                   </div>
 
                   <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "16px" }}>
@@ -385,10 +389,11 @@ function AIAssistant() {
               >
                 <input
                   type="text"
-                  placeholder="Ask any career development, coding, or enterprise learning question..."
+                  placeholder="Ask your AI assistant anything..."
                   value={inputChat}
                   onChange={(e) => setInputChat(e.target.value)}
                 />
+
                 <Button type="submit" icon={Send} loading={loadingChat} variant="glow">
                   Send
                 </Button>

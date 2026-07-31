@@ -159,10 +159,10 @@ export function MarkdownRenderer({ content = "" }) {
               key={idx}
               style={{
                 margin: "14px 0",
-                borderRadius: "var(--radius-md)",
+                borderRadius: "var(--radius-sm)",
                 overflow: "hidden",
                 border: "1px solid var(--border-color)",
-                background: "#0c0c0e",
+                background: "var(--bg-surface-elevated)",
               }}
             >
               {/* Header Bar */}
@@ -172,10 +172,10 @@ export function MarkdownRenderer({ content = "" }) {
                   justifyContent: "space-between",
                   alignItems: "center",
                   padding: "8px 14px",
-                  background: "rgba(255,255,255,0.04)",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  background: "var(--bg-surface)",
+                  borderBottom: "1px solid var(--border-color)",
                   fontSize: "0.78rem",
-                  color: "#a1a1aa",
+                  color: "var(--text-secondary)",
                   fontFamily: "var(--font-mono)",
                 }}
               >
@@ -189,7 +189,7 @@ export function MarkdownRenderer({ content = "" }) {
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: copiedCode === block.id ? "var(--color-success)" : "#a1a1aa",
+                    color: copiedCode === block.id ? "var(--color-success)" : "var(--text-secondary)",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -209,7 +209,7 @@ export function MarkdownRenderer({ content = "" }) {
                   padding: "14px 16px",
                   margin: 0,
                   overflowX: "auto",
-                  color: "#f4f4f5",
+                  color: "var(--text-primary)",
                   fontSize: "0.85rem",
                   fontFamily: "var(--font-mono)",
                   lineHeight: 1.5,
@@ -218,6 +218,7 @@ export function MarkdownRenderer({ content = "" }) {
                 <code>{block.code}</code>
               </pre>
             </div>
+
           );
         }
 

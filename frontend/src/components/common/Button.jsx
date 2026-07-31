@@ -50,9 +50,10 @@ export function Button({
       case "ghost":
         return {
           background: "transparent",
-          color: "var(--text-on-cream-muted)",
+          color: "var(--text-secondary)",
           border: "none",
         };
+
       default:
         return {};
     }

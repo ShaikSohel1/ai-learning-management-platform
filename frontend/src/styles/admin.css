@@ -1,4 +1,4 @@
-/* 21 Hours on the Moon — Admin */
+/* Enterprise Light Theme Admin Console Styles */
 
 .admin-container {
   max-width: 1240px;
@@ -21,33 +21,34 @@
 .admin-users-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   background: var(--bg-surface);
   border-radius: var(--radius-sm);
   overflow: hidden;
   color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 .admin-users-table th {
   text-align: left;
-  padding: 14px 16px;
+  padding: 14px 18px;
   background: var(--bg-surface-elevated);
   border-bottom: 1px solid var(--border-color);
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: 10px;
+  font-weight: 600;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
 }
 
 .admin-users-table td {
-  padding: 14px 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .admin-users-table tr:hover td {
-  background: var(--bg-surface-hover);
+  background: var(--bg-surface-elevated);
 }

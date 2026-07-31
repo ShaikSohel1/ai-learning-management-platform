@@ -1,78 +1,85 @@
-/* Linear, Notion & Stripe Inspired Enterprise SaaS Design System */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+/* Enterprise SaaS Design System — Premium Light Theme */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Canvas & Application Palette — Warm Light Premium SaaS */
-  --bg-app: #F8F6F2;
-  --bg-primary: #F8F6F2;
-  --bg-surface: #FFFFFF;
-  --bg-surface-elevated: #F0EDE6;
-  --bg-surface-hover: #F5F2EC;
+  /* Canvas & Base Palette — Clean Enterprise Light Theme */
+  --bg-app: #F8FAFC;            /* Slate 50 */
+  --bg-primary: #F8FAFC;
+  --bg-surface: #FFFFFF;        /* Pure White Surface */
+  --bg-surface-elevated: #F1F5F9; /* Slate 100 */
+  --bg-surface-hover: #F8FAFC;
+  --bg-surface-subtle: #FAFAFA;
 
-  /* Reserved Dark Surfaces for AI Focus Stage & Code */
-  --bg-dark-ai: #181716;
-  --bg-dark-ai-elevated: #242220;
+  /* Sidebar & Header Palette — Light Theme Enterprise Layout */
+  --bg-sidebar: #FFFFFF;
+  --bg-sidebar-hover: #F1F5F9;
+  --bg-sidebar-active: #EFF6FF; /* Subtle active blue tint */
+  --bg-topbar: rgba(255, 255, 255, 0.88);
 
-  /* Soft Charcoal Sidebar */
-  --bg-sidebar: #1C1B1A;
-  --bg-sidebar-active: rgba(217, 155, 106, 0.15);
-  --bg-topbar: rgba(248, 246, 242, 0.92);
+  /* Border System — Crisp & Subtle Light Borders */
+  --border-color: #E2E8F0;       /* Slate 200 */
+  --border-color-hover: #CBD5E1; /* Slate 300 */
+  --border-color-active: #EA580C; /* Enterprise Orange */
+  --border-color-subtle: #F1F5F9;
 
-  /* Border System — Crisp & Subtle */
-  --border-color: #E5E0D8;
-  --border-color-hover: #D6D0C5;
-  --border-color-active: #D99B6A;
-  --border-color-dark: rgba(255, 255, 255, 0.12);
-
-  /* Typography Colors — High Contrast & WCAG AAA Compliant */
-  --text-primary: #1A1917;
-  --text-secondary: #66625D;
-  --text-muted: #948F88;
+  /* Typography Colors — High Contrast Slate Palette */
+  --text-primary: #0F172A;     /* Slate 900 */
+  --text-secondary: #475569;   /* Slate 600 */
+  --text-muted: #64748B;       /* Slate 500 */
+  --text-tertiary: #94A3B8;    /* Slate 400 */
   --text-inverse: #FFFFFF;
 
-  /* Typography Colors inside AI Dark Stage */
-  --text-dark-primary: #F8F6F2;
-  --text-dark-secondary: #C2BCB3;
-  --text-dark-muted: #8C867E;
+  /* Accent — Enterprise Orange & Royal Blue */
+  --color-primary: #EA580C;         /* Enterprise Orange */
+  --color-primary-hover: #C2410C;   /* Deep Orange */
+  --color-primary-light: rgba(234, 88, 12, 0.08);
+  --color-primary-glow: rgba(234, 88, 12, 0.2);
 
-  /* Accent — Muted Warm Tan / Terracotta */
-  --color-primary: #C77942;
-  --color-primary-hover: #B56A35;
-  --color-primary-light: rgba(199, 121, 66, 0.1);
-  --color-secondary: #A86B3E;
-  --color-secondary-light: rgba(168, 107, 62, 0.1);
+  --color-secondary: #2563EB;       /* Enterprise Blue */
+  --color-secondary-hover: #1D4ED8;
+  --color-secondary-light: rgba(37, 99, 235, 0.08);
 
   /* CTA & Brand Surfaces */
-  --gradient-cta: linear-gradient(135deg, #C77942 0%, #A86B3E 100%);
-  --gradient-brand: linear-gradient(135deg, #C77942 0%, #D99B6A 50%, #A86B3E 100%);
-  --glow-cta: 0 4px 14px rgba(199, 121, 66, 0.25);
+  --gradient-cta: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+  --gradient-brand: linear-gradient(135deg, #EA580C 0%, #F97316 50%, #2563EB 100%);
+  --glow-cta: 0 4px 14px rgba(234, 88, 12, 0.22);
 
   /* Semantic Status Colors */
-  --color-success: #2E7D32;
-  --color-success-bg: #E8F5E9;
-  --color-warning: #D97706;
-  --color-warning-bg: #FEF3C7;
-  --color-danger: #DC2626;
-  --color-danger-bg: #FEE2E2;
-  --color-info: #0284C7;
-  --color-info-bg: #E0F2FE;
+  --color-success: #16A34A;
+  --color-success-bg: #F0FDF4;
+  --color-success-border: #BBF7D0;
 
-  /* Shadows — Subtle, Clean Enterprise SaaS */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 24px rgba(199, 121, 66, 0.15);
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+
+  --color-danger: #DC2626;
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FECACA;
+
+  --color-info: #0284C7;
+  --color-info-bg: #F0F9FF;
+  --color-info-border: #BAE6FD;
+
+  /* Shadows — Soft, Clean & Professional */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-glow: 0 0 20px rgba(234, 88, 12, 0.12);
 
   /* Border Radii */
   --radius-xs: 6px;
-  --radius-sm: 10px;
+  --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
   /* Typography Stack */
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   /* Spacing Scale (4px base) */
   --space-1: 4px;
@@ -83,21 +90,22 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
+  --space-12: 48px;
 
   /* Motion */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 200ms;
-  --duration-base: 300ms;
-  --duration-slow: 400ms;
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 350ms;
 
   /* Container Boundaries */
   --max-content-width: 1440px;
   --sidebar-width: 260px;
-  --sidebar-collapsed-width: 80px;
+  --sidebar-collapsed-width: 76px;
   --topbar-height: 64px;
 }
 
-/* Base Styles & Resets */
+/* Base Resets */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -108,7 +116,7 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-app);
   color: var(--text-primary);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -118,10 +126,10 @@ body {
 
 /* Typography Hierarchy */
 .text-hero {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 800;
   line-height: 1.2;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
@@ -148,27 +156,18 @@ body {
 }
 
 .text-caption {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .text-mono {
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-/* Container Wrapper */
-.app-container-1400 {
-  max-width: var(--max-content-width);
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 var(--space-5);
-}
-
-/* Custom Scrollbar */
+/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -179,10 +178,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(199, 121, 66, 0.3);
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
+  background: #94A3B8;
 }

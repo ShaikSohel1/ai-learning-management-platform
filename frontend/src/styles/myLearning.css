@@ -1,4 +1,4 @@
-/* 21 Hours on the Moon — My Learning */
+/* Enterprise Light Theme My Learning Styles */
 
 .mylearning-container {
   max-width: 1240px;
@@ -14,23 +14,24 @@
 .certificate-card-preview {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: var(--space-8);
   text-align: center;
   position: relative;
   overflow: hidden;
   color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .certificate-seal {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: var(--gradient-brand);
   color: var(--text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 14px auto;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-sm);
 }

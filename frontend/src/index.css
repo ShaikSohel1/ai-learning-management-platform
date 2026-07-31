@@ -11,7 +11,7 @@
   flex: 1;
   margin-left: var(--sidebar-width);
   margin-top: var(--topbar-height);
-  padding: var(--space-8) var(--space-6) 60px var(--space-6);
+  padding: var(--space-8) var(--space-8) 60px var(--space-8);
   transition: margin-left var(--duration-base) var(--ease-spring);
   min-width: 0;
 }
@@ -29,50 +29,52 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulseGlow {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.15); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  50% { opacity: 0.6; transform: scale(1.12); }
 }
 
 .pulse-active-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--color-primary);
-  box-shadow: 0 0 10px rgba(228, 181, 146, 0.4);
+  background-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
   animation: pulseGlow 2.5s infinite var(--ease-spring);
 }
 
-/* Glass Panel — cream-tinted glass */
-.glass-panel {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Light Theme Card Surface Utility */
+.light-card-surface {
+  background: var(--bg-surface);
   border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.light-card-surface:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-md);
 }
 
 /* Form Controls */
 .form-control {
   width: 100%;
-  background-color: var(--bg-surface-elevated);
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 500;
   outline: none;
   transition: all var(--duration-fast) var(--ease-spring);
+  box-shadow: var(--shadow-xs);
 }
 
 .form-control:focus {
@@ -81,15 +83,15 @@
 }
 
 .form-control::placeholder {
-  color: var(--text-muted);
+  color: var(--text-tertiary);
 }
 
 /* Modal Backdrop */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(6px);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -101,8 +103,8 @@
 .modal-content {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 540px;
   padding: var(--space-8);

@@ -1,4 +1,4 @@
-/* Linear, Notion & Stripe Inspired Enterprise AI Workspace */
+/* Enterprise Light Theme AI Knowledge Base & RAG Workspace */
 
 .knowledge-container {
   max-width: 1360px;
@@ -19,9 +19,9 @@
 }
 
 .hero-header-title {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   color: var(--text-primary);
   line-height: 1.15;
 }
@@ -71,7 +71,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--color-success);
-  box-shadow: 0 0 8px var(--color-success);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
 }
 
 /* Two-Column Workspace Layout (70% Main Stage / 30% Sidebar) */
@@ -95,52 +95,54 @@
   gap: 28px;
 }
 
-/* 2. Reserved Dark AI Search Component */
+/* 2. Light Theme AI Search Component */
 .workspace-search-card {
-  background: var(--bg-dark-ai);
-  border: 1px solid var(--border-color-dark);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 28px;
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(199, 121, 66, 0.15);
-  color: var(--text-dark-primary);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
 }
 
 .large-search-bar {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--bg-dark-ai-elevated);
-  border: 1px solid var(--border-color-dark);
-  border-radius: var(--radius-sm);
-  padding: 16px 24px;
-  height: 68px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 12px 24px;
+  height: 64px;
   transition: all var(--duration-fast) var(--ease-spring);
 }
 
 .large-search-bar:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 24px rgba(199, 121, 66, 0.3);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .large-search-input {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--text-dark-primary);
-  font-size: 1.2rem;
+  color: var(--text-primary);
+  font-size: 1.1rem;
   font-family: var(--font-sans);
+  font-weight: 500;
   outline: none;
 }
 
 .shortcut-kbd {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--color-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
 }
 
 .search-prompt-chip {
@@ -148,9 +150,9 @@
   font-size: 11px;
   padding: 7px 14px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-dark-secondary);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-spring);
 }
@@ -158,19 +160,20 @@
 .search-prompt-chip:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
-  background: rgba(199, 121, 66, 0.12);
-  transform: translateY(-2px);
+  background: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
-/* 3. Reserved Dark AI Answer Card (Visual Centerpiece / Hero) */
+/* 3. Light Theme AI Answer Hero Card */
 .hero-answer-card {
-  background: var(--bg-dark-ai);
-  border: 1.5px solid var(--border-color-active);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-top: 3px solid var(--color-primary);
   border-radius: var(--radius-md);
   padding: 36px;
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(199, 121, 66, 0.18);
+  box-shadow: var(--shadow-md);
   position: relative;
-  color: var(--text-dark-primary);
+  color: var(--text-primary);
 }
 
 .hero-answer-header {
@@ -179,13 +182,13 @@
   align-items: center;
   padding-bottom: 20px;
   margin-bottom: 24px;
-  border-bottom: 1px solid var(--border-color-dark);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .hero-answer-body {
-  font-size: 1.12rem;
+  font-size: 1.08rem;
   line-height: 1.8;
-  color: var(--text-dark-primary);
+  color: var(--text-primary);
 }
 
 .ai-answer-badges {
@@ -195,7 +198,7 @@
   flex-wrap: wrap;
   padding-top: 20px;
   margin-top: 28px;
-  border-top: 1px solid var(--border-color-dark);
+  border-top: 1px solid var(--border-color);
 }
 
 .subtle-badge-item {
@@ -206,12 +209,12 @@
   font-size: 11px;
   padding: 6px 12px;
   border-radius: var(--radius-full);
-  background: var(--bg-dark-ai-elevated);
-  border: 1px solid var(--border-color-dark);
-  color: var(--text-dark-primary);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
-/* 4. Source Evidence Cards (Light Surface) */
+/* 4. Source Evidence Citation Cards */
 .citations-wrapper {
   display: flex;
   flex-direction: column;
@@ -224,7 +227,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
   transition: all var(--duration-fast) var(--ease-spring);
 }
 
@@ -238,15 +241,14 @@
 }
 
 .citation-card-header:hover {
-  border-color: var(--color-primary);
-  background: var(--bg-surface-hover);
+  background: var(--bg-surface-elevated);
 }
 
 .citation-body-expanded {
   padding: 20px;
   background: var(--bg-surface-elevated);
   font-family: var(--font-sans);
-  font-size: 0.96rem;
+  font-size: 0.95rem;
   line-height: 1.65;
   border-top: 1px solid var(--border-color);
   color: var(--text-primary);
@@ -261,7 +263,7 @@
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .pipeline-timeline-container {
@@ -293,7 +295,7 @@
   background: var(--color-primary);
 }
 
-/* 6. Document Library Cards (Crisp White Light Cards) */
+/* 6. Document Library Cards */
 .document-library-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -302,13 +304,13 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
   transition: all var(--duration-fast) var(--ease-spring);
 }
 
 .document-library-card:hover {
   border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
 
@@ -325,7 +327,7 @@
   gap: 8px;
 }
 
-/* 7. Simplified Sidebar (ONLY THREE Crisp White Cards) */
+/* 7. Sidebar Sticky Container */
 .workspace-sidebar-sticky {
   position: sticky;
   top: 90px;
@@ -342,11 +344,11 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .sidebar-card-header {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -373,10 +375,10 @@
   font-weight: 700;
 }
 
-/* Upload Dropzone & Progress Checklist */
+/* Dropzone & Progress Checklist */
 .dropzone-box {
   border: 2px dashed var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 36px 20px;
   text-align: center;
   background: var(--bg-surface);

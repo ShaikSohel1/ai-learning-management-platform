@@ -1,4 +1,4 @@
-/* 21 Hours on the Moon — Dashboard */
+/* Enterprise Light Theme Dashboard Styles */
 
 .dash-workspace {
   width: 100%;
@@ -7,14 +7,14 @@
 .workspace-hero-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 36px;
+  border-radius: var(--radius-md);
+  padding: 32px 36px;
   margin-bottom: var(--space-6);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-6);
-  box-shadow: var(--shadow-surface);
+  box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
   color: var(--text-primary);
@@ -27,7 +27,7 @@
   right: -100px;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(228, 181, 146, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(234, 88, 12, 0.08) 0%, transparent 70%);
   pointer-events: none;
 }
 

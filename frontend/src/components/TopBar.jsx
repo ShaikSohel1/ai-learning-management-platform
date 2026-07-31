@@ -78,8 +78,8 @@ export function TopBar({ collapsed }) {
       <header className={`app-topbar ${collapsed ? "sidebar-collapsed" : ""}`}>
         {/* Left Metadata / Breadcrumb */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 400, color: "var(--text-on-cream-muted)", display: "flex", alignItems: "center", gap: "6px", letterSpacing: "-0.1px" }}>
-            <span>Workspace</span> / <strong style={{ color: "var(--text-on-cream)", fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "13px" }}>{getPageTitle()}</strong>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 500, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>Workspace</span> / <strong style={{ color: "var(--text-primary)", fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "13px" }}>{getPageTitle()}</strong>
           </div>
 
           {/* AI Operational Indicator */}
@@ -90,19 +90,19 @@ export function TopBar({ collapsed }) {
               alignItems: "center",
               gap: "6px",
               fontFamily: "var(--font-mono)",
-              fontSize: "10px",
-              fontWeight: 400,
-              color: "var(--color-primary)",
-              background: "rgba(228, 181, 146, 0.1)",
-              border: "1px solid rgba(228, 181, 146, 0.2)",
-              padding: "3px 10px",
+              fontSize: "11px",
+              fontWeight: 600,
+              color: "var(--color-success)",
+              background: "var(--color-success-bg)",
+              border: "1px solid var(--color-success-border)",
+              padding: "4px 12px",
               borderRadius: "var(--radius-full)",
-              letterSpacing: "-0.1px",
             }}
           >
             <div className="pulse-active-dot" />
             <span>{systemInfo.provider} Operational</span>
           </div>
+
         </div>
 
         {/* Center Cmd+K Search Trigger */}

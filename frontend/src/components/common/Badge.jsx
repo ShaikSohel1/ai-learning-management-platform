@@ -6,30 +6,30 @@ export function Badge({ children, variant = "primary", icon: Icon, className = "
       case "success":
       case "emerald":
         return {
-          background: "var(--color-success-light)",
+          background: "var(--color-success-bg)",
           color: "var(--color-success)",
-          border: "1px solid rgba(74, 222, 128, 0.25)",
+          border: "1px solid var(--color-success-border)",
         };
       case "warning":
       case "amber":
         return {
-          background: "var(--color-warning-light)",
+          background: "var(--color-warning-bg)",
           color: "var(--color-warning)",
-          border: "1px solid rgba(251, 191, 36, 0.25)",
+          border: "1px solid var(--color-warning-border)",
         };
       case "danger":
       case "rose":
         return {
-          background: "var(--color-danger-light)",
+          background: "var(--color-danger-bg)",
           color: "var(--color-danger)",
-          border: "1px solid rgba(248, 113, 113, 0.25)",
+          border: "1px solid var(--color-danger-border)",
         };
       case "purple":
       case "indigo":
         return {
           background: "var(--color-primary-light)",
           color: "var(--color-primary)",
-          border: "1px solid rgba(228, 181, 146, 0.3)",
+          border: "1px solid rgba(234, 88, 12, 0.2)",
         };
       case "outline":
         return {
@@ -42,14 +42,15 @@ export function Badge({ children, variant = "primary", icon: Icon, className = "
           background: "var(--color-primary)",
           color: "var(--text-inverse)",
           border: "none",
-          boxShadow: "0 0 12px rgba(228, 181, 146, 0.3)",
+          boxShadow: "var(--shadow-xs)",
         };
       default:
         return {
           background: "var(--color-primary-light)",
           color: "var(--color-primary)",
-          border: "1px solid rgba(228, 181, 146, 0.2)",
+          border: "1px solid rgba(234, 88, 12, 0.2)",
         };
+
     }
   };
 

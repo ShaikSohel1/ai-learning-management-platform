@@ -5,15 +5,16 @@ export function StatCard({ title, value, icon: Icon, trend, color = "indigo", de
   const getColorStyle = () => {
     switch (color) {
       case "emerald":
-        return { bg: "var(--color-success-light)", iconColor: "var(--color-success)" };
+        return { bg: "var(--color-success-bg)", iconColor: "var(--color-success)" };
       case "purple":
         return { bg: "var(--color-primary-light)", iconColor: "var(--color-primary)" };
       case "amber":
-        return { bg: "var(--color-warning-light)", iconColor: "var(--color-warning)" };
+        return { bg: "var(--color-warning-bg)", iconColor: "var(--color-warning)" };
       case "rose":
-        return { bg: "var(--color-danger-light)", iconColor: "var(--color-danger)" };
+        return { bg: "var(--color-danger-bg)", iconColor: "var(--color-danger)" };
       default:
         return { bg: "var(--color-primary-light)", iconColor: "var(--color-primary)" };
+
     }
   };
 
