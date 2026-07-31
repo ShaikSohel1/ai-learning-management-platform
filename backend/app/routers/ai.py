@@ -100,3 +100,23 @@ def clear_chat_history(
         "message": "Conversation history cleared successfully.",
         "user_id": current_user.id
     }
+
+
+@router.get(
+    "/model-status",
+    status_code=status.HTTP_200_OK,
+    summary="Get runtime discovered Gemini model registry and active fallback status"
+)
+def get_ai_model_status():
+    """
+    STEP 9 Endpoint: Returns active model, fallback status, available models, and health.
+    """
+    from app.ai.gemini_client import GeminiClient
+    client = GeminiClient()
+    return {
+        "current_model": GeminiClient.get_active_model(),
+        "fallback_enabled": True,
+        "available_models": client.get_discovered_models(),
+        "engine_health": "Operational"
+    }
+

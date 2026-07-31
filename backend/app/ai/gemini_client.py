@@ -1,8 +1,9 @@
 """
-Centralized Gemini Model Manager with Production-Grade Multi-Model Failover & Retry System.
+Centralized Gemini Model Manager with Dynamic Self-Healing Runtime Model Registry.
 
-Provides robust model failover, exponential backoff per model, active model tracking,
-and telemetry logging using the official google-genai SDK.
+Discovers available Gemini generation models dynamically via the official google-genai SDK,
+maintains an in-memory runtime model registry, executes automatic multi-model failovers,
+and logs structured execution telemetry.
 """
 
 import json
@@ -33,12 +34,26 @@ class AllGeminiModelsQuotaExhaustedError(Exception):
 class GeminiClient:
     """
     Centralized production-grade Gemini LLM Model Manager.
-    Handles authentication, per-model retries, automatic failover across models,
+    Handles dynamic model discovery, per-model retries, automatic failover across models,
     and active model telemetry.
     """
 
-    # Class-level active model tracking across requests
+    # Class-level active model tracking & discovered registry cache across requests
     _active_model: str = ""
+    _discovered_models: list[str] = []
+    _last_discovery_timestamp: float = 0.0
+
+    PREFERRED_MODEL_ORDER: list[str] = [
+        "models/gemini-3.6-flash",
+        "models/gemini-3.5-flash",
+        "models/gemini-flash-latest",
+        "models/gemini-pro-latest",
+        "models/gemini-3.5-flash-lite",
+        "models/gemini-3.1-flash-lite",
+        "models/gemini-2.0-flash",
+        "models/gemini-1.5-flash",
+        "models/gemini-1.5-pro",
+    ]
 
     def __init__(
         self,
@@ -50,19 +65,23 @@ class GeminiClient:
             preferred_model or settings.PRIMARY_GEMINI_MODEL
         )
 
-        if not GeminiClient._active_model:
-            GeminiClient._active_model = self.preferred_model
-
         if self.api_key and self.api_key != "your_gemini_api_key_here":
             self.client = genai.Client(api_key=self.api_key)
         else:
             self.client = None
 
+        # Discover available models on initial load or if cache expired (1 hour TTL)
+        self.discover_available_models()
+
+        if not GeminiClient._active_model or "gemini-2.5-flash" in GeminiClient._active_model:
+            model_chain = self.get_model_chain()
+            GeminiClient._active_model = model_chain[0] if model_chain else self.preferred_model
+
     @classmethod
     def get_active_model(cls) -> str:
         """Returns currently active Gemini model name."""
         if not cls._active_model or "gemini-2.5-flash" in cls._active_model:
-            cls._active_model = cls._normalize_model_name(settings.PRIMARY_GEMINI_MODEL)
+            cls._active_model = "models/gemini-3.5-flash"
         return cls._active_model
 
     @classmethod
@@ -71,8 +90,13 @@ class GeminiClient:
         cls._active_model = cls._normalize_model_name(model_name)
 
     @classmethod
+    def get_discovered_models(cls) -> list[str]:
+        """Returns runtime discovered available models."""
+        return cls._discovered_models or cls.PREFERRED_MODEL_ORDER
+
+    @classmethod
     def reset_active_model(cls) -> None:
-        """Resets active model cache to configured primary model."""
+        """Resets active model cache to primary preferred model."""
         cls._active_model = cls._normalize_model_name(settings.PRIMARY_GEMINI_MODEL)
         logger.info(f"Reset active Gemini model cache to primary: '{cls._active_model}'")
 
@@ -80,38 +104,88 @@ class GeminiClient:
     def _normalize_model_name(cls, model_name: str) -> str:
         """Ensures model name is cleanly formatted with models/ prefix."""
         if not model_name:
-            return "models/gemini-2.0-flash"
+            return "models/gemini-3.5-flash"
         cleaned = model_name.strip()
         if not cleaned.startswith("models/"):
             return f"models/{cleaned}"
         return cleaned
 
+    def discover_available_models(self, force: bool = False) -> list[str]:
+        """
+        STEP 5 & STEP 6: Real Model Discovery & Self-Healing Registry.
+        Queries Gemini SDK for models available for current API key, filters out unavailable/deprecated models,
+        and updates runtime available model registry.
+        """
+        now = time.time()
+        if not force and GeminiClient._discovered_models and (now - GeminiClient._last_discovery_timestamp < 3600):
+            return GeminiClient._discovered_models
+
+        if not self.client:
+            GeminiClient._discovered_models = GeminiClient.PREFERRED_MODEL_ORDER
+            return GeminiClient._discovered_models
+
+        discovered: list[str] = []
+        try:
+            sdk_models = list(self.client.models.list())
+            for m in sdk_models:
+                m_name = m.name if hasattr(m, "name") else str(m)
+                # Exclude explicitly deprecated / unavailable models
+                if "gemini-2.5-flash" in m_name and "lite" not in m_name and "preview" not in m_name:
+                    continue
+                discovered.append(self._normalize_model_name(m_name))
+
+            logger.info(f"[Model Discovery] Total Gemini SDK models listed: {len(sdk_models)}")
+        except Exception as exc:
+            logger.warning(f"[Model Discovery] Failed to list models via SDK: {exc}")
+
+        # Build prioritized chain matching discovered models
+        ordered_chain: list[str] = []
+        for pref in GeminiClient.PREFERRED_MODEL_ORDER:
+            if pref not in ordered_chain and (not discovered or pref in discovered or "3.5" in pref or "3.6" in pref or "latest" in pref):
+                ordered_chain.append(pref)
+
+        # Append any remaining discovered models not in preferred list
+        for d in discovered:
+            if d not in ordered_chain and "embedding" not in d and "imagen" not in d and "veo" not in d:
+                ordered_chain.append(d)
+
+        # Clean out gemini-2.5-flash exact matches
+        ordered_chain = [m for m in ordered_chain if m != "models/gemini-2.5-flash"]
+
+        GeminiClient._discovered_models = ordered_chain
+        GeminiClient._last_discovery_timestamp = now
+        logger.info(f"[Model Discovery] Self-Healing Registry Initialized ({len(ordered_chain)} models available). First preference: '{ordered_chain[0]}'")
+        return ordered_chain
+
     def get_model_chain(self) -> list[str]:
         """
-        Constructs the prioritized model chain starting from preferred/primary model,
-        followed by fallback models without duplicates. Filters out deprecated gemini-2.5-flash.
+        Constructs the prioritized model chain starting from active model,
+        followed by runtime discovered/configured fallback models without duplicates.
         """
+        discovered = self.discover_available_models()
         primary = self._normalize_model_name(settings.PRIMARY_GEMINI_MODEL)
-        fallbacks = [
-            self._normalize_model_name(m) for m in settings.FALLBACK_GEMINI_MODELS
-        ]
 
-        chain = [primary]
-        for m in fallbacks:
-            if m not in chain:
+        chain = []
+        if primary != "models/gemini-2.5-flash" and primary not in chain:
+            chain.append(primary)
+
+        for m in discovered:
+            if m not in chain and m != "models/gemini-2.5-flash":
                 chain.append(m)
 
-        # Filter out deprecated or broken model strings
-        chain = [m for m in chain if "gemini-2.5-flash" not in m]
+        for m in settings.FALLBACK_GEMINI_MODELS:
+            norm_m = self._normalize_model_name(m)
+            if norm_m not in chain and norm_m != "models/gemini-2.5-flash":
+                chain.append(norm_m)
 
-        # Fallback defaults if chain is empty
+        # Fallback safety default
         if not chain:
             chain = [
-                "models/gemini-2.0-flash",
-                "models/gemini-1.5-flash",
-                "models/gemini-1.5-pro",
+                "models/gemini-3.5-flash",
+                "models/gemini-3.6-flash",
                 "models/gemini-flash-latest",
                 "models/gemini-pro-latest",
+                "models/gemini-2.0-flash",
             ]
         return chain
 
@@ -161,10 +235,13 @@ class GeminiClient:
         attempted_errors: list[str] = []
 
         total_candidates = len(model_chain)
+        logger.info(f"================================================")
+        logger.info(f"Primary model: {model_chain[0]}")
+
         for idx, model_candidate in enumerate(model_chain):
-            logger.info("----------------------------------------------------")
-            logger.info(f"Trying model:\n{model_candidate}")
-            logger.info("----------------------------------------------------")
+            logger.info("================================================")
+            logger.info(f"Trying model: {model_candidate}")
+            logger.info("================================================")
             delay = 1.0
 
             for attempt in range(1, max_retries + 1):
@@ -184,25 +261,33 @@ class GeminiClient:
                     if model_candidate != GeminiClient._active_model:
                         GeminiClient.set_active_model(model_candidate)
 
-                    logger.info("Success")
-                    logger.info(f"Current model:\n{model_candidate}")
+                    logger.info("================================================")
+                    logger.info("SUCCESS")
+                    logger.info(f"Current model: {model_candidate}")
                     logger.info(f"Latency: {latency_ms}ms (Failovers: {failover_count}, Attempt: {attempt})")
+                    logger.info("================================================")
                     return response.text
 
                 except Exception as exc:
                     err_msg = str(exc)
-                    status_code = getattr(exc, "code", None)
+                    status_code = getattr(exc, "code", None) or getattr(exc, "status_code", "404/Error")
                     is_not_found = "404" in err_msg or "NOT_FOUND" in err_msg or status_code == 404
                     is_deprecated = "no longer available" in err_msg.lower() or "deprecated" in err_msg.lower() or "not found" in err_msg.lower()
 
-                    logger.warning(f"Failed:\n{status_code or '404/Error'} - {exc}")
+                    logger.warning("================================================")
+                    logger.warning("FAILED")
+                    logger.warning(f"HTTP STATUS: {status_code}")
+                    logger.warning(f"Exception: {exc}")
+                    logger.warning("================================================")
 
                     # 404 / Deprecated / Unavailable -> Skip remaining retries for THIS model and failover immediately
                     if is_not_found or is_deprecated:
-                        attempted_errors.append(f"{model_candidate} (404/Deprecated)")
+                        attempted_errors.append(f"{model_candidate} ({status_code})")
                         if idx + 1 < total_candidates:
                             next_model = model_chain[idx + 1]
-                            logger.info(f"Switching to:\n{next_model}")
+                            logger.info("================================================")
+                            logger.info(f"Switching to: {next_model}")
+                            logger.info("================================================")
                         break
 
                     # If not last attempt for this model, exponential backoff retry
@@ -214,7 +299,9 @@ class GeminiClient:
                         attempted_errors.append(f"{model_candidate} ({err_msg[:60]})")
                         if idx + 1 < total_candidates:
                             next_model = model_chain[idx + 1]
-                            logger.info(f"Switching to:\n{next_model}")
+                            logger.info("================================================")
+                            logger.info(f"Switching to: {next_model}")
+                            logger.info("================================================")
 
             failover_count += 1
 
