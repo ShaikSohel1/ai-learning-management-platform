@@ -44,19 +44,21 @@ function Login() {
   return (
     <div className="login-shell">
       <div className="login-card-wrapper">
-        <Card className="glass-card" style={{ padding: "40px" }}>
+        <Card variant="glass" style={{ padding: "36px" }}>
           {/* Logo & Brand */}
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
             <div className="login-brand-icon">
               <BrainCircuit size={28} />
             </div>
-            <Badge variant="purple" icon={Sparkles} style={{ marginTop: "12px" }}>
-              Enterprise Edition 1.0
-            </Badge>
-            <h1 style={{ fontSize: "1.75rem", fontWeight: 800, marginTop: "10px" }}>
+            <div style={{ marginTop: "12px" }}>
+              <Badge variant="glow" icon={Sparkles}>
+                Enterprise AI SaaS Edition
+              </Badge>
+            </div>
+            <h1 style={{ fontSize: "1.75rem", fontWeight: 800, marginTop: "10px", letterSpacing: "-0.02em" }}>
               AI Learning Platform
             </h1>
-            <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "4px" }}>
+            <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", marginTop: "4px" }}>
               Sign in to access your enterprise AI workspace
             </p>
           </div>
@@ -64,12 +66,14 @@ function Login() {
           {/* Toggle Switch */}
           <div className="login-toggle-bar">
             <button
+              type="button"
               className={`login-toggle-btn ${!isRegister ? "active" : ""}`}
               onClick={() => setIsRegister(false)}
             >
               Sign In
             </button>
             <button
+              type="button"
               className={`login-toggle-btn ${isRegister ? "active" : ""}`}
               onClick={() => setIsRegister(true)}
             >
@@ -157,10 +161,11 @@ function Login() {
             <Button
               type="submit"
               icon={isRegister ? UserPlus : LogIn}
+              variant="glow"
               style={{ width: "100%", marginTop: "20px" }}
-              disabled={loading}
+              loading={loading}
             >
-              {loading ? "Authenticating..." : isRegister ? "Create Account" : "Sign In to Platform"}
+              {isRegister ? "Create Account" : "Sign In to Platform"}
             </Button>
           </form>
         </Card>

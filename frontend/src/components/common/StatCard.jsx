@@ -5,15 +5,15 @@ export function StatCard({ title, value, icon: Icon, trend, color = "indigo", de
   const getColorStyle = () => {
     switch (color) {
       case "emerald":
-        return { bg: "rgba(34, 197, 94, 0.12)", iconColor: "#22c55e" };
+        return { bg: "var(--color-success-light)", iconColor: "var(--color-success)" };
       case "purple":
-        return { bg: "rgba(139, 92, 246, 0.12)", iconColor: "#8b5cf6" };
+        return { bg: "var(--color-primary-light)", iconColor: "var(--color-primary)" };
       case "amber":
-        return { bg: "rgba(245, 158, 11, 0.12)", iconColor: "#f59e0b" };
+        return { bg: "var(--color-warning-light)", iconColor: "var(--color-warning)" };
       case "rose":
-        return { bg: "rgba(239, 68, 68, 0.12)", iconColor: "#ef4444" };
+        return { bg: "var(--color-danger-light)", iconColor: "var(--color-danger)" };
       default:
-        return { bg: "rgba(99, 102, 241, 0.12)", iconColor: "#6366f1" };
+        return { bg: "var(--color-primary-light)", iconColor: "var(--color-primary)" };
     }
   };
 
@@ -23,14 +23,14 @@ export function StatCard({ title, value, icon: Icon, trend, color = "indigo", de
     <Card style={{ position: "relative", overflow: "hidden" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 400, color: "var(--text-secondary)", letterSpacing: "-0.1px" }}>
             {title}
           </span>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800, marginTop: "6px", color: "var(--text-primary)" }}>
+          <div style={{ fontSize: "1.6rem", fontWeight: 700, marginTop: "6px", color: "var(--text-primary)" }}>
             {value}
           </div>
           {description && (
-            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "4px" }}>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "4px", fontWeight: 600 }}>
               {description}
             </div>
           )}
@@ -39,9 +39,9 @@ export function StatCard({ title, value, icon: Icon, trend, color = "indigo", de
         {Icon && (
           <div
             style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "var(--radius-md)",
+              width: "44px",
+              height: "44px",
+              borderRadius: "var(--radius-sm)",
               background: palette.bg,
               color: palette.iconColor,
               display: "flex",
@@ -49,13 +49,13 @@ export function StatCard({ title, value, icon: Icon, trend, color = "indigo", de
               justifyContent: "center",
             }}
           >
-            <Icon size={24} />
+            <Icon size={22} />
           </div>
         )}
       </div>
 
       {trend && (
-        <div style={{ marginTop: "12px", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-success)" }}>
+        <div style={{ marginTop: "12px", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 400, color: "var(--color-success)", letterSpacing: "-0.1px" }}>
           {trend}
         </div>
       )}

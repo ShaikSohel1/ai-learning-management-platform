@@ -3,10 +3,11 @@ import { motion } from "framer-motion";
 
 export function Button({
   children,
-  variant = "primary", // primary | secondary | outline | danger | ghost
+  variant = "primary", // primary | secondary | outline | danger | ghost | glow
   size = "md", // sm | md | lg
   icon: Icon,
   disabled = false,
+  loading = false,
   onClick,
   className = "",
   type = "button",
@@ -16,16 +17,23 @@ export function Button({
     switch (variant) {
       case "primary":
         return {
-          background: "var(--gradient-cta)",
-          color: "#ffffff",
+          background: "var(--color-primary)",
+          color: "var(--text-inverse)",
           border: "none",
           boxShadow: "var(--glow-cta)",
+        };
+      case "glow":
+        return {
+          background: "var(--color-primary)",
+          color: "var(--text-inverse)",
+          border: "1px solid rgba(228, 181, 146, 0.3)",
+          boxShadow: "0 0 20px rgba(228, 181, 146, 0.25)",
         };
       case "secondary":
         return {
           background: "var(--color-primary-light)",
           color: "var(--color-primary)",
-          border: "none",
+          border: "1px solid rgba(228, 181, 146, 0.2)",
         };
       case "outline":
         return {
@@ -37,12 +45,12 @@ export function Button({
         return {
           background: "var(--color-danger-light)",
           color: "var(--color-danger)",
-          border: "none",
+          border: "1px solid rgba(248, 113, 113, 0.2)",
         };
       case "ghost":
         return {
           background: "transparent",
-          color: "var(--text-secondary)",
+          color: "var(--text-on-cream-muted)",
           border: "none",
         };
       default:
@@ -53,21 +61,21 @@ export function Button({
   const getSizeStyles = () => {
     switch (size) {
       case "sm":
-        return { padding: "8px 16px", fontSize: "13px", borderRadius: "var(--radius-sm)" };
+        return { padding: "7px 14px", fontSize: "13px", borderRadius: "var(--radius-sm)" };
       case "lg":
-        return { padding: "14px 28px", fontSize: "16px", borderRadius: "var(--radius-md)" };
+        return { padding: "14px 28px", fontSize: "16px", borderRadius: "var(--radius-sm)" };
       default:
-        return { padding: "10px 22px", fontSize: "15px", borderRadius: "var(--radius-md)" };
+        return { padding: "10px 20px", fontSize: "14px", borderRadius: "var(--radius-sm)" };
     }
   };
 
   return (
     <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
-      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
+      whileTap={{ scale: disabled || loading ? 1 : 0.97 }}
       transition={{ duration: 0.15 }}
       type={type}
-      disabled={disabled}
+      disabled={disabled || loading}
       onClick={onClick}
       className={`ui-btn ${className}`}
       style={{
@@ -75,16 +83,22 @@ export function Button({
         alignItems: "center",
         justifyContent: "center",
         gap: "8px",
-        fontWeight: 600,
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.6 : 1,
+        fontWeight: 700,
+        letterSpacing: "-0.01em",
+        cursor: disabled || loading ? "not-allowed" : "pointer",
+        opacity: disabled || loading ? 0.65 : 1,
         fontFamily: "var(--font-sans)",
+        transition: "background 0.3s cubic-bezier(0.61,1,0.88,1), border-color 0.3s cubic-bezier(0.61,1,0.88,1), box-shadow 0.3s cubic-bezier(0.61,1,0.88,1)",
         ...getVariantStyles(),
         ...getSizeStyles(),
         ...style,
       }}
     >
-      {Icon && <Icon size={size === "sm" ? 16 : 18} />}
+      {loading ? (
+        <span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid currentColor", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      ) : Icon ? (
+        <Icon size={size === "sm" ? 15 : size === "lg" ? 20 : 17} />
+      ) : null}
       {children}
     </motion.button>
   );

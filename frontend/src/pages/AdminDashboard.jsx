@@ -10,6 +10,8 @@ import {
   Database,
   Cpu,
   ShieldAlert,
+  Server,
+  Terminal,
 } from "lucide-react";
 import {
   BarChart,
@@ -28,6 +30,7 @@ import Card from "../components/common/Card";
 import Badge from "../components/common/Badge";
 import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import adminService from "../services/adminService";
+import systemService from "../services/systemService";
 import "../styles/admin.css";
 
 const apiRequestsData = [
@@ -43,6 +46,15 @@ function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [systemInfo, setSystemInfo] = useState({
+    provider: "Google Gemini",
+    model: "models/gemini-2.5-flash",
+    status: "Operational",
+  });
+
+  useEffect(() => {
+    systemService.getSystemInfo().then(setSystemInfo).catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function loadAdminData() {
@@ -54,7 +66,7 @@ function AdminDashboard() {
           adminService.getSystemHealth(),
         ]);
         setStats(statsData);
-        setUsers(usersData);
+        setUsers(usersData || []);
         setHealth(healthData);
       } catch (err) {
         console.error("Failed to load admin dashboard data:", err);
@@ -70,7 +82,7 @@ function AdminDashboard() {
       <div className="admin-container">
         {/* Header */}
         <div style={{ marginBottom: "24px" }}>
-          <h1>⚙️ Enterprise Admin & System Monitoring</h1>
+          <h1 style={{ fontSize: "1.75rem", fontWeight: 800 }}>⚙️ Enterprise Admin & System Console</h1>
           <p style={{ color: "var(--text-secondary)", marginTop: "4px" }}>
             Monitor system health status, active infrastructure components, user catalogs, and tool audit logs.
           </p>
@@ -80,7 +92,7 @@ function AdminDashboard() {
           <LoadingSkeleton height="180px" count={3} />
         ) : (
           <div>
-            {/* System Health Status Badges */}
+            {/* System Health Status Grid */}
             <div className="admin-kpi-grid">
               <StatCard
                 title="PostgreSQL Database"
@@ -97,11 +109,11 @@ function AdminDashboard() {
                 description={`${stats?.knowledge_chunks || 0} vector chunks`}
               />
               <StatCard
-                title="Google Gemini LLM"
+                title={systemInfo.provider}
                 value="HEALTHY"
                 icon={Cpu}
                 color="purple"
-                description="Gemini 2.0 Flash engine"
+                description={`Model: ${systemService.formatModelName(systemInfo.model)}`}
               />
               <StatCard
                 title="Agent Orchestrator"
@@ -112,12 +124,12 @@ function AdminDashboard() {
               />
             </div>
 
-            {/* Platform Enterprise Summary */}
+            {/* Platform Summary Metrics */}
             <div className="admin-summary-grid">
-              <StatCard title="Registered Users" value={stats?.total_users || 0} icon={Users} color="indigo" />
+              <StatCard title="Registered Users" value={stats?.total_users || users.length || 0} icon={Users} color="indigo" />
               <StatCard title="Total LMS Courses" value={stats?.total_courses || 0} icon={BookOpen} color="purple" />
-              <StatCard title="Knowledge Documents" value={stats?.knowledge_documents || 0} icon={FileText} color="emerald" />
-              <StatCard title="Agent Tool Executions" value={stats?.audit_logs_count || 0} icon={Wrench} color="amber" />
+              <StatCard title="Knowledge Docs" value={stats?.knowledge_documents || 0} icon={FileText} color="emerald" />
+              <StatCard title="Tool Executions" value={stats?.audit_logs_count || 0} icon={Wrench} color="amber" />
             </div>
 
             {/* Recharts Analytics Chart */}
@@ -128,8 +140,8 @@ function AdminDashboard() {
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                     <XAxis dataKey="endpoint" stroke="var(--text-muted)" fontSize={12} />
                     <YAxis stroke="var(--text-muted)" fontSize={12} />
-                    <Tooltip contentStyle={{ background: "var(--bg-surface)", borderColor: "var(--border-color)", borderRadius: "8px" }} />
-                    <Bar dataKey="requests" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                    <Tooltip contentStyle={{ background: "var(--bg-surface)", borderColor: "var(--border-color)", borderRadius: "12px", color: "var(--text-primary)" }} />
+                    <Bar dataKey="requests" fill="var(--color-primary)" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -137,8 +149,8 @@ function AdminDashboard() {
 
             {/* Platform Users Table */}
             <Card>
-              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "16px" }}>
-                👤 Platform User Directory ({users.length})
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <Users size={20} color="var(--color-primary)" /> Platform User Directory ({users.length})
               </h3>
 
               <div style={{ overflowX: "auto" }}>
@@ -157,14 +169,14 @@ function AdminDashboard() {
                     {users.map((u) => (
                       <tr key={u.id}>
                         <td style={{ fontWeight: 700 }}>#{u.id}</td>
-                        <td>{u.name}</td>
+                        <td style={{ fontWeight: 600 }}>{u.name}</td>
                         <td>{u.email}</td>
                         <td>
-                          <Badge variant="purple">{u.role}</Badge>
+                          <Badge variant="glow">{u.role}</Badge>
                         </td>
                         <td>{u.department}</td>
                         <td>
-                          <Badge variant="success">Active</Badge>
+                          <Badge variant="emerald">Active</Badge>
                         </td>
                       </tr>
                     ))}

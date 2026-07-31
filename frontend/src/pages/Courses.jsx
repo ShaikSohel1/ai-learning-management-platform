@@ -10,6 +10,8 @@ import {
   User,
   Sparkles,
   CheckCircle,
+  X,
+  Filter,
 } from "lucide-react";
 
 import AppLayout from "../components/AppLayout";
@@ -111,7 +113,7 @@ function Courses() {
 
   const handleEnroll = async (courseId) => {
     try {
-      await enrollmentService.enrollUser(courseId);
+      await enrollmentService.enrollInCourse(courseId);
       alert("Enrolled successfully!");
       loadData();
     } catch (err) {
@@ -129,14 +131,14 @@ function Courses() {
         {/* Header Bar */}
         <div className="courses-header-bar">
           <div>
-            <h1>📚 LMS Course Catalog</h1>
+            <h1 style={{ fontSize: "1.75rem", fontWeight: 800 }}>📚 Enterprise Course Catalog</h1>
             <p style={{ color: "var(--text-secondary)", marginTop: "4px" }}>
-              Explore enterprise learning paths, AI-matched courses, and technical labs.
+              Explore AI-curated learning paths, interactive modules, and technical labs.
             </p>
           </div>
 
           {isAdmin && (
-            <Button icon={Plus} onClick={handleOpenAddModal}>
+            <Button icon={Plus} variant="glow" onClick={handleOpenAddModal}>
               Create New Course
             </Button>
           )}
@@ -146,10 +148,10 @@ function Courses() {
         <Card style={{ marginBottom: "24px" }}>
           <div className="courses-filter-bar">
             <div className="filter-input-box">
-              <Search size={18} color="var(--text-muted)" />
+              <Search size={17} color="var(--text-muted)" />
               <input
                 type="text"
-                placeholder="Filter courses by title..."
+                placeholder="Filter courses by title or keyword..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -172,7 +174,7 @@ function Courses() {
           </div>
         </Card>
 
-        {/* Course Cards Responsive Grid */}
+        {/* Course Cards Grid */}
         {loading ? (
           <LoadingSkeleton height="220px" count={3} />
         ) : courses.length === 0 ? (
@@ -185,14 +187,14 @@ function Courses() {
           <div className="courses-grid">
             {courses.map((course, idx) => {
               const enrolled = isEnrolled(course.id);
-              const matchPercent = 90 + ((idx * 3) % 9); // AI Match Score
+              const matchPercent = 90 + ((idx * 3) % 9);
 
               return (
-                <Card key={course.id} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                <Card key={course.id} hoverEffect style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                   <div>
-                    {/* Course Image Header Banner */}
+                    {/* Course Banner Header */}
                     <div className="course-card-banner">
-                      <Badge variant="purple" icon={Sparkles}>
+                      <Badge variant="glow" icon={Sparkles}>
                         {matchPercent}% AI Match
                       </Badge>
                       <Badge variant="primary">{course.category || "General"}</Badge>
@@ -203,13 +205,13 @@ function Courses() {
 
                     <div className="course-card-meta">
                       <span>
-                        <Clock size={14} /> {course.duration || "10"} hrs
+                        <Clock size={14} color="var(--color-primary)" /> {course.duration || "10"} hrs
                       </span>
                       <span>
-                        <BarChart size={14} /> {course.difficulty || "Intermediate"}
+                        <BarChart size={14} color="var(--color-primary)" /> {course.difficulty || "Intermediate"}
                       </span>
                       <span>
-                        <User size={14} /> Senior Architect
+                        <User size={14} color="var(--color-primary)" /> Senior Architect
                       </span>
                     </div>
                   </div>
@@ -220,17 +222,17 @@ function Courses() {
                         Enrolled
                       </Button>
                     ) : (
-                      <Button style={{ width: "100%" }} onClick={() => handleEnroll(course.id)}>
+                      <Button variant="glow" style={{ width: "100%" }} onClick={() => handleEnroll(course.id)}>
                         Enroll Now
                       </Button>
                     )}
 
                     {isAdmin && (
                       <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-                        <Button variant="outline" size="sm" icon={Edit2} onClick={() => handleOpenEditModal(course)}>
+                        <Button variant="outline" size="sm" icon={Edit2} onClick={() => handleOpenEditModal(course)} style={{ flex: 1 }}>
                           Edit
                         </Button>
-                        <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDeleteCourse(course.id, course.title)}>
+                        <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDeleteCourse(course.id, course.title)} style={{ flex: 1 }}>
                           Delete
                         </Button>
                       </div>
@@ -244,11 +246,22 @@ function Courses() {
 
         {/* Modal: Create / Edit Course */}
         {showModal && (
-          <div className="modal-backdrop">
-            <div className="modal-content">
-              <h3>{editCourse ? "Edit Course" : "Create New Course"}</h3>
-              <form onSubmit={handleSaveCourse} style={{ marginTop: "16px" }}>
-                <div style={{ marginBottom: "12px" }}>
+          <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                <h3 style={{ fontSize: "1.2rem", fontWeight: 800 }}>
+                  {editCourse ? "Edit Course" : "Create New Course"}
+                </h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveCourse}>
+                <div style={{ marginBottom: "14px" }}>
                   <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Title</label>
                   <input
                     type="text"
@@ -259,7 +272,7 @@ function Courses() {
                   />
                 </div>
 
-                <div style={{ marginBottom: "12px" }}>
+                <div style={{ marginBottom: "14px" }}>
                   <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Description</label>
                   <textarea
                     className="form-control"
@@ -270,7 +283,7 @@ function Courses() {
                   />
                 </div>
 
-                <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+                <div style={{ display: "flex", gap: "12px", marginBottom: "18px" }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Category</label>
                     <input
@@ -298,7 +311,7 @@ function Courses() {
                   <Button variant="outline" onClick={() => setShowModal(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit">Save Course</Button>
+                  <Button type="submit" variant="glow">Save Course</Button>
                 </div>
               </form>
             </div>

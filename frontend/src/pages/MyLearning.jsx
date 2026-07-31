@@ -8,6 +8,9 @@ import {
   ShieldCheck,
   Calendar,
   Layers,
+  Printer,
+  X,
+  Sparkles,
 } from "lucide-react";
 
 import AppLayout from "../components/AppLayout";
@@ -68,9 +71,9 @@ function MyLearning() {
       <div className="mylearning-container">
         {/* Header Bar */}
         <div style={{ marginBottom: "24px" }}>
-          <h1>🎓 My Learning Workspace</h1>
+          <h1 style={{ fontSize: "1.75rem", fontWeight: 800 }}>🎓 My Learning Workspace</h1>
           <p style={{ color: "var(--text-secondary)", marginTop: "4px" }}>
-            Track active module progress, view milestones, and download issued digital certificates.
+            Track active module progress, view milestones, and inspect digital certificates.
           </p>
         </div>
 
@@ -90,25 +93,27 @@ function MyLearning() {
               const isDone = item.status === "COMPLETED";
 
               return (
-                <Card key={item.id}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                    <div>
-                      <Badge variant={isDone ? "success" : "primary"}>
-                        {isDone ? "Completed" : "In Progress"}
-                      </Badge>
-                      <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginTop: "8px" }}>
-                        {course.title || "Course"}
-                      </h3>
+                <Card key={item.id} hoverEffect style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                      <div>
+                        <Badge variant={isDone ? "success" : "primary"}>
+                          {isDone ? "Completed" : "In Progress"}
+                        </Badge>
+                        <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginTop: "8px" }}>
+                          {course.title || "Course"}
+                        </h3>
+                      </div>
+
+                      <span style={{ fontSize: "0.82rem", color: "var(--text-muted)", fontWeight: 600 }}>
+                        {course.category || "General"}
+                      </span>
                     </div>
 
-                    <span style={{ fontSize: "0.82rem", color: "var(--text-muted)", fontWeight: 600 }}>
-                      {course.category || "General"}
-                    </span>
+                    <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginBottom: "16px", lineHeight: 1.5 }}>
+                      {course.description}
+                    </p>
                   </div>
-
-                  <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", marginBottom: "16px", lineHeight: 1.45 }}>
-                    {course.description}
-                  </p>
 
                   <div style={{ marginTop: "auto" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", fontWeight: 600, marginBottom: "6px" }}>
@@ -117,7 +122,7 @@ function MyLearning() {
                     </div>
 
                     <div style={{ height: "8px", background: "var(--border-color)", borderRadius: "var(--radius-full)", overflow: "hidden", marginBottom: "16px" }}>
-                      <div style={{ height: "100%", width: `${progress}%`, background: isDone ? "var(--color-success)" : "var(--color-primary)", borderRadius: "var(--radius-full)" }} />
+                      <div style={{ height: "100%", width: `${progress}%`, background: isDone ? "var(--color-success)" : "var(--gradient-cta)", borderRadius: "var(--radius-full)" }} />
                     </div>
 
                     <div style={{ display: "flex", gap: "10px" }}>
@@ -126,7 +131,7 @@ function MyLearning() {
                           Advance Progress (+25%)
                         </Button>
                       ) : (
-                        <Button variant="secondary" icon={ShieldCheck} style={{ width: "100%" }} onClick={() => handleViewCertificate(item.id)}>
+                        <Button variant="glow" icon={ShieldCheck} style={{ width: "100%" }} onClick={() => handleViewCertificate(item.id)}>
                           View Digital Certificate
                         </Button>
                       )}
@@ -140,29 +145,44 @@ function MyLearning() {
 
         {/* Certificate Modal */}
         {selectedCert && (
-          <div className="modal-backdrop">
-            <div className="modal-content" style={{ maxWidth: "600px" }}>
-              <div style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "16px", marginBottom: "16px" }}>
-                <Award size={42} color="var(--color-primary)" />
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginTop: "8px" }}>
+          <div className="modal-backdrop" onClick={() => setSelectedCert(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "600px" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+                <button onClick={() => setSelectedCert(null)} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="certificate-card-preview">
+                <div className="certificate-seal">
+                  <Award size={32} />
+                </div>
+                <Badge variant="glow" icon={Sparkles} style={{ marginBottom: "12px" }}>
+                  Verified Enterprise Certificate
+                </Badge>
+                <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)" }}>
                   Digital Certificate of Accomplishment
                 </h2>
-                <Badge variant="success">Credential #{selectedCert.certificate_number || "CERT-9981"}</Badge>
-              </div>
+                <span style={{ fontSize: "0.82rem", color: "var(--text-muted)", fontWeight: 600, display: "block", marginTop: "4px" }}>
+                  Credential ID: #{selectedCert.certificate_number || "CERT-9981"}
+                </span>
 
-              <div style={{ padding: "16px", background: "var(--bg-primary)", borderRadius: "var(--radius-md)", marginBottom: "20px", fontSize: "0.95rem", lineHeight: 1.6 }}>
-                This certifies that <strong>{selectedCert.user_name || "Learner"}</strong> has successfully completed the course:
-                <h3 style={{ color: "var(--color-primary)", margin: "8px 0" }}>{selectedCert.course_title}</h3>
-                Issued on {new Date(selectedCert.issued_at || Date.now()).toLocaleDateString()}.
-              </div>
+                <div style={{ margin: "20px 0", padding: "16px", background: "var(--bg-surface)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                  This certifies that <strong>{selectedCert.user_name || "Learner"}</strong> has successfully completed the course:
+                  <h3 style={{ color: "var(--color-primary)", margin: "8px 0", fontSize: "1.2rem", fontWeight: 800 }}>
+                    {selectedCert.course_title}
+                  </h3>
+                  Issued on {new Date(selectedCert.issued_at || Date.now()).toLocaleDateString()}.
+                </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-                <Button variant="outline" onClick={() => setSelectedCert(null)}>
-                  Close
-                </Button>
-                <Button icon={Download} onClick={() => window.print()}>
-                  Print / Download PDF
-                </Button>
+                <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginTop: "24px" }}>
+                  <Button variant="outline" onClick={() => setSelectedCert(null)}>
+                    Close Preview
+                  </Button>
+                  <Button icon={Printer} variant="glow" onClick={() => window.print()}>
+                    Print / Export PDF
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

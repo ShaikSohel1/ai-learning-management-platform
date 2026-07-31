@@ -1,4 +1,4 @@
-/* Enterprise My Learning Workspace Styling */
+/* 21 Hours on the Moon — My Learning */
 
 .mylearning-container {
   max-width: 1240px;
@@ -7,6 +7,30 @@
 
 .mylearning-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--space-6);
+}
+
+.certificate-card-preview {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: var(--space-8);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+.certificate-seal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px auto;
+  box-shadow: var(--shadow-glow);
 }

@@ -221,5 +221,10 @@ __marimo__/
 backend/chroma_db/
 backend/chroma_db/chroma.sqlite3
 
-# Frontend Node Modules
+# Frontend Node Modules & Build Artifacts
+node_modules/
 frontend/node_modules/
+frontend/dist/
+.vercel/
+.vite/
+

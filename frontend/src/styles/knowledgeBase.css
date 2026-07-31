@@ -1,30 +1,424 @@
-/* Enterprise Knowledge Base (RAG) Styling */
+/* Linear, Notion & Stripe Inspired Enterprise AI Workspace */
 
 .knowledge-container {
-  max-width: 1240px;
+  max-width: 1360px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
+/* 1. Hero Header Section */
+.hero-header-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px 36px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.hero-header-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.hero-header-subtitle {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.hero-header-desc {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 780px;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.hero-badge-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.hero-pill-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.status-dot-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+}
+
+/* Two-Column Workspace Layout (70% Main Stage / 30% Sidebar) */
+.workspace-two-column-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .workspace-two-column-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Main Stage (Left 70%) */
+.workspace-main-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* 2. Reserved Dark AI Search Component */
+.workspace-search-card {
+  background: var(--bg-dark-ai);
+  border: 1px solid var(--border-color-dark);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(199, 121, 66, 0.15);
+  color: var(--text-dark-primary);
+}
+
+.large-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-dark-ai-elevated);
+  border: 1px solid var(--border-color-dark);
+  border-radius: var(--radius-sm);
+  padding: 16px 24px;
+  height: 68px;
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.large-search-bar:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 24px rgba(199, 121, 66, 0.3);
+}
+
+.large-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-dark-primary);
+  font-size: 1.2rem;
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.shortcut-kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-primary);
+}
+
+.search-prompt-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-dark-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.search-prompt-chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(199, 121, 66, 0.12);
+  transform: translateY(-2px);
+}
+
+/* 3. Reserved Dark AI Answer Card (Visual Centerpiece / Hero) */
+.hero-answer-card {
+  background: var(--bg-dark-ai);
+  border: 1.5px solid var(--border-color-active);
+  border-radius: var(--radius-md);
+  padding: 36px;
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(199, 121, 66, 0.18);
+  position: relative;
+  color: var(--text-dark-primary);
+}
+
+.hero-answer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color-dark);
+}
+
+.hero-answer-body {
+  font-size: 1.12rem;
+  line-height: 1.8;
+  color: var(--text-dark-primary);
+}
+
+.ai-answer-badges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  margin-top: 28px;
+  border-top: 1px solid var(--border-color-dark);
+}
+
+.subtle-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-dark-ai-elevated);
+  border: 1px solid var(--border-color-dark);
+  color: var(--text-dark-primary);
+}
+
+/* 4. Source Evidence Cards (Light Surface) */
+.citations-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.citation-card-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.citation-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  cursor: pointer;
+  background: var(--bg-surface);
+}
+
+.citation-card-header:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-surface-hover);
+}
+
+.citation-body-expanded {
+  padding: 20px;
+  background: var(--bg-surface-elevated);
+  font-family: var(--font-sans);
+  font-size: 0.96rem;
+  line-height: 1.65;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+/* 5. Collapsible AI Processing Details */
+.processing-details-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.pipeline-timeline-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 10px;
+  overflow-x: auto;
+  position: relative;
+}
+
+.pipeline-node-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-elevated);
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  z-index: 2;
+  color: var(--text-primary);
+}
+
+.node-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+/* 6. Document Library Cards (Crisp White Light Cards) */
+.document-library-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.document-library-card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.document-inspection-drawer {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 7. Simplified Sidebar (ONLY THREE Crisp White Cards) */
+.workspace-sidebar-sticky {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-clean-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-card-header {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.sidebar-kv-label {
+  color: var(--text-secondary);
+}
+
+.sidebar-kv-value {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Upload Dropzone & Progress Checklist */
 .dropzone-box {
   border: 2px dashed var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 32px;
+  border-radius: var(--radius-sm);
+  padding: 36px 20px;
   text-align: center;
-  background: var(--bg-primary);
+  background: var(--bg-surface);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--duration-base) var(--ease-spring);
+  cursor: pointer;
+  color: var(--text-primary);
 }
 
-.dropzone-box:hover {
+.dropzone-box:hover, .dropzone-box.dragging {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
 }
 
-.knowledge-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 18px;
+.ingestion-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg-surface-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.checklist-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.checklist-step.done {
+  color: var(--color-success);
+}
+
+.checklist-step.active {
+  color: var(--color-primary);
+  font-weight: 700;
 }

@@ -1,4 +1,4 @@
-/* Linear & Lovable Enterprise Workspace Hero & Dashboard Styling */
+/* 21 Hours on the Moon — Dashboard */
 
 .dash-workspace {
   width: 100%;
@@ -7,14 +7,28 @@
 .workspace-hero-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   padding: 36px;
-  margin-bottom: 28px;
+  margin-bottom: var(--space-6);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
-  box-shadow: var(--shadow-sm);
+  gap: var(--space-6);
+  box-shadow: var(--shadow-surface);
+  position: relative;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+.workspace-hero-card::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(228, 181, 146, 0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .hero-left-col {
@@ -23,9 +37,9 @@
 
 .hero-metrics-strip {
   display: flex;
-  gap: 24px;
-  margin-top: 20px;
-  padding-top: 16px;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
   border-top: 1px solid var(--border-color);
 }
 
@@ -38,37 +52,37 @@
 .hero-actions-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  min-width: 320px;
+  gap: var(--space-3);
+  min-width: 340px;
 }
 
-/* Responsive Metric Card Grid (6 cols on desktop) */
+/* 6 Column Metric Card Grid */
 .dash-metrics-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
+  gap: var(--space-4);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .dash-metrics-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 680px) {
   .dash-metrics-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* 2-Column Analytics Charts Grid */
+/* 2-Column Analytics Chart Grid */
 .dash-charts-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: var(--space-6);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .dash-charts-2col {
     grid-template-columns: 1fr;
   }
@@ -85,6 +99,6 @@
 
 .dash-continue-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-5);
 }

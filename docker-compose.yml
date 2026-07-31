@@ -28,7 +28,7 @@ services:
     environment:
       DATABASE_URL: postgresql://shaiksohel:password@postgres:5432/ai_learning_db
       GEMINI_API_KEY: ${GEMINI_API_KEY:-your_gemini_api_key_here}
-      GEMINI_MODEL: gemini-2.0-flash
+      GEMINI_MODEL: models/gemini-2.5-flash
       SECRET_KEY: ${SECRET_KEY:-your_jwt_secret_key_here}
     volumes:
       - ./backend/chroma_db:/app/chroma_db

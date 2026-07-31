@@ -1,90 +1,103 @@
-/* Linear & Lovable Enterprise AI SaaS Design System & Typography Scale */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Linear, Notion & Stripe Inspired Enterprise SaaS Design System */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  /* Light Mode Color System */
-  --bg-primary: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f5f9;
-  --bg-sidebar: #ffffff;
-  --bg-sidebar-active: #f1f5f9;
-  --border-color: #e5e7eb;
-  --border-color-hover: #cbd5e1;
+  /* Canvas & Application Palette — Warm Light Premium SaaS */
+  --bg-app: #F8F6F2;
+  --bg-primary: #F8F6F2;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #F0EDE6;
+  --bg-surface-hover: #F5F2EC;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --text-inverse: #ffffff;
+  /* Reserved Dark Surfaces for AI Focus Stage & Code */
+  --bg-dark-ai: #181716;
+  --bg-dark-ai-elevated: #242220;
 
-  /* Brand Palette */
-  --color-primary: #7c3aed;
-  --color-primary-hover: #6d28d9;
-  --color-primary-light: rgba(124, 58, 237, 0.12);
-  --color-secondary: #6366f1;
+  /* Soft Charcoal Sidebar */
+  --bg-sidebar: #1C1B1A;
+  --bg-sidebar-active: rgba(217, 155, 106, 0.15);
+  --bg-topbar: rgba(248, 246, 242, 0.92);
 
-  --gradient-cta: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-  --glow-cta: 0 8px 24px rgba(124, 58, 237, 0.28);
+  /* Border System — Crisp & Subtle */
+  --border-color: #E5E0D8;
+  --border-color-hover: #D6D0C5;
+  --border-color-active: #D99B6A;
+  --border-color-dark: rgba(255, 255, 255, 0.12);
 
-  --color-success: #10b981;
-  --color-success-light: rgba(16, 185, 129, 0.12);
+  /* Typography Colors — High Contrast & WCAG AAA Compliant */
+  --text-primary: #1A1917;
+  --text-secondary: #66625D;
+  --text-muted: #948F88;
+  --text-inverse: #FFFFFF;
 
-  --color-warning: #f59e0b;
-  --color-warning-light: rgba(245, 158, 11, 0.12);
+  /* Typography Colors inside AI Dark Stage */
+  --text-dark-primary: #F8F6F2;
+  --text-dark-secondary: #C2BCB3;
+  --text-dark-muted: #8C867E;
 
-  --color-danger: #ef4444;
-  --color-danger-light: rgba(239, 68, 68, 0.12);
+  /* Accent — Muted Warm Tan / Terracotta */
+  --color-primary: #C77942;
+  --color-primary-hover: #B56A35;
+  --color-primary-light: rgba(199, 121, 66, 0.1);
+  --color-secondary: #A86B3E;
+  --color-secondary-light: rgba(168, 107, 62, 0.1);
 
-  /* Shadows & Elevation */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08);
+  /* CTA & Brand Surfaces */
+  --gradient-cta: linear-gradient(135deg, #C77942 0%, #A86B3E 100%);
+  --gradient-brand: linear-gradient(135deg, #C77942 0%, #D99B6A 50%, #A86B3E 100%);
+  --glow-cta: 0 4px 14px rgba(199, 121, 66, 0.25);
 
-  /* Border Radii Hierarchy */
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
+  /* Semantic Status Colors */
+  --color-success: #2E7D32;
+  --color-success-bg: #E8F5E9;
+  --color-warning: #D97706;
+  --color-warning-bg: #FEF3C7;
+  --color-danger: #DC2626;
+  --color-danger-bg: #FEE2E2;
+  --color-info: #0284C7;
+  --color-info-bg: #E0F2FE;
+
+  /* Shadows — Subtle, Clean Enterprise SaaS */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 24px rgba(199, 121, 66, 0.15);
+
+  /* Border Radii */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 9999px;
 
-  /* Typography Scale */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --text-hero-size: 48px;
-  --text-section-size: 30px;
-  --text-card-size: 18px;
-  --text-body-size: 15px;
-  --text-caption-size: 13px;
+  /* Typography Stack */
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  /* Spacing Scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Motion */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 200ms;
+  --duration-base: 300ms;
+  --duration-slow: 400ms;
 
   /* Container Boundaries */
-  --max-content-width: 1400px;
-  --sidebar-width: 250px;
-  --sidebar-collapsed-width: 76px;
-  --topbar-height: 72px;
+  --max-content-width: 1440px;
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 80px;
+  --topbar-height: 64px;
 }
 
-/* Dedicated Dark Mode Tokens */
-[data-theme="dark"] {
-  --bg-primary: #09090b;
-  --bg-surface: #18181b;
-  --bg-surface-hover: #27272a;
-  --bg-sidebar: #111113;
-  --bg-sidebar-active: #18181b;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-color-hover: rgba(255, 255, 255, 0.16);
-
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-  --text-inverse: #09090b;
-
-  --color-primary: #8b5cf6;
-  --color-primary-light: rgba(139, 92, 246, 0.18);
-  --gradient-cta: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.6);
-}
-
-/* Global Resets & Base Styles */
+/* Base Styles & Resets */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -93,67 +106,66 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-primary);
+  background-color: var(--bg-app);
   color: var(--text-primary);
-  font-size: var(--text-body-size);
-  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Typography Hierarchy Classes */
+/* Typography Hierarchy */
 .text-hero {
-  font-size: var(--text-hero-size);
+  font-size: 2.2rem;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.2;
   letter-spacing: -0.03em;
+  color: var(--text-primary);
 }
 
 .text-section {
-  font-size: var(--text-section-size);
+  font-size: 1.25rem;
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .text-card-title {
-  font-size: var(--text-card-size);
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.4;
+  color: var(--text-primary);
 }
 
 .text-body {
-  font-size: var(--text-body-size);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.text-caption {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 400;
   line-height: 1.5;
 }
 
-.text-caption {
-  font-size: var(--text-caption-size);
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-/* 1400px Centered Container Wrapper */
+/* Container Wrapper */
 .app-container-1400 {
   max-width: var(--max-content-width);
   margin: 0 auto;
   width: 100%;
-}
-
-/* Glassmorphism & Elevation */
-.ui-card-container {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ui-card-container:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-color-hover);
+  padding: 0 var(--space-5);
 }
 
 /* Custom Scrollbar */
@@ -167,6 +179,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 10px;
+  background: rgba(199, 121, 66, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }
