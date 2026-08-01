@@ -93,8 +93,8 @@ function Dashboard() {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [systemInfo, setSystemInfo] = useState({
-    provider: "Google Gemini",
-    model: "models/gemini-2.0-flash",
+    provider: "AI Provider",
+    model: "Active Model",
     status: "Operational",
   });
 

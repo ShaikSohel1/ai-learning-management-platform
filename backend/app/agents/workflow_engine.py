@@ -2,7 +2,7 @@
 Workflow Engine Module.
 
 Orchestrates multi-agent workflow execution, passes context between collaborating agents,
-synthesizes unified executive responses via Gemini, and calculates execution metrics.
+synthesizes unified executive responses via AIProviderManager, and calculates execution metrics.
 """
 
 import logging
@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.agents.agent_context import AgentContext
 from app.agents.agent_manager import agent_manager
 from app.agents.agent_memory import agent_memory_store
-from app.ai.gemini_client import GeminiClient
+from app.ai.provider_manager import AIProviderManager, provider_manager
 from app.ai.retry_handler import retry_handler
 from app.schemas.agents import AgentChatResponse, AgentStepResult
 
@@ -23,8 +23,9 @@ logger = logging.getLogger(__name__)
 class WorkflowEngine:
     """Orchestrates collaborative multi-agent workflow pipelines."""
 
-    def __init__(self, gemini_client: GeminiClient | None = None) -> None:
-        self.client = gemini_client or GeminiClient()
+    def __init__(self, ai_provider_manager: AIProviderManager | None = None) -> None:
+        self.provider = ai_provider_manager or provider_manager
+        self.client = self.provider
         self.manager = agent_manager
         self.memory = agent_memory_store
 
@@ -98,7 +99,7 @@ class WorkflowEngine:
         )
 
         final_summary = retry_handler.execute(
-            self.client.generate_content,
+            self.provider.generate_content,
             prompt=prompt,
             system_instruction=system_instruction,
             json_mode=False

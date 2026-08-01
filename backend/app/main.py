@@ -1,8 +1,11 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.ai.gemini_client import AllGeminiModelsQuotaExhaustedError
+from app.ai.providers import ProviderUnavailableException
 from app.core.config import settings
 from app.routers.admin import router as admin_router
 from app.routers.agents import router as agents_router
@@ -14,19 +17,35 @@ from app.routers.health import router as health_router
 from app.routers.knowledge import router as knowledge_router
 from app.routers.notifications import router as notifications_router
 
+logger = logging.getLogger("main_app")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup logging
+    print("==================================================")
+    print(" 🚀 MULTI-PROVIDER AI PLATFORM INITIALIZING      ")
+    print("==================================================")
+    print(f" • PRIMARY_PROVIDER  : {settings.PRIMARY_PROVIDER.upper()}")
+    print(f" • FALLBACK_PROVIDERS: {[p.upper() for p in settings.FALLBACK_PROVIDERS]}")
+    print(f" • GROQ_MODELS       : {settings.GROQ_MODELS}")
+    print(f" • GEMINI_MODELS     : {settings.GEMINI_MODELS}")
+    print(f" • TIMEOUT (SECONDS) : {settings.AI_TIMEOUT_SECONDS}s")
+    print(f" • MAX RETRIES       : {settings.AI_MAX_RETRIES}")
+    print("==================================================")
+    yield
+
 
 app = FastAPI(
     title="AI Learning Management Platform API",
     description="Backend APIs for AI-Native Learning & Development Platform",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
-import logging
 
-logger = logging.getLogger("cors_audit")
-
-@app.exception_handler(AllGeminiModelsQuotaExhaustedError)
-async def quota_exhausted_exception_handler(request: Request, exc: AllGeminiModelsQuotaExhaustedError):
+@app.exception_handler(ProviderUnavailableException)
+async def provider_unavailable_exception_handler(request: Request, exc: ProviderUnavailableException):
     return JSONResponse(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         content={
@@ -34,6 +53,7 @@ async def quota_exhausted_exception_handler(request: Request, exc: AllGeminiMode
             "error": exc.message
         }
     )
+
 
 @app.middleware("http")
 async def cors_diagnostic_middleware(request: Request, call_next):
@@ -74,6 +94,7 @@ app.include_router(agents_router)
 app.include_router(notifications_router)
 app.include_router(health_router)
 app.include_router(admin_router)
+
 
 @app.get("/")
 def home():

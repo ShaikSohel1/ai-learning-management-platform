@@ -16,7 +16,8 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from app.ai.gemini_client import AllGeminiModelsQuotaExhaustedError, GeminiClient
+from app.ai.provider_manager import AIProviderManager, provider_manager
+from app.ai.providers import ProviderUnavailableException
 from app.ai.retry_handler import retry_handler
 from app.rag.context_compressor import context_compressor
 from app.rag.document_loader import document_loader
@@ -39,7 +40,7 @@ logger = logging.getLogger(__name__)
 class RAGService:
     """Unified Enterprise Semantic Search Platform Service Facade."""
 
-    def __init__(self, gemini_client: GeminiClient | None = None) -> None:
+    def __init__(self, ai_provider_manager: AIProviderManager | None = None) -> None:
         self.loader = document_loader
         self.chunker = text_chunker
         self.embeddings = embedding_service
@@ -47,7 +48,8 @@ class RAGService:
         self.retriever = retriever
         self.compressor = context_compressor
         self.history_store = search_history_store
-        self.client = gemini_client or GeminiClient()
+        self.provider = ai_provider_manager or provider_manager
+        self.client = self.provider
 
     def ingest_document(
         self,
@@ -139,7 +141,7 @@ class RAGService:
         start_time = time.perf_counter()
         request_id = str(uuid.uuid4())
         start_timestamp = datetime.now(UTC).isoformat()
-        current_active_model = GeminiClient.get_active_model()
+        current_active_model = self.provider.get_active_model()
         user_info_str = f"{user_name} ({user_email})"
 
         # RAG REQUEST START
@@ -151,7 +153,7 @@ class RAGService:
         logger.info(f"Authenticated User: {user_info_str}")
         logger.info(f"Workspace ID: {user_department}")
         logger.info(f"Question: {question}")
-        logger.info(f"Requested Model: {settings.GEMINI_MODEL}")
+        logger.info(f"Provider: {self.provider.provider_name()}")
         logger.info(f"Current Active Model: {current_active_model}\n")
 
         # STEP 1 — USER QUESTION
@@ -282,16 +284,16 @@ class RAGService:
         logger.info(f"Context:\n{compressed_context}\n")
         logger.info(f"User question:\n{proc_query.optimized_query}\n")
 
-        # STEP 5 — GEMINI REQUEST
+        # STEP 5 — AI GENERATION REQUEST
         logger.info("====================================================")
-        logger.info("STEP 5 — GEMINI REQUEST")
+        logger.info("STEP 5 — AI GENERATION REQUEST")
         logger.info("====================================================")
-        logger.info(f"Model name: {GeminiClient.get_active_model()}")
+        logger.info(f"Provider: {self.provider.provider_name()}")
+        logger.info(f"Model name: {self.provider.get_active_model()}")
         logger.info("Temperature: 0.3")
         logger.info("Max tokens: 2048")
         logger.info("Top P: 1.0")
         logger.info("Top K: 40")
-        logger.info("Safety settings: Default (BLOCK_MEDIUM_AND_ABOVE)")
         logger.info("Retry count: 0")
 
         t_gemini_start = time.perf_counter()
@@ -299,23 +301,23 @@ class RAGService:
 
         try:
             raw_response_text = retry_handler.execute(
-                self.client.generate_content,
+                self.provider.generate_content,
                 prompt=prompt,
                 system_instruction=system_instruction,
                 json_mode=False
             )
             gemini_latency_ms = round((time.perf_counter() - t_gemini_start) * 1000, 2)
             logger.info(f"Latency: {gemini_latency_ms} ms\n")
-        except AllGeminiModelsQuotaExhaustedError:
+        except ProviderUnavailableException:
             gemini_latency_ms = round((time.perf_counter() - t_gemini_start) * 1000, 2)
-            logger.info(f"Latency: {gemini_latency_ms} ms (Quota Exhausted)\n")
+            logger.info(f"Latency: {gemini_latency_ms} ms (Quota Exhausted / Provider Unavailable)\n")
             if final_citations:
                 snippets_summary = "\n\n".join([f"• **[{c.document_name}]**: {c.snippet}" for c in final_citations[:3]])
                 raw_response_text = (
                     f"### Enterprise Document Context Retrieved\n\n"
                     f"Relevant context was successfully retrieved from the Knowledge Base for your query:\n\n"
                     f"{snippets_summary}\n\n"
-                    f"*(Note: AI synthesis is temporarily unavailable because all configured Gemini models have exceeded their API quota. The retrieved document context above is provided directly from your knowledge base.)*"
+                    f"*(Note: AI synthesis is temporarily unavailable because all configured provider models are unavailable. The retrieved document context above is provided directly from your knowledge base.)*"
                 )
             else:
                 raise

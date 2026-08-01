@@ -1,15 +1,15 @@
 """
 AI Service Facade Module.
 
-Orchestrates Gemini Client, Prompt Manager, Response Parser, Retry Handler, and Conversation Memory.
+Orchestrates ProviderManager, Prompt Manager, Response Parser, Retry Handler, and Conversation Memory.
 Provides high-level business functions for generating learning paths and handling multi-turn AI assistant chats.
 """
 
 import logging
 
 from app.ai.conversation_memory import memory_store
-from app.ai.gemini_client import GeminiClient
 from app.ai.prompt_manager import prompt_manager
+from app.ai.provider_manager import AIProviderManager, provider_manager
 from app.ai.response_parser import response_parser
 from app.ai.retry_handler import retry_handler
 from app.schemas.ai import AIChatResponse, LearningPathResponse
@@ -20,8 +20,10 @@ logger = logging.getLogger(__name__)
 class AIService:
     """Unified service facade for AI features in the LMS platform."""
 
-    def __init__(self, gemini_client: GeminiClient | None = None) -> None:
-        self.client = gemini_client or GeminiClient()
+    def __init__(self, ai_provider_manager: AIProviderManager | None = None) -> None:
+        self.provider = ai_provider_manager or provider_manager
+        # Backward compatibility property getter
+        self.client = self.provider
 
     def generate_learning_path(
         self,
@@ -41,11 +43,11 @@ class AIService:
         user_prompt = prompt_builder.build_user_prompt()
         system_instruction = prompt_builder.get_system_instruction()
 
-        logger.info(f"Generating AI learning path for goal='{career_goal}', skills={current_skills}")
+        logger.info(f"Generating AI learning path for goal='{career_goal}', skills={current_skills} using provider '{self.provider.provider_name()}'")
 
-        # Execute Gemini API call with exponential retry handler
+        # Execute provider call with exponential retry handler
         raw_output = retry_handler.execute(
-            self.client.generate_content,
+            self.provider.generate_content,
             prompt=user_prompt,
             system_instruction=system_instruction,
             json_mode=True
@@ -86,11 +88,11 @@ class AIService:
         # Add user message to conversation memory store
         memory_store.add_user_message(user_id, message)
 
-        logger.info(f"Processing AI assistant chat for user_id={user_id}")
+        logger.info(f"Processing AI assistant chat for user_id={user_id} using provider '{self.provider.provider_name()}'")
 
         # Execute call with exponential backoff retry handler
         ai_reply = retry_handler.execute(
-            self.client.generate_content,
+            self.provider.generate_content,
             prompt=user_prompt,
             system_instruction=system_instruction,
             json_mode=False

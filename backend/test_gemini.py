@@ -28,9 +28,11 @@ def run_production_health_check():
     except Exception as e:
         print(f"⚠️ Warning: Could not detect google-genai package version: {e}")
 
-    # 3. Print Configured Model from .env / settings
-    configured_model = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash")
-    print(f"✓ Configured Model (GEMINI_MODEL): {configured_model}")
+    # 3. Print Configured Models from .env / settings
+    configured_models_raw = os.getenv("GEMINI_MODELS", "models/gemini-3.6-flash,models/gemini-3.5-flash")
+    configured_models = [m.strip() for m in configured_models_raw.split(",") if m.strip()]
+    configured_model = configured_models[0] if configured_models else "models/gemini-3.5-flash"
+    print(f"✓ Configured Models Chain (GEMINI_MODELS): {configured_models}")
 
     # 4. Initialize Client & Fetch Available Models
     try:
@@ -44,8 +46,8 @@ def run_production_health_check():
                 print(f" • {m.name}")
 
         # 5. Verify Configured Target Model Exists in Registry
-        target_model = "models/gemini-2.5-flash"
-        if target_model in available_models or "gemini-2.5-flash" in available_models:
+        target_model = configured_model
+        if target_model in available_models or target_model.replace("models/", "") in available_models:
             print(f"\n✓ VERIFIED: Target model '{target_model}' exists in Google API Registry.")
         else:
             print(f"\n⚠️ WARNING: Target model '{target_model}' was not found in available models list.")

@@ -17,8 +17,8 @@ export function TopBar({ collapsed }) {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [systemInfo, setSystemInfo] = useState({
-    provider: "Google Gemini",
-    model: "models/gemini-2.0-flash",
+    provider: "AI Provider",
+    model: "Active Model",
     status: "Operational",
   });
 
@@ -84,7 +84,7 @@ export function TopBar({ collapsed }) {
 
           {/* AI Operational Indicator */}
           <div
-            title={`Active Model: ${systemService.formatModelName(systemInfo.model)}`}
+            title={`Active Provider: ${systemInfo.provider} | Model: ${systemService.formatModelName(systemInfo.model)}`}
             style={{
               display: "flex",
               alignItems: "center",
@@ -92,16 +92,17 @@ export function TopBar({ collapsed }) {
               fontFamily: "var(--font-mono)",
               fontSize: "11px",
               fontWeight: 600,
-              color: "var(--color-success)",
-              background: "var(--color-success-bg)",
-              border: "1px solid var(--color-success-border)",
+              color: systemInfo.healthy !== false ? "var(--color-success)" : "var(--color-warning)",
+              background: systemInfo.healthy !== false ? "var(--color-success-bg)" : "var(--color-warning-bg)",
+              border: `1px solid ${systemInfo.healthy !== false ? "var(--color-success-border)" : "var(--color-warning-border)"}`,
               padding: "4px 12px",
               borderRadius: "var(--radius-full)",
             }}
           >
             <div className="pulse-active-dot" />
-            <span>{systemInfo.provider} Operational</span>
+            <span>{systemInfo.provider} ({systemService.formatModelName(systemInfo.model)}) {systemInfo.healthy !== false ? "Healthy" : "Degraded"}</span>
           </div>
+
 
         </div>
 

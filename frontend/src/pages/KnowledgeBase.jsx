@@ -50,9 +50,9 @@ function KnowledgeBase() {
   const [deletingId, setDeletingId] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
   const [systemInfo, setSystemInfo] = useState({
-    provider: "Google Gemini",
-    model: "models/gemini-2.0-flash",
-    status: "Operational"
+    provider: "AI Provider",
+    model: "Active Model",
+    status: "Operational",
   });
 
   // UI Accordion & Modal States

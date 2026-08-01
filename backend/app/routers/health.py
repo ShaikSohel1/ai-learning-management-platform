@@ -1,14 +1,15 @@
 """
 Health Monitoring Router Module.
 
-Provides granular health check endpoints for Database, Gemini AI, ChromaDB Vector Store,
-and overall System Health status.
+Provides granular health check endpoints for Database, Multi-Provider Multi-Model AI Engine,
+ChromaDB Vector Store, and overall System Health status.
 """
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.ai.llm_manager import llm_manager
 from app.core.config import settings
 from app.database.database import get_db
 from app.rag import RAGService, get_rag_service
@@ -35,11 +36,11 @@ def get_health():
     summary="Get active AI provider, model, and system status"
 )
 def get_system_info():
-    from app.ai.gemini_client import GeminiClient
+    h = llm_manager.get_health_status()
     return {
-        "provider": "Google Gemini",
-        "model": GeminiClient.get_active_model(),
-        "status": "Operational"
+        "provider": h["current_provider"],
+        "model": h["current_model"],
+        "status": h["failover_status"]
     }
 
 
@@ -65,18 +66,13 @@ def check_database_health(db: Session = Depends(get_db)):
 
 @router.get(
     "/health/ai",
-    summary="Google Gemini AI client connectivity check"
+    summary="Multi-Provider Multi-Model AI Engine connectivity check"
 )
 def check_ai_health():
-    from app.ai.gemini_client import GeminiClient
-    client = GeminiClient()
-    return {
-        "provider": "Google Gemini",
-        "component": "Google Gemini LLM",
-        "model": client.model,
-        "status": "Operational",
-        "message": "AI client ready."
-    }
+    """
+    Returns real-time health diagnostic metrics for Groq & Gemini providers, model chains, and failover status.
+    """
+    return llm_manager.get_health_status()
 
 
 @router.get(
@@ -122,12 +118,13 @@ def get_full_system_status(
 
     overall = "HEALTHY" if (db_ok and vector_ok) else "DEGRADED"
 
-    from app.ai.gemini_client import GeminiClient
+    h = llm_manager.get_health_status()
     return {
         "overall_status": overall,
         "database": "HEALTHY" if db_ok else "DEGRADED",
         "vector_store": "HEALTHY" if vector_ok else "DEGRADED",
-        "ai_engine": "HEALTHY",
+        "ai_engine": h["failover_status"],
         "agents_platform": "HEALTHY",
-        "model": GeminiClient.get_active_model()
+        "provider": h["current_provider"],
+        "model": h["current_model"]
     }

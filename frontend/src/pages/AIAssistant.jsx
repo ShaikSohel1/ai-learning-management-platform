@@ -40,8 +40,8 @@ const chatSuggestions = [
 function AIAssistant() {
   const [activeTab, setActiveTab] = useState("agents");
   const [systemInfo, setSystemInfo] = useState({
-    provider: "Google Gemini",
-    model: "models/gemini-2.0-flash",
+    provider: "AI Provider",
+    model: "Active Model",
     status: "Operational",
   });
 
@@ -61,7 +61,7 @@ function AIAssistant() {
   const [chatMessages, setChatMessages] = useState([
     {
       sender: "ai",
-      text: "Hello! I am your Enterprise AI Assistant powered by Google Gemini. How can I assist your career development, technical questions, or policy search today?",
+      text: "Hello! I am your Enterprise AI Assistant. How can I assist your career development, technical questions, or policy search today?",
       timestamp: "10:00 AM",
     },
   ]);
@@ -334,8 +334,8 @@ function AIAssistant() {
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <Bot size={22} color="var(--color-primary)" />
                   <div>
-                    <span style={{ fontWeight: 700, fontSize: "1rem" }}>Enterprise ChatGPT Session</span>
-                    <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "block" }}>Powered by Google Gemini (Model: {systemService.formatModelName(systemInfo.model)})</span>
+                    <span style={{ fontWeight: 700, fontSize: "1rem" }}>Enterprise AI Chat Session</span>
+                    <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "block" }}>Powered by {systemInfo.provider} ({systemService.formatModelName(systemInfo.model)})</span>
                   </div>
                 </div>
 
@@ -347,7 +347,7 @@ function AIAssistant() {
                 {chatMessages.map((msg, idx) => (
                   <div key={idx} className={`chat-bubble ${msg.sender === "user" ? "user-bubble" : "ai-bubble"}`}>
                     <div className="chat-bubble-header">
-                      <span>{msg.sender === "user" ? "You" : "Gemini AI Assistant"}</span>
+                      <span>{msg.sender === "user" ? "You" : `${systemInfo.provider} AI Assistant`}</span>
                       <span className="chat-timestamp">{msg.timestamp}</span>
                     </div>
                     {msg.sender === "user" ? (
@@ -361,7 +361,7 @@ function AIAssistant() {
                 {loadingChat && (
                   <div className="chat-bubble ai-bubble">
                     <div className="chat-bubble-header">
-                      <span>Gemini AI Assistant</span>
+                      <span>{systemInfo.provider} AI Assistant</span>
                     </div>
                     <div className="typing-indicator">
                       <span /> <span /> <span />

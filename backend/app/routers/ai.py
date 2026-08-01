@@ -2,14 +2,16 @@
 AI Router Module.
 
 Exposes RESTful endpoints for:
-- POST /ai/learning-path : Generating structured learning path & course recommendations.
-- POST /ai/chat          : General multi-turn conversational AI business assistant.
-- DELETE /ai/history     : Clearing conversation history.
+- POST /ai/learning-path   : Generating structured learning path & course recommendations.
+- POST /ai/chat            : General multi-turn conversational AI business assistant.
+- DELETE /ai/history       : Clearing conversation history.
+- GET /ai/provider-status  : Provider-agnostic active LLM provider, model, health, and fallback models status.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.ai import AIService, get_ai_service
+from app.ai.provider_manager import provider_manager
 from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.schemas.ai import (
@@ -103,20 +105,37 @@ def clear_chat_history(
 
 
 @router.get(
+    "/provider-status",
+    status_code=status.HTTP_200_OK,
+    summary="Get active AI provider status, model, health, and fallbacks"
+)
+def get_ai_provider_status():
+    """
+    STEP 10 Endpoint: Returns active provider, model, health, and fallback models.
+    """
+    health_info = provider_manager.health()
+    return {
+        "provider": health_info["provider"],
+        "model": health_info["model"],
+        "healthy": health_info["healthy"],
+        "fallback_models": health_info["fallback_models"]
+    }
+
+
+@router.get(
     "/model-status",
     status_code=status.HTTP_200_OK,
-    summary="Get runtime discovered Gemini model registry and active fallback status"
+    summary="Get runtime discovered AI model registry and active fallback status (backward compatible)"
 )
 def get_ai_model_status():
     """
-    STEP 9 Endpoint: Returns active model, fallback status, available models, and health.
+    Backward compatible endpoint returning active model, provider, fallback status, and health.
     """
-    from app.ai.gemini_client import GeminiClient
-    client = GeminiClient()
+    health_info = provider_manager.health()
     return {
-        "current_model": GeminiClient.get_active_model(),
+        "provider": health_info["provider"],
+        "current_model": health_info["model"],
         "fallback_enabled": True,
-        "available_models": client.get_discovered_models(),
-        "engine_health": "Operational"
+        "available_models": [health_info["model"]] + health_info["fallback_models"],
+        "engine_health": "Operational" if health_info["healthy"] else "Degraded"
     }
-

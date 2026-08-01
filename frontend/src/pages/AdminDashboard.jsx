@@ -47,8 +47,8 @@ function AdminDashboard() {
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
   const [systemInfo, setSystemInfo] = useState({
-    provider: "Google Gemini",
-    model: "models/gemini-2.0-flash",
+    provider: "AI Provider",
+    model: "Active Model",
     status: "Operational",
   });
 
