@@ -1,79 +1,86 @@
 <div align="center">
   <h1>🚀 AI Learning Management Platform</h1>
-  <p><strong>Provider-Agnostic AI-Native Learning & Development Ecosystem</strong></p>
-  
+  <p><strong>Enterprise-Grade, Provider-Agnostic AI-Native Learning & Development Ecosystem</strong></p>
+
   [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
   [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
   [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-  [![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
   [![Groq](https://img.shields.io/badge/Groq-F54E00?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com/)
-  [![OpenRouter](https://img.shields.io/badge/OpenRouter-6366F1?style=for-the-badge&logo=openai&logoColor=white)](https://openrouter.ai/)
-  [![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-
-  <br />
+  [![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+  [![ChromaDB](https://img.shields.io/badge/ChromaDB-FF6F61?style=for-the-badge&logo=database&logoColor=white)](https://www.trychroma.com/)
 </div>
+
+---
 
 ## 📖 Overview
 
-The **AI Learning Management Platform (LMS)** is an enterprise-grade ecosystem designed to revolutionize employee training and upskilling. Built with a **Provider-Agnostic AI Architecture**, the platform seamlessly integrates **Google Gemini**, **Groq**, and **OpenRouter**, paired with **ChromaDB** vector storage to power personalized course recommendations, a Retrieval-Augmented Generation (RAG) knowledge base, and automated Multi-Agent learning workflows.
+The **AI Learning Management Platform** is a full-stack, enterprise-ready learning management ecosystem designed to accelerate career growth, automate corporate upskilling, and power intelligent knowledge discovery.
+
+Built on a **Multi-Provider Multi-Model AI Architecture**, the system routes AI generation requests to **Groq** as the Primary Provider (executing multi-model failover chains across Llama, DeepSeek, and Qwen) and seamlessly fails over to **Google Gemini** if Groq models become unavailable. The platform integrates an **Enterprise Retrieval-Augmented Generation (RAG)** pipeline powered by **ChromaDB** and an autonomous **Multi-Agent Workflow Engine**.
 
 ---
 
 ## ✨ Key Features
 
-- **🌐 Provider-Agnostic AI Engine**: Seamlessly switch between **Google Gemini**, **Groq**, and **OpenRouter** via environment variables (`AI_PROVIDER=groq`) without code changes.
-- **🔄 Multi-Model Failover & Resiliency**: Built-in exponential backoff retries and primary-to-fallback model failovers (e.g. `llama-3.3-70b-versatile` $\rightarrow$ `llama-3.1-8b-instant`).
-- **🧠 AI-Powered Recommendations**: Real-time course and skill suggestions tailored to user career goals and current skill gaps.
-- **📚 Interactive Knowledge Base**: Chat with enterprise documents using a hybrid search RAG pipeline.
-- **🤖 Multi-Agent Architecture**: Autonomous AI agents that summarize lessons, grade assessments, and curate content.
-- **🛡️ Enterprise Security**: Role-Based Access Control (RBAC), JWT Authentication, and Supabase RLS.
-- **📊 Real-Time Telemetry & Health**: Active model tracking, latency metrics, and real-time provider status checks via `GET /ai/provider-status`.
+- **🌐 Multi-Provider Multi-Model AI Engine**: Executes intra-provider model chains (Groq `llama-3.3-70b-versatile` $\rightarrow$ `deepseek-r1-distill-llama-70b` $\rightarrow$ `qwen/qwen3-32b` $\rightarrow$ `openai/gpt-oss-120b`) before performing inter-provider failover to Google Gemini (`gemini-3.6-flash` $\rightarrow$ `gemini-3.5-flash`).
+- **🧠 Personalized Learning Paths**: Automatically curates multi-week roadmaps tailored to employee career goals, current skill levels, and role expectations.
+- **📚 Enterprise Knowledge Base (RAG)**: Chat directly with internal documents, policy PDFs, and manuals using hybrid semantic search and vector embeddings in ChromaDB.
+- **🤖 Multi-Agent Workflow Engine**: Autonomous AI agents that summarize complex course modules, grade assessments, and curate training materials.
+- **🛡️ Enterprise Security**: Role-Based Access Control (RBAC with Student, Instructor, Admin roles), JWT authentication, bcrypt password hashing, and Supabase security.
+- **📊 Real-Time Diagnostic Health Monitoring**: Provides live provider/model operational telemetry via `GET /health/ai`.
+
+---
+
+## 🏗️ Architecture Overview
+
+```mermaid
+graph TD
+    Client[Web Browser - React/Vite] -->|REST / JSON| FastAPI[FastAPI Backend Server]
+
+    subgraph Authentication & Security
+        FastAPI --> AuthMiddleware[JWT Auth & RBAC Middleware]
+        AuthMiddleware --> Postgres[(PostgreSQL / Supabase)]
+    end
+
+    subgraph Business Logic & Core Services
+        FastAPI --> AIService[AIService Facade]
+        FastAPI --> RAGService[RAGService Engine]
+        FastAPI --> WorkflowEngine[Multi-Agent Workflow Engine]
+    end
+
+    subgraph AI Platform Abstraction Layer
+        AIService --> LLMManager[LLMManager Orchestrator]
+        RAGService --> LLMManager
+        WorkflowEngine --> LLMManager
+        LLMManager --> ProviderRegistry[ProviderRegistry]
+    end
+
+    subgraph Multi-Model Provider Execution
+        ProviderRegistry -->|Primary| GroqProvider[GroqProvider]
+        ProviderRegistry -->|Fallback| GeminiProvider[GeminiProvider]
+        
+        GroqProvider -->|Model Chain 1-5| GroqAPI[Groq Cloud API]
+        GeminiProvider -->|Model Chain 1-5| GeminiAPI[Google Gemini API]
+    end
+
+    subgraph Vector Knowledge Storage
+        RAGService --> ChromaDB[(ChromaDB Vector Store)]
+    end
+```
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React, Vite, TailwindCSS, React Router, Recharts, Axios, Lucide Icons |
-| **Backend** | Python, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic |
-| **Database** | PostgreSQL (Supabase Serverless), Redis (Caching) |
-| **AI Providers** | **Google Gemini SDK**, **Groq SDK**, **OpenRouter REST API** |
-| **Vector Store** | ChromaDB (hnsw:cosine) |
-| **Deployment** | Docker, Docker Compose |
-
----
-
-## 🏗️ Provider-Agnostic AI Architecture
-
-```mermaid
-graph TD
-    Client[Web Browser] -->|REST/JSON| FastAPI[FastAPI Backend]
-    
-    subgraph Business Logic Layer
-        FastAPI --> AIService[AIService]
-        FastAPI --> RAGService[RAGService]
-        FastAPI --> WorkflowEngine[WorkflowEngine]
-    end
-
-    subgraph AI Platform Abstraction
-        AIService --> ProviderManager[AIProviderManager]
-        RAGService --> ProviderManager
-        WorkflowEngine --> ProviderManager
-    end
-    
-    subgraph Concrete LLM Providers
-        ProviderManager -->|AI_PROVIDER=gemini| GeminiProvider[GeminiProvider]
-        ProviderManager -->|AI_PROVIDER=groq| GroqProvider[GroqProvider]
-        ProviderManager -->|AI_PROVIDER=openrouter| OpenRouterProvider[OpenRouterProvider]
-    end
-
-    subgraph External LLM APIs
-        GeminiProvider -->|Primary / Fallbacks| GeminiAPI[Google Gemini API]
-        GroqProvider -->|llama-3.3-70b -> 3.1-8b| GroqAPI[Groq API]
-        OpenRouterProvider -->|gpt-oss-20b -> llama-70b| OpenRouterAPI[OpenRouter API]
-    end
-```
+| Layer | Component | Technologies |
+| :--- | :--- | :--- |
+| **Frontend** | UI & Routing | React 18, Vite, TailwindCSS, React Router V6, Axios, Lucide Icons, Recharts |
+| **Backend** | API Framework | Python 3.12+, FastAPI, Pydantic V2, Uvicorn |
+| **Database** | Relational DB | PostgreSQL, Supabase Serverless, SQLAlchemy 2.0, Alembic |
+| **AI Layer** | Multi-Provider Engine | **Groq SDK / REST**, **Google GenAI SDK**, OpenRouter REST API |
+| **Vector Store** | RAG Search | ChromaDB (`hnsw:cosine` embedding space) |
+| **Containerization** | Infrastructure | Docker, Docker Compose |
 
 ---
 
@@ -81,81 +88,110 @@ graph TD
 
 ```text
 .
-├── backend/                            # FastAPI Application
+├── backend/                            # FastAPI Application Root
 │   ├── app/
-│   │   ├── agents/                     # Multi-Agent Workflow Engine & Tools
-│   │   ├── ai/                         # Provider-Agnostic AI Layer
+│   │   ├── agents/                     # Multi-Agent Engine & Agent Tools
+│   │   ├── ai/                         # Multi-Provider Multi-Model Layer
 │   │   │   ├── providers/              # Concrete Provider Implementations
-│   │   │   │   ├── base_provider.py    # Abstract Base Class & Exceptions
-│   │   │   │   ├── gemini_provider.py  # Google Gemini Provider
-│   │   │   │   ├── groq_provider.py    # Groq Llama Provider
-│   │   │   │   └── openrouter_provider.py # OpenRouter API Provider
-│   │   │   ├── provider_manager.py     # Unified Provider Manager Facade
-│   │   │   ├── ai_service.py           # Business AI Facade
-│   │   │   ├── retry_handler.py        # Exponential Backoff Retry Handler
-│   │   │   ├── prompt_manager.py       # Versioned Prompt Builders
-│   │   │   └── response_parser.py      # Output Sanitization & Validation
-│   │   ├── core/                       # App Configuration settings
-│   │   ├── database/                   # SQLAlchemy Session & Engine
-│   │   ├── rag/                        # Vector Store & Search Pipeline
-│   │   ├── routers/                    # REST API Endpoints
+│   │   │   │   ├── base_provider.py    # Abstract Base Class & Failover Exceptions
+│   │   │   │   ├── gemini_provider.py  # Gemini Multi-Model Provider
+│   │   │   │   ├── groq_provider.py    # Groq Multi-Model Provider
+│   │   │   │   └── openrouter_provider.py # OpenRouter Provider
+│   │   │   ├── provider_registry.py    # Dynamic Provider Registry
+│   │   │   ├── llm_manager.py          # Centralized LLM Failover Orchestrator
+│   │   │   ├── ai_service.py           # Business AI Service Facade
+│   │   │   ├── prompt_manager.py       # Prompt Templates
+│   │   │   └── response_parser.py      # JSON Sanitization & Parsing
+│   │   ├── core/                       # Settings & App Config
+│   │   ├── database/                   # SQLAlchemy Engine & Models
+│   │   ├── rag/                        # Enterprise RAG & ChromaDB Integration
+│   │   ├── routers/                    # FastAPI REST Endpoints
 │   │   └── schemas/                    # Pydantic Schemas
-│   └── tests/                          # Unit & Provider Test Suites
-├── frontend/                           # React/Vite Application
+│   ├── tests/                          # Complete Unit & Integration Test Suite
+│   ├── .env.example                    # Environment Configuration Template
+│   └── requirements.txt                # Python Dependencies
+├── frontend/                           # React + Vite Client Application
 │   ├── src/
-│   │   ├── components/                 # TopBar, CommandPalette, Modals
+│   │   ├── components/                 # TopBar, Sidebar, Modals, Cards
 │   │   ├── pages/                      # Dashboard, AIAssistant, KnowledgeBase, Admin
-│   │   └── services/                   # systemService, API Handlers
-└── README.md
+│   │   └── services/                   # Axios API Clients & System Services
+└── docs/                               # Detailed Enterprise Documentation
+    ├── architecture.md                 # System Architecture
+    ├── backend.md                      # Backend Specification
+    ├── frontend.md                     # Frontend Specification
+    ├── provider-architecture.md        # AI Provider Deep Dive
+    ├── rag.md                          # Enterprise RAG Engine
+    ├── agents.md                       # Multi-Agent Workflow Engine
+    ├── authentication.md               # Auth & Security Specifications
+    ├── api-reference.md                # Complete API Documentation
+    └── deployment.md                  # Deployment Guide
 ```
 
 ---
 
-## ⚙️ Environment Variables & Provider Configuration
+## ⚙️ Environment Variables
 
-Switching providers requires **zero code modifications**. Set `AI_PROVIDER` in `backend/.env`:
+Copy `backend/.env.example` to `backend/.env` and update values:
 
 ```env
-# Provider Selection (gemini | groq | openrouter)
-AI_PROVIDER=groq
+# Multi-Provider AI Platform Configuration
+PRIMARY_PROVIDER=groq
+FALLBACK_PROVIDERS=gemini
 
-# API Keys
-GEMINI_API_KEY="your-google-gemini-key"
-GROQ_API_KEY="your-groq-api-key"
-OPENROUTER_API_KEY="your-openrouter-api-key"
+# Groq Credentials & Models Chain
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_MODELS=llama-3.3-70b-versatile,deepseek-r1-distill-llama-70b,qwen/qwen3-32b,openai/gpt-oss-120b,llama-3.1-8b-instant
 
-# Optional Model Overrides
-PRIMARY_MODEL="llama-3.3-70b-versatile"
-FALLBACK_MODELS="llama-3.1-8b-instant"
+# Gemini Credentials & Models Chain
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODELS=models/gemini-3.6-flash,models/gemini-3.5-flash,models/gemini-flash-latest,models/gemini-3.5-flash-lite,models/gemini-3.1-flash-lite
 
-# Retries & Timeouts
-AI_MAX_RETRIES=3
-AI_BACKOFF_FACTOR=2.0
-AI_REQUEST_TIMEOUT=30.0
+# AI Execution Retries & Timeouts
+AI_TIMEOUT_SECONDS=30.0
+AI_MAX_RETRIES=2
+AI_BACKOFF_FACTOR=1.5
+
+# Database & Security
+DATABASE_URL=postgresql://postgres:password@localhost:5432/ai_learning_db
+SECRET_KEY=your-super-secret-jwt-key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 ```
-
-### Supported Providers & Default Models
-
-| Provider (`AI_PROVIDER`) | Primary Model | Fallback Model | Protocol |
-| :--- | :--- | :--- | :--- |
-| `gemini` | `models/gemini-3.5-flash` | `models/gemini-3.6-flash`, `models/gemini-flash-latest` | Google GenAI SDK |
-| `groq` | `llama-3.3-70b-versatile` | `llama-3.1-8b-instant` | Groq SDK / REST API |
-| `openrouter` | `openai/gpt-oss-20b` | `meta-llama/llama-3.1-70b-instruct` | HTTPS REST API |
 
 ---
 
-## 🔁 Retry & Failover Mechanism
+## 🚀 Running Locally
 
-1. **Model-Level Retry**: On transient errors (429 Rate Limits, 500/503 Server Errors, Network Timeouts), the provider retries up to `AI_MAX_RETRIES` times with exponential backoff (`delay *= 2.0`).
-2. **Model Failover**: If the primary model fails after retries, the provider automatically switches execution to its designated fallback model.
-3. **Provider Exhaustion**: If all models fail, a clean `ProviderUnavailableException` (HTTP 503) is raised, preventing unhandled SDK crashes and providing structured telemetry logs.
+### 1. Backend Setup
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Run migrations & start FastAPI server
+uvicorn app.main:app --reload --port 8000
+```
+
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The application will be accessible at `http://localhost:5173`.
 
 ---
 
 ## 🧪 Testing
 
-Run the comprehensive test suite verifying Gemini, Groq, OpenRouter providers, ProviderManager, failover, and health endpoints:
-
+Run the full automated test suite:
 ```bash
 cd backend
 PYTHONPATH=. python3 -m unittest discover -s tests -p "test_*.py"
@@ -163,9 +199,19 @@ PYTHONPATH=. python3 -m unittest discover -s tests -p "test_*.py"
 
 ---
 
-## 📄 API Endpoints
+## 📚 Detailed Documentation
 
-- `GET /ai/provider-status` : Real-time active provider, model, health status, and fallback models.
-- `POST /ai/learning-path` : Structured career roadmap generation.
-- `POST /ai/chat`          : Multi-turn conversational AI assistant.
-- `GET /system/info`        : Operational indicator status.
+- 📐 **[System Architecture](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/docs/architecture.md)**
+- 🤖 **[Multi-Provider AI Architecture](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/docs/provider-architecture.md)**
+- 🔍 **[Enterprise RAG Engine](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/docs/rag.md)**
+- 👥 **[Multi-Agent Workflows](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/docs/agents.md)**
+- 💾 **[Database Schema & ERD](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/DATABASE.md)**
+- 🔐 **[Security & RBAC](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/SECURITY.md)**
+- 🌐 **[API Reference](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/docs/api-reference.md)**
+- 🚢 **[Deployment Guide](file:///Users/shaiksohel/Downloads/ai-learning-management-platform/DEPLOYMENT.md)**
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for details.

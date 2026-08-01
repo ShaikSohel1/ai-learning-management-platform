@@ -1,53 +1,91 @@
-# Security Overview
+# Security Architecture & Policies
 
-Security is a foundational pillar of the AI Learning Management Platform. We enforce strict protocols across data storage, network transfer, and application logic.
+This document outlines the security controls, authentication mechanisms, data protection practices, and threat mitigation strategies implemented in the **AI Learning Management Platform**.
 
 ---
 
-## 1. Authentication & JWT
+## 🛡️ Security Architecture Overview
 
-We use stateless **JSON Web Tokens (JWT)** for all client-server communication.
+```mermaid
+graph TD
+    Client[Web Browser / React Frontend] -->|HTTPS Request| WAF[CORS & Security Middleware]
+    WAF -->|Validate Token| JWTAuth[JWT Auth & RBAC Guard]
+    
+    subgraph Authentication & Access Control
+        JWTAuth -->|Bcrypt Verify| UserDB[(PostgreSQL Users Table)]
+        JWTAuth -->|Role Validation| RoleGuard[Student / Instructor / Admin Role Check]
+    end
 
+    subgraph Service Layer & Prompt Defense
+        RoleGuard --> ServiceLayer[AIService / RAGService / WorkflowEngine]
+        ServiceLayer --> PromptSanitizer[Prompt Injection Defense & Secret Masking]
+        PromptSanitizer --> LLMManager[LLMManager Orchestrator]
+    end
+
+    subgraph Vector Isolation & External APIs
+        ServiceLayer -->|User / Scope Filter| ChromaDB[(ChromaDB Vector Store)]
+        LLMManager -->|Sanitized Prompt| ExternalAPIs[Groq / Gemini LLM APIs]
+    end
+```
+
+---
+
+## 🔑 1. Authentication & JWT Controls
+
+### Token Generation & Verification
 - **Algorithm**: `HS256` (HMAC with SHA-256).
-- **Expiration**: Access tokens expire quickly (e.g., 30 minutes).
-- **Storage**: The frontend stores the token securely and attaches it as a `Bearer` token in the `Authorization` header of Axios requests.
-- **Middleware Check**: FastAPI's `Depends(get_current_user)` function intercepts incoming requests, decodes the JWT using the `SECRET_KEY`, and halts execution with `HTTP 401` if invalid or expired.
+- **Expiration**: Configured via `ACCESS_TOKEN_EXPIRE_MINUTES` (Default: 30-60 minutes).
+- **Payload Schema**:
+  ```json
+  {
+    "sub": "user_id_uuid_string",
+    "email": "user@company.com",
+    "role": "student",
+    "exp": 1785313653
+  }
+  ```
 
-## 2. Password Hashing
+### Password Hashing
+- **Algorithm**: `Bcrypt` with work factor 12.
+- Plaintext passwords are **never** stored or written to logs.
 
-We **never** store plain text passwords.
-- **Library**: `passlib` configured with the `bcrypt` algorithm.
-- **Salting**: Bcrypt automatically salts passwords upon creation, rendering rainbow table attacks ineffective.
-- **Verification**: The `verify_password` utility securely hashes incoming login attempts and compares them in constant time against the database string.
+---
 
-## 3. CORS (Cross-Origin Resource Sharing)
+## 🔐 2. Role-Based Access Control (RBAC)
 
-The platform enforces strict CORS policies to prevent unauthorized domains from invoking our API.
+The platform enforces 3 user roles:
 
-- Managed via FastAPI's `CORSMiddleware`.
-- **Allowed Origins**: Strictly defined via the `FRONTEND_URLS` environment variable (e.g., `http://localhost:5173`).
-- **Credentials**: `allow_credentials=True` is enabled.
-- **Methods/Headers**: Configured securely depending on the deployment profile.
+| Role | Access Scope | Enforced By |
+| :--- | :--- | :--- |
+| `student` | Access enrolled courses, AI Assistant, personal learning paths, knowledge base query. | `get_current_active_user` dependency |
+| `instructor` | Create, edit, and delete courses, lessons, and view enrolled student progress. | `get_current_instructor` dependency |
+| `admin` | System health diagnostics, user management, audit logs, platform configuration. | `get_current_admin` dependency |
 
-## 4. Role-Based Access Control (RBAC)
+---
 
-Authorization is handled via robust dependency injection in FastAPI.
+## 🛡️ 3. Prompt Injection Defense & Sanitization
 
-- Roles: `employee`, `manager`, `admin`.
-- **Example Implementation**: The `Depends(require_admin)` dependency fetches the user profile from the JWT and ensures their role matches `admin`. If not, a `403 Forbidden` error is returned before the route logic ever executes.
+1. **System Prompt Encapsulation**: User inputs are strictly wrapped in user-turn messages. System instructions are injected separately via standard API parameter fields (`system_instruction` / `system_message`).
+2. **Secret Redaction**: Structured logging sanitizes prompt secrets, API keys, JWT tokens, and emails before writing log entries:
+   ```python
+   # Sanitization Example
+   logger.info(f"AI Request executed for user {user_id} using model {model_name}")
+   ```
 
-## 5. Secrets Management & Environment Variables
+---
 
-- **No Hardcoded Secrets**: Every sensitive value (Database URL, JWT Secret Key, Google Gemini API Key) is injected at runtime via environment variables.
-- **Dotenv**: `python-dotenv` loads these safely in development.
-- **Docker**: Secrets are passed securely via Docker Compose environment blocks or production orchestrator secrets managers.
+## 🔍 4. Enterprise RAG & Vector Store Safety
 
-## 6. HTTPS & Network Security
+1. **Document Isolation**: Document chunk retrieval includes document metadata filtering (`doc_id`, `user_id`, `course_id`) to prevent unauthorized cross-tenant context leaks.
+2. **Context Window Boundary**: Retrieved vector context chunks are truncated to fit model context limits, preventing context-overflow attacks.
 
-- In production, FastAPI is deployed behind a reverse proxy (e.g., Nginx, AWS ALB, Vercel) that terminates SSL/TLS.
-- All connections to the Supabase PostgreSQL database require SSL (`sslmode=require` in the connection URI) to prevent Man-In-The-Middle (MITM) data sniffing.
+---
 
-## 7. AI Prompt Injection Mitigation
+## 🌐 5. CORS & HTTP Security Headers
 
-- User inputs mapped to Google Gemini prompts are sanitized and strongly typed via Pydantic schemas.
-- The multi-agent workflow engine strictly scopes the context window to prevent jailbreaking attempts against the AI features.
+- **CORS Filtering**: Strict origin validation (`cors_origins` list) and regex pattern matching (`https://.*\.vercel\.app`).
+- **Security Headers**:
+  - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `X-XSS-Protection: 1; mode=block`
